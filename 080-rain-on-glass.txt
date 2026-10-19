@@ -1,0 +1,18 @@
+TITLE: RAIN — the window at dusk
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "RAIN — the window at dusk". Art direction: rainy evening, warm street light behind cold glass. Palette: ground #0b1018, ink #e9edf3, dim #7c8797, hairline rgba(233,237,243,.14), amber #ffb86b, sky blue #3b5a7d. Layout: a header with a two-stroke rain logo mark and a monospaced coordinate line; then a hero with an amber kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered window panel holding a 1200×620 canvas and an absolutely positioned monospace HUD reporting the number of drops, the number running and the rainfall; then a control band of two sliders (Rainfall, Wind) and three buttons (Wipe the glass / Storm / Clear); then a two-column section pairing an essay on why the big drops move with a conditions table giving the temperature, humidity, wind, the number of drops on the glass, the number running and the runners per second; and a footer. Behind the glass is a procedurally drawn street at dusk — a gradient sky, soft cloud bloom, two layers of buildings with lit windows, a street glow and bokeh lights — rendered once into an offscreen canvas. Each droplet is then drawn as a real lens: the offscreen scene is clipped to a circle around the drop and drawn flipped in both axes, so the street appears inside the bead upside down and compressed, with a rim highlight and a specular bloom on top. The drops themselves are simulated: a static drop grows until it is heavy enough to break adhesion, then runs, accelerating under gravity, shedding small static residue behind it and absorbing smaller drops it passes, which is why runners speed up as they descend. Interaction: drag across the glass to wipe it; Storm raises the rainfall; Clear empties the glass; the two sliders change the rate of new drops and the sideways drift. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+Rain on a window, with the optics done properly. Every bead is a real lens: the street behind the glass is clipped to a circle around the drop and drawn flipped in both axes, so the building appears inside the bead upside down and compressed. The drops behave too — they grow, break loose when they are heavy enough, run, accelerate, shed residue behind them and swallow the small drops they meet.
+
+MAJOR VISUAL TECHNIQUES:
+- Inverted refraction of an offscreen scene clipped to each droplet
+- Procedural dusk street scene with lit windows and bokeh
+- Drop growth, adhesion break, gravity run and residue shedding
+- Runners absorbing smaller static drops and gaining radius
+- Blurred background layer via canvas filter
+- Vignette and a double window frame drawn over the scene
+
+INTENDED INTERACTION MODEL:
+Watch the weather. Wipe the glass with the pointer, raise the rainfall, let the wind push the runners sideways, and clear it to start again.

@@ -1,0 +1,18 @@
+TITLE: STRATA — a core through the ground
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "STRATA — a core through the ground". Art direction: earthy, tactile, laboratory-notebook. Palette: ground #161311, ink #efe6d8, dim #8d8072, hairline rgba(239,230,216,.14), ochre #c98a3c, rust #a14a2c. Body type is Helvetica; the instrument parts are monospaced. Layout: a header with a logo mark built from a repeating linear-gradient of banded strata and a monospaced catalogue line; then a hero with an ochre kicker, a huge light-weight headline with one bold word, and a paragraph; then a three-column laboratory panel inside a single hairline border — a narrow depth ruler on the left whose tick labels are absolutely positioned by percentage, a 420×520 canvas in the middle drawing the core, and a reading panel on the right with a depth-and-age line, a large heading, a descriptive paragraph and a five-row key-value table; then a control row of three monospaced buttons (Deeper / Shallower / Scan core) and a depth slider pushed right; then a two-column section pairing an essay on what the order of the layers means with a method note and a specification table; and a footer. The core is drawn procedurally on the canvas: nine beds with their own colour, grain and age, stacked in proportion, each separated by an irregular bedding plane built from two summed sine waves so the boundary is never straight, each bed speckled with a hundred and sixty light and dark grains clipped to its own shape, and the whole column shaded by a subtle vignette. Interaction: the depth slider and the Deeper and Shallower buttons move the marker through the column and rewrite the reading panel; Scan core animates a bright ochre line down the column with the region above it filled, and the read panel follows the line down as it goes. Responsive: below 900px the ruler is hidden, the reading panel moves below the core, and the columns stack.
+
+DESCRIPTION:
+A drill core you can walk down. Nine beds — topsoil, charcoal silt, aeolian sand, glacial varves, a flood sand, marine clay, sandstone, Jurassic limestone and basement basalt — are stacked with irregular bedding planes and speckled with grain, and the reading panel changes as you move through them. Scan core sends an ochre line down the column while the text follows it.
+
+MAJOR VISUAL TECHNIQUES:
+- Procedural bedding planes from two summed sine waves
+- Per-bed grain speckling clipped to each stratum shape
+- Absolutely positioned ruler ticks scaled by percentage
+- Animated scan line with a filled region above it
+- Banded gradient logo mark
+- Monospaced key-value instrumentation panels
+
+INTENDED INTERACTION MODEL:
+Go deeper. Use the slider, the Deeper and Shallower buttons, or Scan core to send the marker down the column while the reading panel follows.

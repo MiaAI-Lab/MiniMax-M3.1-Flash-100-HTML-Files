@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANEL — issue no. 4</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#f4efe2;--ink:#15120c;--red:#d6342a;--blue:#2a5db0;--yellow:#f2c53d;--grey:#a49b8a;}
+  body{background:#2c2a26;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;padding:26px 16px 70px;}
+  .topbar{max-width:980px;margin:0 auto 16px;display:flex;justify-content:space-between;align-items:center;gap:14px;
+    flex-wrap:wrap;color:#b6ada0;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;}
+  .topbar b{color:var(--yellow);}
+  .sheet{max-width:980px;margin:0 auto;background:var(--paper);padding:20px;box-shadow:0 40px 80px -40px #000;
+    transform:rotate(-.25deg);}
+  .page{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(70px,auto);gap:10px;
+    min-height:900px;}
+  .panel{position:relative;overflow:hidden;border:2.5px solid var(--ink);background:var(--paper);}
+  .panel svg{position:absolute;inset:0;width:100%;height:100%;}
+  .dots{position:absolute;inset:0;
+    background-image:radial-gradient(circle,rgba(21,18,12,.85) 34%,transparent 36%);
+    background-size:6px 6px;opacity:.5;}
+  .bubble{position:absolute;background:#fff;border:2.5px solid var(--ink);border-radius:50%;padding:12px 16px;
+    font-size:13px;line-height:1.35;max-width:78%;font-weight:600;z-index:3;}
+  .bubble::after{content:"";position:absolute;width:14px;height:14px;background:#fff;border-right:2.5px solid var(--ink);
+    border-bottom:2.5px solid var(--ink);transform:rotate(45deg);bottom:-8px;left:26px;}
+  .sfx{position:absolute;font-size:clamp(1.6rem,3.6vw,2.8rem);font-weight:900;letter-spacing:-.04em;z-index:3;
+    -webkit-text-stroke:1.5px var(--ink);color:var(--yellow);transform:rotate(-7deg);}
+  .caption{position:absolute;left:0;right:0;bottom:0;background:var(--yellow);border-top:2.5px solid var(--ink);
+    padding:7px 12px;font-size:11px;letter-spacing:.06em;font-weight:600;z-index:3;}
+  .p1{grid-column:span 7;grid-row:span 6;}
+  .p2{grid-column:span 5;grid-row:span 3;}
+  .p3{grid-column:span 5;grid-row:span 3;}
+  .p4{grid-column:span 5;grid-row:span 3;}
+  .p5{grid-column:span 5;grid-row:span 3;}
+  .p6{grid-column:span 4;grid-row:span 3;}
+  .p7{grid-column:span 4;grid-row:span 3;}
+  .p8{grid-column:span 4;grid-row:span 3;}
+  .p9{grid-column:span 12;grid-row:span 3;}
+  .flip{animation:flip .9s cubic-bezier(.4,.1,.2,1);}
+  @keyframes flip{0%{transform:none;opacity:1;}45%{transform:perspective(1400px) rotateY(-42deg) scale(.94);opacity:.4;}
+    100%{transform:none;opacity:1;}}
+  .hint{max-width:980px;margin:18px auto 0;color:#8d8578;font-size:11.5px;line-height:1.8;max-width:640px;}
+  .hint b{color:var(--yellow);}
+
+  @media(max-width:760px){.page{grid-template-columns:repeat(6,1fr);min-height:0;}
+    .p1{grid-column:span 6;grid-row:span 5;}.p2,.p3,.p4,.p5{grid-column:span 6;grid-row:span 3;}
+    .p6,.p7,.p8{grid-column:span 3;grid-row:span 3;}.p9{grid-column:span 6;grid-row:span 3;}
+    .sheet{padding:12px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="topbar"><span>Panel — a comic in the browser</span><span>Issue <b>no. 4</b> · The Halcyon Line</span></div>
+<div class="sheet" id="sheet">
+  <div class="page" id="page"></div>
+</div>
+<p class="hint">Press the <b>next page</b> button to turn. Every panel is drawn with inline SVG — no images, no sprite sheets. <b>Halftone</b> is a repeating radial-gradient of dots, which is exactly what a printing plate does.</p>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var pageEl=document.getElementById('page');
+
+  function svg(inner,vb){
+    return '<svg viewBox="'+vb+'" preserveAspectRatio="none">'+inner+'</svg>';
+  }
+  function sky(hills,col1,col2){
+    var s='<defs><linearGradient id="g'+col1.replace('#','')+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="'+col1+'"/><stop offset="1" stop-color="'+col2+'"/></linearGradient></defs>';
+    s+='<rect width="400" height="300" fill="url(#g'+col1.replace('#','')+')"/>';
+    s+=hills;
+    return s;
+  }
+  function hill(pts,fill,op){
+    return '<path d="'+pts+'" fill="'+fill+'" opacity="'+(op||1)+'"/>';
+  }
+  function fig(x,y,s,fill){
+    return '<g transform="translate('+x+','+y+') scale('+s+')">'+fill+'</g>';
+  }
+  function person(x,y,s,coat,skin){
+    return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+      '<ellipse cx="0" cy="-26" rx="8" ry="9" fill="'+skin+'"/>'+
+      '<path d="M-11 -16 L11 -16 L15 22 L-15 22 Z" fill="'+coat+'"/>'+
+      '<rect x="-14" y="22" width="11" height="26" fill="#22202a"/>'+
+      '<rect x="3" y="22" width="11" height="26" fill="#22202a"/>'+
+      '<path d="M-11 -12 L-22 6" stroke="'+coat+'" stroke-width="6" stroke-linecap="round"/>'+
+      '<path d="M11 -12 L22 2" stroke="'+coat+'" stroke-width="6" stroke-linecap="round"/>'+
+      '</g>';
+  }
+  function train(x,y,s){
+    return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+      '<rect x="0" y="0" width="150" height="52" rx="6" fill="#8d2f2a"/>'+
+      '<rect x="8" y="8" width="40" height="22" fill="#cfe3ee"/><rect x="56" y="8" width="40" height="22" fill="#cfe3ee"/>'+
+      '<rect x="104" y="8" width="38" height="22" fill="#cfe3ee"/>'+
+      '<rect x="0" y="34" width="150" height="6" fill="#5c1c18"/>'+
+      '<circle cx="30" cy="56" r="9" fill="#22202a"/><circle cx="120" cy="56" r="9" fill="#22202a"/>'+
+      '</g>';
+  }
+  function halftoneOverlay(){
+    return '<rect width="400" height="300" fill="url(#halftone)" opacity=".22"/>';
+  }
+
+  var PAGES=[
+    [
+      {c:'p1',svg:svg(sky(hill('M0 240 L60 200 L110 228 L170 186 L230 220 L300 180 L360 214 L400 196 L400 300 L0 300 Z','#2b3f6b')+
+        hill('M0 268 L80 244 L150 262 L240 240 L320 258 L400 240 L400 300 L0 300 Z','#1a2440'),'0 0 400 300')+
+        '<rect x="0" y="0" width="400" height="300" fill="none"/>'+
+        fig(120,262,1.5,'#d6342a','#e8c9a8')+
+        fig(250,258,1.2,'#2a3b5c','#c9a683'),'0 0 400 300'),
+       bubble:{t:'You said the last train was at midnight.',x:'6%',y:'8%',w:'46%'}},
+      {c:'p2',svg:svg('<rect width="400" height="300" fill="#2a3b5c"/>'+
+        fig(150,250,1.6,'#d6342a','#e8c9a8')+
+        '<circle cx="250" cy="90" r="40" fill="#f2c53d" opacity=".85"/>','0 0 400 300'),
+       bubble:{t:'I said it left at midnight. I did not say it arrived.',x:'8%',y:'12%',w:'80%'}},
+      {c:'p3',svg:svg('<rect width="400" height="300" fill="#1b2740"/>'+
+        train(60,170,1.3)+
+        '<rect x="0" y="252" width="400" height="48" fill="#111827"/>'+
+        '<rect x="0" y="252" width="400" height="4" fill="#5c6478"/>','0 0 400 300'),
+       sfx:{t:'CLANG',x:'8%',y:'14%',rot:-8}},
+      {c:'p4',svg:svg('<rect width="400" height="300" fill="#3a2c1c"/>'+
+        '<rect x="40" y="60" width="320" height="200" fill="#241a10"/>'+
+        '<rect x="70" y="100" width="120" height="120" fill="#f2c53d" opacity=".85"/>'+
+        fig(300,250,1.3,'#2a3b5c','#c9a683'),'0 0 400 300'),
+       caption:'The 00:12 from the harbour line. Always empty.'},
+      {c:'p5',svg:svg('<rect width="400" height="300" fill="#e9e2d0"/>'+
+        '<rect x="0" y="210" width="400" height="90" fill="#d6cdb8"/>'+
+        '<rect x="60" y="90" width="120" height="120" fill="#2a3b5c"/>'+
+        '<circle cx="290" cy="120" r="46" fill="#d6342a"/>'+
+        fig(190,240,1.4,'#111827','#e8c9a8'),'0 0 400 300'),
+       bubble:{t:'Then who paid for the ticket?',x:'6%',y:'8%',w:'52%'}},
+      {c:'p6',svg:svg('<rect width="400" height="300" fill="#2b3f6b"/>'+
+        '<circle cx="200" cy="120" r="60" fill="#f2c53d"/>'+
+        '<rect x="0" y="200" width="400" height="100" fill="#1a2440"/>','0 0 400 300'),
+       sfx:{t:'KA-CHAK',x:'6%',y:'12%',rot:5}},
+      {c:'p7',svg:svg('<rect width="400" height="300" fill="#1a2440"/>'+
+        '<rect x="30" y="40" width="340" height="220" fill="#2b3f6b"/>'+
+        '<circle cx="200" cy="150" r="70" fill="#f2c53d" opacity=".9"/>','0 0 400 300'),
+       caption:'The lamp in the tunnel flickers twice, always twice.'},
+      {c:'p8',svg:svg('<rect width="400" height="300" fill="#e9e2d0"/>'+
+        fig(200,250,1.8,'#111827','#e8c9a8')+
+        '<circle cx="200" cy="150" r="46" fill="none" stroke="#111827" stroke-width="6"/>','0 0 400 300'),
+       bubble:{t:'Somebody is in the tunnel.',x:'8%',y:'10%',w:'66%'}},
+      {c:'p9',svg:svg('<rect width="400" height="300" fill="#111827"/>'+
+        '<circle cx="200" cy="150" r="90" fill="none" stroke="#f2c53d" stroke-width="4"/>'+
+        '<circle cx="200" cy="150" r="8" fill="#f2c53d"/>','0 0 400 300'),
+       caption:'To be continued in issue five.'}
+    ],
+    [
+      {c:'p1',svg:svg('<rect width="400" height="300" fill="#111827"/>'+
+        '<circle cx="200" cy="150" r="120" fill="#2b3f6b" opacity=".6"/>'+
+        '<circle cx="200" cy="150" r="70" fill="#f2c53d" opacity=".9"/>','0 0 400 300'),
+       sfx:{t:'WHUMP',x:'10%',y:'18%',rot:-4}},
+      {c:'p2',svg:svg('<rect width="400" height="300" fill="#3a2c1c"/>'+
+        fig(200,250,1.7,'#d6342a','#e8c9a8')+
+        '<rect x="0" y="240" width="400" height="60" fill="#241a10"/>','0 0 400 300'),
+       bubble:{t:'It was only the wind. It is only ever the wind.',x:'6%',y:'8%',w:'74%'}},
+      {c:'p3',svg:svg('<rect width="400" height="300" fill="#e9e2d0"/>'+
+        '<rect x="40" y="60" width="320" height="200" fill="#2a3b5c"/>'+
+        '<rect x="80" y="110" width="120" height="80" fill="#f2c53d" opacity=".8"/>','0 0 400 300'),
+       caption:'The station clock had stopped at 00:12 for eleven years.'},
+      {c:'p4',svg:svg('<rect width="400" height="300" fill="#1a2440"/>'+
+        train(100,150,1.2)+'<rect x="0" y="240" width="400" height="60" fill="#111827"/>','0 0 400 300'),
+       bubble:{t:'Eleven years, and the same minute.',x:'8%',y:'8%',w:'64%'}},
+      {c:'p5',svg:svg('<rect width="400" height="300" fill="#2b3f6b"/>'+
+        '<circle cx="110" cy="120" r="55" fill="#f2c53d"/>'+
+        '<rect x="0" y="220" width="400" height="80" fill="#1a2440"/>','0 0 400 300'),
+       sfx:{t:'TICK',x:'8%',y:'12%',rot:0}},
+      {c:'p6',svg:svg('<rect width="400" height="300" fill="#111827"/>'+
+        fig(200,260,1.5,'#2a3b5c','#c9a683'),'0 0 400 300'),
+       bubble:{t:'And then somebody paid.',x:'8%',y:'10%',w:'60%'}},
+      {c:'p7',svg:svg('<rect width="400" height="300" fill="#3a2c1c"/>'+
+        '<rect x="60" y="70" width="280" height="180" fill="#f2c53d" opacity=".9"/>'+
+        '<rect x="120" y="120" width="160" height="90" fill="#111827"/>','0 0 400 300'),
+       caption:'A ticket, paid for in cash, dated that night.'},
+      {c:'p8',svg:svg('<rect width="400" height="300" fill="#e9e2d0"/>'+
+        '<circle cx="200" cy="140" r="60" fill="#d6342a"/>'+
+        '<rect x="0" y="230" width="400" height="70" fill="#d6cdb8"/>','0 0 400 300'),
+       sfx:{t:'SNAP',x:'10%',y:'12%',rot:6}},
+      {c:'p9',svg:svg('<rect width="400" height="300" fill="#111827"/>'+
+        '<text x="200" y="150" text-anchor="middle" fill="#f2c53d" font-size="34" font-weight="900" '+
+        'font-family="Helvetica Neue,Arial" letter-spacing="6">FIN</text>','0 0 400 300'),
+       caption:'End of issue four. Thank you for reading.'}
+    ]
+  ];
+
+  var idx=0;
+  function render(){
+    var html='';
+    PAGES[idx].forEach(function(p){
+      html+='<div class="panel '+p.c+'">'+p.svg+
+        (p.bubble?'<div class="bubble" style="'+p.bubble.x+';top:'+p.bubble.y+';width:'+p.bubble.w+'">'+p.bubble.t+'</div>':'')+
+        (p.sfx?'<div class="sfx" style="'+p.sfx.x+';top:'+p.sfx.y+';transform:rotate('+p.sfx.rot+'deg)">'+p.sfx.t+'</div>':'')+
+        (p.caption?'<div class="caption">'+p.caption+'</div>':'')+
+        '</div>';
+    });
+    pageEl.innerHTML=html;
+  }
+  render();
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); turn(1); }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); turn(-1); }
+  });
+  function turn(d){
+    idx=(idx+d+PAGES.length)%PAGES.length;
+    var sheet=document.getElementById('sheet');
+    sheet.classList.remove('flip'); void sheet.offsetWidth; sheet.classList.add('flip');
+    render();
+  }
+  document.querySelector('.topbar').addEventListener('click',function(e){
+    if(e.target.tagName==='B') return;
+    turn(1);
+  });
+})();
+</script>
+</body>
+</html>

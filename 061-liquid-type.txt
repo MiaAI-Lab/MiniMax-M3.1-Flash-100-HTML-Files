@@ -1,0 +1,19 @@
+TITLE: LIQUID — type that behaves like matter
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LIQUID — type that behaves like matter". Art direction: dark, fluid, experimental. Palette: ground #07080c, ink #eef1f7, dim #7d8397, hairline rgba(238,241,247,.13), accents pink #ff4d9d, blue #4d8dff, teal #4de0b8, gold #ffd166. Layout: a header with a morphing blob logo (its border-radius animates between two shapes) and a subtitle; then a bordered stage containing a 1200×520 canvas with a small HUD reporting surface tension, viscosity and drop rate; then a very large centred word whose letters are individual spans that lift, scale and turn pink on hover; then four sliders (tension, viscosity, gravity, and a word-length selector that changes the word); then a two-column note on ink refusing to respect letterforms; and a footer. The canvas runs a real metaball simulation: several hundred drops are integrated with buoyancy, drag and gravity, their positions sampled into a scalar field on a quarter-resolution grid, thresholded into an isosurface, written into an ImageData buffer and upscaled with smoothing so the drops merge into liquid shapes. Interaction: the tension slider changes the isosurface threshold, so high tension pulls separate drops into tight beads and low tension lets them run together; viscosity damps their movement; gravity makes them fall and recycle at the bottom; the word selector changes the displayed word and reseeds the drop count. Responsive: the slider grid becomes 2 then 1 column and the note stacks.
+
+DESCRIPTION:
+Type treated as a fluid. The word is a cloud of drops, and the sliders are the physics: raise the surface tension and the drops pull into tight beads; lower it and they run together into a single sheet; raise gravity and the whole thing falls and reforms at the bottom. It is a metaball field solved on a quarter-resolution grid and upscaled, so the merging is real rather than a stack of blurred circles.
+
+MAJOR VISUAL TECHNIQUES:
+- Quarter-resolution scalar field of inverse-square drop contributions
+- Isosurface thresholding into a translucent liquid body
+- ImageData buffer write and smoothed upscale
+- Tension controlling the threshold, viscosity the damping, gravity the buoyancy
+- Drop recycling at the bottom of the frame
+- Per-letter hover transform on a very large display word
+- Morphing border-radius logo
+
+INTENDED INTERACTION MODEL:
+Pour it. Move the four sliders and watch the liquid change character; change the word and the drop count follows it. The letters themselves respond to the pointer independently.

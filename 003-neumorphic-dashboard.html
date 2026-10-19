@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Softline — Neumorphic Operations Console</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#e6e9f0;
+    --sh-dark:#c3c7d1;
+    --sh-light:#ffffff;
+    --ink:#3b4256;
+    --muted:#98a0b5;
+    --accent:#5c7cfa;
+    --accent2:#3ec9a7;
+    --warn:#f0a44a;
+  }
+  body{
+    background:var(--bg);
+    font-family:"SF Pro Text","Segoe UI",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:30px 20px;
+  }
+  .neu{
+    background:var(--bg);
+    box-shadow:-9px -9px 18px var(--sh-light), 9px 9px 18px var(--sh-dark);
+    border-radius:26px;
+  }
+  .neu-in{
+    background:var(--bg);
+    box-shadow:inset -5px -5px 10px var(--sh-light), inset 5px 5px 10px var(--sh-dark);
+    border-radius:16px;
+  }
+  .shell{width:100%;max-width:1180px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;padding:28px;}
+
+  .side{padding:26px 22px;display:flex;flex-direction:column;gap:26px;min-width:0;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+    box-shadow:-4px -4px 8px var(--sh-light),4px 4px 8px var(--sh-dark);}
+  .logo i{width:18px;height:18px;border-radius:50%;background:linear-gradient(140deg,var(--accent),var(--accent2));display:block;}
+  .brand b{font-size:1.02rem;letter-spacing:-.01em;display:block;}
+  .brand span{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
+  .navlist{display:grid;gap:10px;}
+  .navitem{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;color:var(--muted);
+    font-size:14px;font-weight:500;cursor:pointer;transition:.28s;user-select:none;}
+  .navitem:hover{color:var(--ink);}
+  .navitem.active{box-shadow:inset -4px -4px 8px var(--sh-light),inset 4px 4px 8px var(--sh-dark);color:var(--ink);font-weight:600;}
+  .navitem .gl{width:20px;height:20px;border-radius:6px;background:var(--bg);
+    box-shadow:inset -2px -2px 4px var(--sh-light),inset 2px 2px 4px var(--sh-dark);position:relative;}
+  .navitem .gl::after{content:"";position:absolute;inset:5px;border-radius:3px;background:var(--muted);}
+  .navitem.active .gl::after{background:var(--accent);}
+  .sidefoot{margin-top:auto;padding:16px;border-radius:18px;text-align:center;}
+  .sidefoot p{font-size:11.5px;color:var(--muted);line-height:1.6;}
+  .sidefoot .ava{width:46px;height:46px;border-radius:50%;margin:0 auto 10px;
+    background:linear-gradient(140deg,#ffd6a5,#f79f6d);display:grid;place-items:center;color:#fff;font-weight:700;
+    box-shadow:-4px -4px 8px var(--sh-light),4px 4px 8px var(--sh-dark);}
+
+  .main{display:flex;flex-direction:column;gap:24px;min-width:0;}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;}
+  .top h1{font-size:1.55rem;letter-spacing:-.025em;font-weight:600;}
+  .top p{font-size:13px;color:var(--muted);margin-top:4px;}
+  .search{display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;min-width:230px;}
+  .search input{border:none;background:transparent;outline:none;width:100%;font:inherit;font-size:13.5px;color:var(--ink);}
+  .search .ic{width:15px;height:15px;border:2.4px solid var(--muted);border-radius:50%;position:relative;flex:none;}
+  .search .ic::after{content:"";position:absolute;width:6px;height:2.4px;background:var(--muted);right:-4px;bottom:-2px;transform:rotate(45deg);}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .kpi{padding:20px 18px;border-radius:20px;transition:.35s;cursor:default;}
+  .kpi:hover{transform:translateY(-4px);}
+  .kpi .lab{font-size:11.5px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;}
+  .kpi .val{font-size:1.85rem;font-weight:600;letter-spacing:-.03em;margin:10px 0 4px;}
+  .kpi .delta{font-size:12px;font-weight:600;}
+  .up{color:var(--accent2);} .down{color:#e3685f;}
+  .kpi .chip{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--bg);
+    box-shadow:inset -3px -3px 6px var(--sh-light),inset 3px 3px 6px var(--sh-dark);}
+  .kpi .chip i{width:12px;height:12px;border-radius:4px;display:block;}
+
+  .row{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;}
+  .card{padding:24px;border-radius:24px;}
+  .card h2{font-size:1rem;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .card h2 small{font-size:11.5px;color:var(--muted);font-weight:500;}
+  .chart{margin-top:22px;height:200px;position:relative;}
+  .chart svg{width:100%;height:100%;overflow:visible;}
+  .axis{position:absolute;left:0;right:0;bottom:-4px;display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);}
+  .legend{display:flex;gap:18px;margin-top:26px;flex-wrap:wrap;}
+  .legend span{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+  .legend b{width:11px;height:11px;border-radius:4px;display:block;}
+
+  .ringwrap{display:grid;place-items:center;margin:18px 0 6px;position:relative;}
+  .ring{width:158px;height:158px;transform:rotate(-90deg);}
+  .ring circle{fill:none;stroke-width:15;stroke-linecap:round;}
+  .ring .bgc{stroke:#d7dbe5;}
+  .ring .fgc{stroke:var(--accent);transition:stroke-dashoffset 1.4s cubic-bezier(.4,1.3,.4,1);}
+  .ring .fgc2{stroke:var(--accent2);}
+  .ring .fgc3{stroke:var(--warn);}
+  .ringwrap .ctr{position:absolute;text-align:center;}
+  .ringwrap .ctr b{font-size:1.6rem;display:block;letter-spacing:-.03em;}
+  .ringwrap .ctr span{font-size:11.5px;color:var(--muted);}
+  .segments{display:grid;gap:12px;margin-top:20px;}
+  .seg{display:grid;grid-template-columns:10px 1fr auto;gap:12px;align-items:center;font-size:13px;}
+  .seg i{width:10px;height:10px;border-radius:50%;display:block;}
+  .seg b{font-weight:600;}
+
+  .list{padding:24px;border-radius:24px;}
+  .listrow{display:grid;grid-template-columns:38px 1fr auto auto;gap:16px;align-items:center;padding:15px 0;border-bottom:1px solid rgba(0,0,0,.055);}
+  .listrow:last-child{border-bottom:none;}
+  .listrow .ic{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:var(--bg);
+    box-shadow:-3px -3px 7px var(--sh-light),3px 3px 7px var(--sh-dark);font-size:15px;}
+  .listrow .nm{font-weight:600;font-size:14px;}
+  .listrow .sb{font-size:12px;color:var(--muted);}
+  .pill{padding:6px 13px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--bg);
+    box-shadow:inset -3px -3px 6px var(--sh-light),inset 3px 3px 6px var(--sh-dark);color:var(--muted);}
+  .pill.g{color:var(--accent2);} .pill.w{color:var(--warn);} .pill.b{color:var(--accent);}
+  .time{font-size:12px;color:var(--muted);}
+
+  .toggle{display:flex;align-items:center;gap:12px;margin-top:18px;cursor:pointer;}
+  .tg{width:52px;height:28px;border-radius:999px;background:var(--bg);position:relative;
+    box-shadow:inset -3px -3px 6px var(--sh-light),inset 3px 3px 6px var(--sh-dark);transition:.35s;flex:none;}
+  .tg::after{content:"";position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;
+    background:linear-gradient(140deg,#fff,#dfe3ec);box-shadow:2px 2px 5px rgba(0,0,0,.2);transition:.35s cubic-bezier(.5,1.6,.5,1);}
+  .toggle.on .tg{background:linear-gradient(140deg,var(--accent),#7b93ff);}
+  .toggle.on .tg::after{transform:translateX(24px);background:#fff;}
+  .toggle span{font-size:13px;color:var(--muted);}
+
+  @media(max-width:1000px){.shell{grid-template-columns:minmax(0,1fr);}.side{flex-direction:row;align-items:center;flex-wrap:wrap;gap:18px;min-width:0;}
+    .navlist{grid-auto-flow:column;grid-auto-columns:max-content;overflow:auto;flex:1 1 0;min-width:0;}.sidefoot{margin:0;}}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr);}.row{grid-template-columns:1fr;}}
+  @media(max-width:480px){.kpis{grid-template-columns:1fr 1fr;gap:14px;}.kpi .val{font-size:1.4rem;}.listrow{grid-template-columns:34px 1fr auto;}.listrow .pill{display:none;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="shell neu">
+  <aside class="side neu">
+    <div class="brand">
+      <div class="logo"><i></i></div>
+      <div><b>Softline</b><span>Operations</span></div>
+    </div>
+    <nav class="navlist" id="nav">
+      <div class="navitem active"><span class="gl"></span>Overview</div>
+      <div class="navitem"><span class="gl"></span>Throughput</div>
+      <div class="navitem"><span class="gl"></span>Latency</div>
+      <div class="navitem"><span class="gl"></span>Regions</div>
+      <div class="navitem"><span class="gl"></span>Incidents</div>
+    </nav>
+    <div class="sidefoot neu-in">
+      <div class="ava">MJ</div>
+      <p><strong>Marit Jansen</strong><br>Platform lead</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Service overview</h1>
+        <p>Rolling 24 hours across 4 regions · refreshed <span id="ago">just now</span></p>
+      </div>
+      <div class="search neu-in"><span class="ic"></span><input id="q" placeholder="Search metrics, hosts, traces…"></div>
+    </div>
+
+    <section class="kpis">
+      <div class="kpi neu">
+        <div class="lab">Requests / s<div class="chip"><i style="background:var(--accent)"></i></div></div>
+        <div class="val" id="v1">48,210</div>
+        <div class="delta up" id="d1">▲ 12.4% vs yesterday</div>
+      </div>
+      <div class="kpi neu">
+        <div class="lab">p99 latency<div class="chip"><i style="background:var(--warn)"></i></div></div>
+        <div class="val" id="v2">184 ms</div>
+        <div class="delta down" id="d2">▼ 3.1% vs yesterday</div>
+      </div>
+      <div class="kpi neu">
+        <div class="lab">Error rate<div class="chip"><i style="background:#e3685f"></i></div></div>
+        <div class="val" id="v3">0.42 %</div>
+        <div class="delta up" id="d3">▲ 0.08 pts</div>
+      </div>
+      <div class="kpi neu">
+        <div class="lab">Uptime<div class="chip"><i style="background:var(--accent2)"></i></div></div>
+        <div class="val">99.982 %</div>
+        <div class="delta up">▲ within SLO</div>
+      </div>
+    </section>
+
+    <div class="row">
+      <section class="card neu">
+        <h2>Throughput <small>requests per minute</small></h2>
+        <div class="chart">
+          <svg viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5c7cfa" stop-opacity=".38"/>
+                <stop offset="1" stop-color="#5c7cfa" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3ec9a7" stop-opacity=".3"/>
+                <stop offset="1" stop-color="#3ec9a7" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(0,0,0,.06)" stroke-width="1">
+              <line x1="0" y1="50" x2="600" y2="50"/><line x1="0" y1="100" x2="600" y2="100"/>
+              <line x1="0" y1="150" x2="600" y2="150"/><line x1="0" y1="199" x2="600" y2="199"/>
+            </g>
+            <path id="areaA" fill="url(#gA)" d=""/>
+            <path id="areaB" fill="url(#gB)" d=""/>
+            <path id="lineA" fill="none" stroke="#5c7cfa" stroke-width="2.4" stroke-linecap="round" d=""/>
+            <path id="lineB" fill="none" stroke="#3ec9a7" stroke-width="2.4" stroke-linecap="round" d=""/>
+            <circle id="dotA" r="4.5" fill="#5c7cfa" stroke="#e6e9f0" stroke-width="3" cx="0" cy="0"/>
+          </svg>
+          <div class="axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+        </div>
+        <div class="legend">
+          <span><b style="background:#5c7cfa"></b>Accepted</span>
+          <span><b style="background:#3ec9a7"></b>Completed</span>
+        </div>
+        <div class="toggle on" id="tg"><span class="tg"></span><span>Live stream — updates every 3s</span></div>
+      </section>
+
+      <section class="card neu">
+        <h2>Traffic mix</h2>
+        <div class="ringwrap">
+          <svg class="ring" viewBox="0 0 120 120">
+            <circle class="bgc" cx="60" cy="60" r="46"/>
+            <circle class="fgc"  cx="60" cy="60" r="46" stroke-dasharray="289" stroke-dashoffset="289"/>
+            <circle class="fgc2" cx="60" cy="60" r="46" stroke-dasharray="289" stroke-dashoffset="289" stroke-dashoffset="289" transform="rotate(-90 60 60)"/>
+            <circle class="fgc3" cx="60" cy="60" r="46" stroke-dasharray="289" stroke-dashoffset="289" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="ctr"><b id="ringPct">64%</b><span>edge cache hit</span></div>
+        </div>
+        <div class="segments">
+          <div class="seg"><i style="background:#5c7cfa"></i><span>Edge cache</span><b>64%</b></div>
+          <div class="seg"><i style="background:#3ec9a7"></i><span>Origin</span><b>24%</b></div>
+          <div class="seg"><i style="background:#f0a44a"></i><span>Streaming</span><b>12%</b></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="list neu">
+      <h2 style="font-size:1rem;font-weight:600;margin-bottom:6px;">Recent activity</h2>
+      <div class="listrow"><div class="ic" style="color:#3ec9a7">✓</div>
+        <div><div class="nm">Deployment succeeded</div><div class="sb">api-gateway v4.19.2 · eu-west-1</div></div>
+        <span class="pill g">Healthy</span><span class="time">2m</span></div>
+      <div class="listrow"><div class="ic" style="color:#f0a44a">!</div>
+        <div><div class="nm">Cache miss spike</div><div class="sb">assets-cdn · 3× baseline</div></div>
+        <span class="pill w">Watch</span><span class="time">11m</span></div>
+      <div class="listrow"><div class="ic" style="color:#5c7cfa">↻</div>
+        <div><div class="nm">Autoscaler adjusted</div><div class="sb">worker-pool · +8 replicas</div></div>
+        <span class="pill b">Applied</span><span class="time">26m</span></div>
+      <div class="listrow"><div class="ic" style="color:#e3685f">×</div>
+        <div><div class="nm">Upstream timeout</div><div class="sb">billing-svc · 3 retries</div></div>
+        <span class="pill">Resolved</span><span class="time">1h</span></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var W=600,H=200,N=48;
+  function series(mult,phase){
+    var a=[],i;
+    for(i=0;i<N;i++){
+      var t=i/N*Math.PI*4+phase;
+      var base=Math.sin(t)*26+Math.sin(t*2.3+1.1)*15+Math.cos(t*.7)*10;
+      a.push(H/2 - (base+30)*mult);
+    }
+    return a;
+  }
+  function build(a,color,fill){
+    var d='',i;
+    for(i=0;i<a.length;i++) d+=(i?'L':'M')+(i*W/(a.length-1)).toFixed(1)+','+a[i].toFixed(1);
+    var fa=d+'L'+W+','+H+'L0,'+H+'Z';
+    document.getElementById(fill).setAttribute('d',fa);
+    document.getElementById(color).setAttribute('d',d);
+    return d;
+  }
+  var A=series(1,0),B=series(.78,1.4),phase=0,live=true;
+  function draw(){
+    build(A,'lineA','areaA'); build(B,'lineB','areaB');
+    var last=A[A.length-1];
+    document.getElementById('dotA').setAttribute('cx',W);
+    document.getElementById('dotA').setAttribute('cy',last);
+  }
+  draw();
+
+  // ring segments
+  var C=2*Math.PI*46, parts=[.64,.24,.12];
+  var rings=document.querySelectorAll('.ring .fgc,.ring .fgc2,.ring .fgc3');
+  var off=0;
+  rings.forEach(function(r,i){
+    var len=C*parts[i];
+    r.setAttribute('stroke-dasharray',len+' '+(C-len));
+    r.setAttribute('stroke-dashoffset',-off);
+    r.style.transition='none';
+    off+=len;
+  });
+  // animate dash offsets for entry
+  requestAnimationFrame(function(){
+    var o2=0;
+    rings.forEach(function(r,i){
+      var len=C*parts[i];
+      r.setAttribute('stroke-dasharray','0 '+C);
+      r.style.transition='stroke-dasharray 1.5s cubic-bezier(.4,1.2,.4,1)';
+      setTimeout(function(){ r.setAttribute('stroke-dasharray',len+' '+(C-len)); },60*i);
+      o2+=len;
+    });
+  });
+
+  // live updates
+  var v1=document.getElementById('v1'),d1=document.getElementById('d1');
+  setInterval(function(){
+    if(!live) return;
+    phase+=.22;
+    A=series(1,phase); B=series(.78,phase+1.4);
+    draw();
+    var n=48000+Math.floor(Math.random()*4000);
+    v1.textContent=n.toLocaleString('en-US');
+    var pct=(Math.random()*4-1.6);
+    d1.textContent=(pct>=0?'▲ ':'▼ ')+Math.abs(pct).toFixed(1)+'% vs yesterday';
+    d1.className='delta '+(pct>=0?'up':'down');
+  },3000);
+
+  // toggle
+  var tg=document.getElementById('tg');
+  tg.addEventListener('click',function(){ live=!live; this.classList.toggle('on',live);
+    this.querySelector('span:last-child').textContent = live?'Live stream — updates every 3s':'Paused — click to resume'; });
+
+  // nav
+  var items=document.querySelectorAll('.navitem');
+  items.forEach(function(it){ it.addEventListener('click',function(){
+    items.forEach(function(x){x.classList.remove('active');}); it.classList.add('active'); });});
+
+  // "ago" timer
+  var s=0, ago=document.getElementById('ago');
+  setInterval(function(){ s+=10; ago.textContent = s<60? s+'s ago' : Math.floor(s/60)+'m ago'; },10000);
+
+  // search filters list rows
+  document.getElementById('q').addEventListener('input',function(e){
+    var v=e.target.value.toLowerCase();
+    document.querySelectorAll('.listrow').forEach(function(r){
+      r.style.display = r.textContent.toLowerCase().indexOf(v)>-1 ? '' : 'none';
+    });
+  });
+})();
+</script>
+</body>
+</html>

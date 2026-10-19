@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CALDERA — an eruption in three acts</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0507;--ink:#f3e2d8;--dim:#8f6d66;--lava:#ff5a1f;--ash:#5b5350;--line:rgba(243,226,216,.14);}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  canvas#v{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block;}
+  .wrap{position:relative;z-index:3;max-width:1100px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:11px;height:11px;border-radius:50%;background:var(--lava);box-shadow:0 0 18px var(--lava);
+    animation:bp 1.6s ease-in-out infinite;}
+  @keyframes bp{0%,100%{opacity:.4;}50%{opacity:1;}}
+  .acts{display:flex;gap:8px;flex-wrap:wrap;}
+  .acts button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .acts button.on{background:var(--lava);border-color:var(--lava);color:#1a0703;font-weight:700;}
+
+  .hero{padding:12vh 0 6vh;max-width:760px;}
+  .k{font-size:10.5px;letter-spacing:.44em;text-transform:uppercase;color:var(--lava);}
+  h1{font-size:clamp(2.8rem,8vw,6.2rem);font-weight:200;line-height:.94;letter-spacing:-.04em;margin:22px 0 24px;}
+  h1 b{font-weight:700;}
+  .lede{color:var(--dim);font-size:1.05rem;line-height:1.9;max-width:52ch;}
+  .lede b{color:var(--ink);font-weight:500;}
+
+  .hud{position:fixed;right:20px;top:96px;z-index:6;width:190px;border:1px solid var(--line);border-radius:14px;
+    padding:16px;background:rgba(10,5,7,.6);backdrop-filter:blur(10px);}
+  .hud u{display:block;text-decoration:none;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  .hud s{display:block;text-decoration:none;font-size:1.3rem;margin:4px 0 12px;font-variant-numeric:tabular-nums;}
+  .hud .bar{height:4px;background:rgba(243,226,216,.12);border-radius:99px;overflow:hidden;margin-bottom:12px;}
+  .hud .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--lava),#ffd166);transition:width .4s;}
+
+  .acts2{margin-top:8vh;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .act{border-top:1px solid var(--line);padding-top:18px;cursor:pointer;transition:.35s;}
+  .act:hover{transform:translateY(-5px);}
+  .act .n{font-size:10px;letter-spacing:.3em;color:var(--lava);margin-bottom:10px;}
+  .act h3{font-size:1.2rem;font-weight:400;margin-bottom:8px;}
+  .act p{color:var(--dim);font-size:.9rem;line-height:1.8;}
+  .act.on{border-top-color:var(--lava);}
+  .act.on h3{color:var(--lava);}
+
+  .facts{margin-top:7vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:repeat(4,1fr);gap:22px;}
+  .facts u{display:block;text-decoration:none;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+  .facts s{display:block;text-decoration:none;font-size:1.5rem;margin:8px 0 6px;}
+  .facts p{color:var(--dim);font-size:.85rem;line-height:1.75;}
+  footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:900px){.hud{position:static;width:auto;margin-top:20px;}.acts2{grid-template-columns:1fr;}
+    .facts{grid-template-columns:1fr 1fr;}}
+  @media(max-width:520px){.facts{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<canvas id="v"></canvas>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Caldera</div>
+    <div class="acts">
+      <button class="on" data-act="0">Dormant</button>
+      <button data-act="1">Erupt</button>
+      <button data-act="2">Collapse</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Volcán Tecalate · Guatemala</div>
+    <h1>It has not erupted<br>since <b>1974</b>,<br>and it is thinking about it.</h1>
+    <p class="lede">A volcano is a conversation between pressure and patience. Every day the magma chamber makes a little more gas; every day the rock above it gets a little heavier. One day the conversation ends in an afternoon.</p>
+  </section>
+
+  <div class="hud">
+    <u>Chamber pressure</u><s id="pVal">112 MPa</s>
+    <div class="bar"><i id="pBar"></i></div>
+    <u>Seismic activity</u><s id="sVal">0.2 / day</s>
+    <div class="bar"><i id="sBar"></i></div>
+    <u>Ash fall</u><s id="aVal">0 km</s>
+    <div class="bar"><i id="aBar"></i></div>
+  </div>
+
+  <section class="acts2" id="actCards">
+    <article class="act on" data-act="0"><div class="n">ACT ONE</div><h3>Dormant</h3>
+      <p>Steam from a fumarole on the north flank. The last eruption put 2.1 km of ash over four villages and nobody was hurt, which surprises people every time.</p></article>
+    <article class="act" data-act="1"><div class="n">ACT TWO</div><h3>Eruption</h3>
+      <p>A column rises eleven kilometres in four hours, and the wind takes it east. The first pyroclastic flow arrives at 03:40 and finishes the job.</p></article>
+    <article class="act" data-act="2"><div class="n">ACT THREE</div><h3>Collapse</h3>
+      <p>The summit falls in on itself. A caldera 1.4 km across forms in ninety seconds, and the mountain is now 400 metres shorter than the map says.</p></article>
+  </section>
+
+  <section class="facts">
+    <div><u>Height</u><s>3,812 m</s><p>Before 1974. 3,410 m now, if the last collapse is confirmed.</p></div>
+    <div><u>Last eruption</u><s>1974</s><p>52 days of ash production, then nothing for half a century.</p></div>
+    <div><u>Rock</u><s>Andesite</s><p>Silica-rich, viscous, and therefore explosive rather than effusive.</p></div>
+    <div><u>Plates</u><s>2</s><p>The Cocos plate subducts beneath the Caribbean at roughly 8 cm a year.</p></div>
+  </section>
+
+  <footer>
+    <span>Caldera — an eruption in three acts</span>
+    <span>Particles drawn live in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('v'), ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+  function resize(){W=window.innerWidth;H=window.innerHeight;cvs.width=W*DPR;cvs.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+  resize(); window.addEventListener('resize',resize);
+
+  var act=0, particles=[], ash=[], t=0;
+  var ACTS=[
+    {p:112,s:0.2,a:0,rate:0.25},
+    {p:640,s:48.0,a:11,rate:14},
+    {p:210,s:9.4,a:86,rate:5}
+  ];
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function spawn(){
+    var x=W*0.5+rnd(-40,40), y=H*0.86;
+    particles.push({x:x,y:y,vx:rnd(-1.4,1.4),vy:rnd(-6.5,-3.2),r:rnd(2,7),life:1,
+      c:Math.random()<.3?'#ffd166':'#ff5a1f',g:rnd(.01,.05)});
+  }
+  function spawnAsh(){
+    ash.push({x:rnd(0,W),y:rnd(-40,H*0.4),r:rnd(.5,2.2),v:rnd(.4,2.2),a:rnd(.06,.3)});
+  }
+
+  function draw(ts){
+    t+=1;
+    ctx.clearRect(0,0,W,H);
+    // sky
+    var g=ctx.createLinearGradient(0,0,0,H);
+    if(act===0){ g.addColorStop(0,'#0a0507'); g.addColorStop(.6,'#241016'); g.addColorStop(1,'#3d1a12'); }
+    else if(act===1){ g.addColorStop(0,'#180608'); g.addColorStop(.45,'#5c1a0d'); g.addColorStop(1,'#c23a10'); }
+    else { g.addColorStop(0,'#07050a'); g.addColorStop(.5,'#1a1420'); g.addColorStop(1,'#2a2028'); }
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // cone
+    ctx.beginPath();
+    ctx.moveTo(W*0.5-W*0.34, H);
+    ctx.lineTo(W*0.5-30, H*0.80);
+    ctx.lineTo(W*0.5, H*0.855);
+    ctx.lineTo(W*0.5+30, H*0.80);
+    ctx.lineTo(W*0.5+W*0.34, H);
+    ctx.closePath();
+    ctx.fillStyle= act===2? '#191319' : '#120c10';
+    ctx.fill();
+
+    // eruption column
+    var rate=ACTS[act].rate;
+    for(var i=0;i<rate;i++) spawn();
+    ctx.globalCompositeOperation='lighter';
+    for(var j=0;j<particles.length;j++){
+      var p=particles[j];
+      p.vy-=p.g; p.x+=p.vx+rnd(-.3,.3); p.y+=p.vy;
+      p.life-=0.004;
+      if(p.life<=0||p.y<-40){ particles.splice(j,1); j--; continue; }
+      ctx.globalAlpha=Math.max(0,p.life);
+      ctx.fillStyle=p.c;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*(2-p.life),0,6.283); ctx.fill();
+    }
+    ctx.globalCompositeOperation='source-over';
+
+    // ash
+    if(act>0){
+      for(var k=0;k<3;k++) spawnAsh();
+      for(var m=0;m<ash.length;m++){
+        var a=ash[m];
+        a.y+=a.v; a.x+=rnd(-.4,.6);
+        if(a.y>H+10){a.y=-10;a.x=rnd(0,W);}
+        ctx.fillStyle='rgba(190,180,175,'+a.a+')';
+        ctx.fillRect(a.x,a.y,a.r,a.r);
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  function setAct(n){
+    act=n;
+    document.querySelectorAll('.acts button').forEach(function(b,i){b.classList.toggle('on',i===n);});
+    document.querySelectorAll('.act').forEach(function(a,i){a.classList.toggle('on',i===n);});
+    var A=ACTS[n];
+    document.getElementById('pVal').textContent=A.p+' MPa';
+    document.getElementById('sVal').textContent=A.s.toFixed(1)+' / day';
+    document.getElementById('aVal').textContent=A.a+' km';
+    document.getElementById('pBar').style.width=Math.min(100,A.p/7)+'%';
+    document.getElementById('sBar').style.width=Math.min(100,A.s*2)+'%';
+    document.getElementById('aBar').style.width=Math.min(100,A.a/90*100)+'%';
+    if(n===0){ particles=[]; ash=[]; }
+  }
+  document.querySelector('.acts').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    setAct(+b.dataset.act);
+  });
+  document.getElementById('actCards').addEventListener('click',function(e){
+    var a=e.target.closest('.act'); if(!a) return;
+    setAct(+a.dataset.act);
+  });
+  setAct(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUTOMATA — one hundred cells and a rule</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#06070a;--ink:#e9ecf2;--dim:#767d8a;--line:rgba(233,236,242,.13);--live:#7ef2c0;--dead:#1a1d24;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .brand i b{background:var(--live);display:block;}
+  .brand i b:nth-child(2){background:var(--dead);}
+  .brand i b:nth-child(3){background:var(--live);}
+  .brand i b:nth-child(5){background:var(--live);}
+  .brand i b:nth-child(6){background:var(--dead);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--live);}
+  h1{font-size:clamp(2.2rem,5.6vw,4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--live);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#030405;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;image-rendering:pixelated;}
+  .hud{position:absolute;top:14px;right:16px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--live);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--live);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--live);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--live);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--live);color:var(--live);background:rgba(126,242,192,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.1rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--live);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i><b></b><b></b><b></b><b></b><b></b><b></b></i>Automata</div>
+    <div class="meta">Elementary cellular automaton · 1 dimension · 256 rules</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Discrete mathematics</div>
+    <h1>Eight rules and<br>you have <b>everything</b></h1>
+    <p>There are only four possible neighbourhoods of three cells, and each one can be declared dead or alive. That is sixteen bits of choice, and there are two hundred and fifty-six rules you can build from them. Some of them do nothing. Some of them fall apart. A few of them make a pattern so complicated that people have argued about it for eighty years.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="620"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Rule <output id="oa">30</output></label>
+      <input type="range" id="rule" min="0" max="255" value="30">
+    </div>
+    <div class="fld">
+      <label>Generations per second <output id="ob">30</output></label>
+      <input type="range" id="rate" min="1" max="120" value="30">
+    </div>
+    <div class="btns">
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="single">Single cell</button>
+      <button class="btn" id="rand">Random row</button>
+      <button class="btn" data-r="30" class="on">Rule 30</button>
+      <button class="btn" data-r="90">Rule 90</button>
+      <button class="btn" data-r="110">Rule 110</button>
+      <button class="btn" data-r="184">Rule 184</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Rule (binary)</u><s id="s1">—</s></div>
+    <div><u>Wolfram class</u><s id="s2">—</s></div>
+    <div><u>Generations</u><s id="s3">—</s></div>
+    <div><u>Live cells</u><s id="s4">—</s></div>
+    <div><u>Density</u><s id="s5">—</s></div>
+    <div><u>Behaviour</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Four<br>neighbours,<br>eight<br>choices</h2>
+      <p>The rule is written as eight binary digits, one for each of the eight possible neighbourhoods, read from 111 down to 000. <b>Rule 30</b> is 00011110, which means: a cell with a live right-hand neighbour becomes live, and a cell with a live left-hand neighbour becomes live unless its right-hand neighbour is also live. Everything else stays dead.</p>
+      <p>That single sentence produces the chaotic triangle on the left of this page. Nothing about it was designed to look like that; the pattern falls out of the rule the way a river falls out of a slope.</p>
+    </div>
+    <div>
+      <h2>The<br>classes</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">Stephen Wolfram classified the hundred and twenty-eight <b>elementary</b> rules into four families by what they settle into: rules that end in a fixed point, rules that end in a repeating cycle, rules that produce ever-growing chaotic regions, and rules that produce intricate non-repeating structure that may or may not be complicated.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Rule 30 is the famous member of the last family, and Wolfram himself conjectured that it is <b>universal</b> — that it can simulate any computation, given enough time and room. That has not been proved, and it is one of the great open questions of the subject, and it is being argued about in this very paragraph's neighbourhood.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Automata — one hundred cells and a rule</span>
+    <span>Space-time diagram drawn live</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height,CELL=2;
+  var cols=Math.floor(W/CELL), rows=Math.floor(H/CELL);
+  var rule=30, speed=30, gen=0, row=new Uint8Array(cols);
+  var hist=[];
+  var timer=null, running=true;
+
+  function classify(r){
+    // simple heuristic by the shape of the rule table
+    if(r===0||r===32||r===160||r===255) return 'I · trivial';
+    if(r===170||r===240||r===204||r===51) return 'I · periodic';
+    if(r===90||r===150||r===105||r===45||r===60) return 'II · chaotic';
+    if(r===110||r===54||r===18||r===30) return 'IV · complex';
+    if(r===184) return 'III · traffic';
+    if(r===20) return 'III · traffic';
+    return 'unclassified';
+  }
+  function describe(r){
+    if(r===0) return 'nothing';
+    if(r===255) return 'everything';
+    if(r===30) return 'chaotic triangle';
+    if(r===90) return 'Sierpiński triangle';
+    if(r===110) return 'universal candidate';
+    if(r===184) return 'traffic rule';
+    if(r===170) return 'shifted copy';
+    return 'evolving';
+  }
+  function nextRow(){
+    var out=new Uint8Array(cols);
+    for(var i=0;i<cols;i++){
+      var l=row[(i-1+cols)%cols], c=row[i], r=row[(i+1)%cols];
+      var idx=(l<<2)|(c<<1)|r;
+      out[i]=(rule>>idx)&1;
+    }
+    row=out;
+  }
+  function seedSingle(){
+    row=new Uint8Array(cols);
+    row[(cols/2)|0]=1;
+    gen=0; hist=[];
+    hist.push(row.slice());
+  }
+  function seedRandom(){
+    row=new Uint8Array(cols);
+    for(var i=0;i<cols;i++) row[i]=Math.random()<0.35?1:0;
+    gen=0; hist=[];
+    hist.push(row.slice());
+  }
+  function step(){
+    nextRow();
+    gen++;
+    hist.push(row.slice());
+    if(hist.length>rows) hist.shift();
+  }
+  function draw(){
+    ctx.fillStyle='#030405'; ctx.fillRect(0,0,W,H);
+    var n=hist.length;
+    for(var g=0;g<n;g++){
+      var r=hist[g];
+      var y=H-(n-g)*CELL;
+      ctx.fillStyle='#7ef2c0';
+      for(var i=0;i<cols;i++){
+        if(r[i]) ctx.fillRect(i*CELL,y,CELL,CELL);
+      }
+    }
+    document.getElementById('s1').textContent=('00000000'+rule.toString(2)).slice(-8);
+    document.getElementById('s2').textContent=classify(rule);
+    document.getElementById('s3').textContent=gen;
+    var live=0; for(var k=0;k<cols;k++) live+=row[k];
+    document.getElementById('s4').textContent=live;
+    document.getElementById('s5').textContent=(live/cols*100).toFixed(1)+' %';
+    document.getElementById('s6').textContent=describe(rule);
+    document.getElementById('hud').innerHTML='RULE <b>'+rule+'</b><br>GEN <b>'+gen+'</b><br>LIVE <b>'+live+'</b>';
+  }
+  function loop(){
+    if(running) step();
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('rule').addEventListener('input',function(){
+    rule=parseInt(this.value,10);
+    document.getElementById('oa').textContent=rule;
+    seedSingle();
+  });
+  document.getElementById('rate').addEventListener('input',function(){
+    speed=parseInt(this.value,10);
+    document.getElementById('ob').textContent=speed;
+  });
+  document.getElementById('reset').addEventListener('click',seedSingle);
+  document.getElementById('single').addEventListener('click',seedSingle);
+  document.getElementById('rand').addEventListener('click',seedRandom);
+  var btns=document.querySelectorAll('[data-r]');
+  Array.prototype.forEach.call(btns,function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(btns,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      rule=parseInt(b.getAttribute('data-r'),10);
+      document.getElementById('rule').value=rule;
+      document.getElementById('oa').textContent=rule;
+      seedSingle();
+    });
+  });
+  seedSingle();
+})();
+</script>
+</body>
+</html>

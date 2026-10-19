@@ -1,0 +1,19 @@
+TITLE: RIDGELINE — four passes, no photographs
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "RIDGELINE — four passes, no photographs". Art direction: a moody alpine photograph that turns out not to be one. Palette: ground #0b1014, ink #e7eef0, dim #7d8a90, pine #7fa08a, hairline rgba(231,238,240,.14). Layout: a header with a wide-tracked wordmark, a small ridge-shaped logo mark and four pill controls (Fog / Snow / Night / New pass); a bordered stage holding a 1240×620 canvas with a HUD in the top-left reporting the pass name, the seed and the number of ridges; then a three-column explainer band (One function, seven times / Depth is a fog bank / Snow is a threshold); then a two-column note beginning "There are no photographs on this page"; and a footer. The canvas draws seven ridge layers back to front: each is a one-dimensional fractal built from three summed sine functions with randomised frequencies and phases, filled down to the baseline, coloured by interpolating from a pale far tone to a near-black near tone; a snow cap is then painted over each ridge by clipping to the ridge path and filling a vertical white gradient that fades out; a fog bank is painted between the layers as a horizontal band of translucent white; the sky is a vertical gradient with a soft sun bloom, and the whole scene can switch to a night palette. Interaction: the Fog, Snow and Night buttons each toggle one aspect of the render and immediately redraw; New pass rolls a new seed, renames the pass from a list of five Alpine-sounding names and redraws. Responsive: the explainer band and the note become one column under 880px.
+
+DESCRIPTION:
+Seven ridges, each one a sum of three sines, arranged back to front so that distance is built entirely from fog. The snow is a threshold rather than a texture — a vertical gradient clipped to the ridge silhouette — and the palette shifts from pale grey distance to near-black foreground, which is the whole trick of aerial perspective. New Pass re-rolls the seed and the mountain's name; Night, Fog and Snow each take one layer of the illusion away.
+
+MAJOR VISUAL TECHNIQUES:
+- One-dimensional fractal ridges from three summed sine harmonics per layer
+- Depth colouring interpolating far-pale to near-dark per layer
+- Snow caps drawn by clipping to the ridge path and filling a fading vertical gradient
+- Horizontal fog bands painted between ridge layers for aerial perspective
+- Seeded mulberry32 randomness per layer and per pass
+- Day/night sky gradients with a radial sun bloom
+- Foreground haze gradient over the bottom of the frame
+
+INTENDED INTERACTION MODEL:
+Four switches. Fog, Snow and Night each toggle a layer of the illusion and redraw instantly; New pass rolls a new seed, a new name and a new set of ridges. Nothing is dragged and nothing is submitted.

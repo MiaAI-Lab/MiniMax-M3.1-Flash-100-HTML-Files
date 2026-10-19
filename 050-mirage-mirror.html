@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRAGE — a mirror that remembers</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0a0f;--ink:#f0eef8;--dim:#87839b;--line:rgba(240,238,248,.13);--a:#ff6b9d;--b:#7ae0ff;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:30px;height:18px;border:1.5px solid var(--b);border-radius:9px 9px 0 0;display:block;position:relative;}
+  .brand i::after{content:"";position:absolute;left:50%;top:100%;width:1.5px;height:12px;background:var(--b);}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .tools button.on{border-color:var(--b);color:var(--b);}
+
+  .stage{position:relative;margin-top:24px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:#101018;display:grid;grid-template-columns:1fr 1fr;min-height:440px;}
+  .cell{position:relative;overflow:hidden;}
+  .cell + .cell{border-left:1px solid var(--line);}
+  .scene{position:absolute;inset:0;}
+  .sun{position:absolute;left:50%;top:46%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle at 38% 34%,#fff5e2,#ffb37a 52%,#ff6b9d 100%);box-shadow:0 0 70px 18px rgba(255,107,157,.35);}
+  .ridge{position:absolute;left:-10%;right:-10%;bottom:0;}
+  .r1{height:56%;background:#1c1b33;clip-path:polygon(0 62%,12% 40%,26% 58%,40% 30%,56% 52%,70% 34%,84% 56%,100% 38%,100% 100%,0 100%);}
+  .r2{height:42%;background:#12112a;clip-path:polygon(0 70%,14% 46%,30% 66%,46% 38%,62% 60%,80% 42%,100% 62%,100% 100%,0 100%);}
+  .r3{height:26%;background:#080818;clip-path:polygon(0 64%,18% 42%,36% 64%,56% 38%,76% 60%,100% 40%,100% 100%,0 100%);}
+  .water{position:absolute;left:0;right:0;bottom:0;height:18%;
+    background:repeating-linear-gradient(180deg,rgba(122,224,255,.20) 0 2px,transparent 2px 6px);}
+  .tag{position:absolute;left:16px;top:14px;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);z-index:5;}
+  .tag b{color:var(--b);font-weight:400;}
+  .glasspane{position:absolute;inset:0;z-index:4;pointer-events:none;}
+  .seam{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(240,238,248,.22);z-index:6;}
+
+  .ctrls{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:22px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:400;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:rgba(240,238,248,.22);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--a);cursor:pointer;box-shadow:0 0 12px rgba(255,107,157,.8);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--a);cursor:pointer;}
+
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  .note .mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px;}
+  .note .mini div{border:1px solid var(--line);border-radius:12px;padding:14px;font-size:.8rem;color:var(--dim);}
+  .note .mini b{display:block;color:var(--ink);font-weight:500;margin-bottom:4px;font-size:.9rem;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:880px){.stage{grid-template-columns:1fr;min-height:640px;}.cell + .cell{border-left:none;border-top:1px solid var(--line);}
+    .ctrls{grid-template-columns:1fr;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Mirage</div>
+    <div class="tools">
+      <button class="on" id="warp">Warp</button>
+      <button id="flip">Flip</button>
+      <button id="still">Still</button>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="cell">
+      <div class="scene" id="s1">
+        <div class="sun"></div>
+        <div class="ridge r1"></div><div class="ridge r2"></div><div class="ridge r3"></div>
+        <div class="water"></div>
+      </div>
+      <div class="tag">Direct view</div>
+    </div>
+    <div class="cell">
+      <div class="scene" id="s2">
+        <div class="sun"></div>
+        <div class="ridge r1"></div><div class="ridge r2"></div><div class="ridge r3"></div>
+        <div class="water"></div>
+      </div>
+      <div class="glasspane" id="pane"></div>
+      <div class="tag">Through the glass · <b id="warpOut">0.0</b></div>
+    </div>
+    <div class="seam"></div>
+  </div>
+
+  <div class="ctrls">
+    <div class="ctl"><label>Distortion <b id="vWarp">0.0</b></label><input type="range" id="warpR" min="0" max="60" value="0"></div>
+    <div class="ctl"><label>Scale <b id="vScale">1.00</b></label><input type="range" id="scale" min="80" max="160" value="100"></div>
+    <div class="ctl"><label>Chroma <b id="vChroma">0</b></label><input type="range" id="chroma" min="0" max="60" value="0"></div>
+  </div>
+
+  <section class="note">
+    <div><h2>One of these<br>is a reflection.<br>Neither is<br>the truth.</h2></div>
+    <div>
+      <p>The right-hand panel is a real duplicate of the left, passed through an SVG displacement filter. Moving the pointer over the glass pushes the image around as though it were behind thick, uneven glass; the scale and chroma controls change how far it bends and how much colour it splits.</p>
+      <p>Mirrors in this building work the same way — a silvered surface that is never quite flat, reflecting a room that is never quite there. The difference is that a real mirror remembers a little of what it has seen, and this one remembers nothing at all.</p>
+      <div class="mini">
+        <div><b>Still</b>Freezes the warp so you can study the distortion on its own.</div>
+        <div><b>Flip</b>Mirrors the panel horizontally, as a real mirror would.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Mirage — a mirror that remembers</span>
+    <span>SVG displacement filter · no images</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage'), s2=document.getElementById('s2');
+  var pane=document.getElementById('pane');
+  var warp=0, scale=1, chroma=0, flip=false, still=false;
+  var mx=0.5, my=0.5;
+
+  // build the filter
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('width','0'); svg.setAttribute('height','0');
+  svg.style.position='absolute';
+  svg.innerHTML='<defs>'+
+    '<filter id="glass" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">'+
+    '<feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="3" seed="4" result="n">'+
+    '<animate attributeName="baseFrequency" dur="22s" values="0.012 0.02;0.02 0.014;0.012 0.02" repeatCount="indefinite"/>'+
+    '</feTurbulence>'+
+    '<feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" id="disp" result="d"/>'+
+    '<feGaussianBlur in="d" stdDeviation="0.4" result="b"/>'+
+    '<feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" id="cm" result="c"/>'+
+    '</filter></defs>';
+  document.body.appendChild(svg);
+  var disp=document.getElementById('disp'), cm=document.getElementById('cm');
+
+  function apply(){
+    pane.style.filter='url(#glass)';
+    s2.style.transform='scale('+scale+')'+(flip?' scaleX(-1)':'');
+    var w=still?0:warp*(0.6+0.8*Math.hypot(mx-0.5,my-0.5)*2);
+    disp.setAttribute('scale',w.toFixed(2));
+    // chroma: shift red and blue channels sideways
+    var c=chroma/100;
+    cm.setAttribute('values',
+      '1 0 0 0 '+(c*0.012).toFixed(4)+'  0 1 0 0 0  0 0 1 0 '+(-c*0.012).toFixed(4)+'  0 0 0 1 0');
+    document.getElementById('vWarp').textContent=(warp/60).toFixed(1);
+    document.getElementById('warpOut').textContent=w.toFixed(1);
+  }
+  document.getElementById('stage').addEventListener('pointermove',function(e){
+    var r=this.getBoundingClientRect();
+    mx=(e.clientX-r.left)/r.width; my=(e.clientY-r.top)/r.height;
+    if(!still) apply();
+  });
+  document.getElementById('stage').addEventListener('pointerleave',function(){ mx=.5; my=.5; if(!still) apply(); });
+
+  document.getElementById('warpR').addEventListener('input',function(){
+    warp=+this.value; apply();
+  });
+  document.getElementById('scale').addEventListener('input',function(){
+    scale=+this.value/100; document.getElementById('vScale').textContent=scale.toFixed(2); apply();
+  });
+  document.getElementById('chroma').addEventListener('input',function(){
+    chroma=+this.value; document.getElementById('vChroma').textContent=chroma; apply();
+  });
+  document.getElementById('warp').addEventListener('click',function(){
+    warp=warp>0?0:36; this.classList.toggle('on',warp>0);
+    document.getElementById('warpR').value=warp; apply();
+  });
+  document.getElementById('flip').addEventListener('click',function(){
+    flip=!flip; this.classList.toggle('on',flip); apply();
+  });
+  document.getElementById('still').addEventListener('click',function(){
+    still=!still; this.classList.toggle('on',still); apply();
+  });
+
+  apply();
+})();
+</script>
+</body>
+</html>

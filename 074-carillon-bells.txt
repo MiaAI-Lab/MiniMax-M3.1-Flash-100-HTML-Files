@@ -1,0 +1,18 @@
+TITLE: CARILLON — a tower of bells
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "CARILLON — a tower of bells". Art direction: night, bronze, gold light, deep indigo. Palette: ground #0c0e1a, ink #f2ecdd, dim #8a8ca6, hairline rgba(242,236,221,.14), gold #e0b451, bronze #b3832f. Layout: a header with a bell-shaped gradient logo and a monospaced specification line; then a hero with a gold kicker, a huge light-weight headline with one gold bold word, and a paragraph; then a bordered tower panel holding a 1200×520 canvas that draws a night sky with stars, a stone tower with an arched opening, six bronze bells hanging in the arch, and expanding gold wavefronts from any bell that is struck; then a two-card panel: on the left a bank of eight bars that show the amplitude of each partial of the last bell struck, labelled hum, prime, tierce, quint, nominal and three upper partials, with three buttons beneath (Peal / Hum bell / Strike one); on the right a read-only table giving the bell's name, nominal frequency in hertz, weight, diameter, hum note and how long it is still ringing; then a two-column section pairing an essay on why a bell's partials drift with a note on carillons; and a footer. Every bell is synthesised with the Web Audio API: eight partials at ratios 0.5, 1, 1.19, 1.5, 2, 2.5, 3 and 4.2 of the nominal, each with its own gain and its own exponential decay, slightly detuned so they are not perfectly harmonic, summed into one output gain. Interaction: clicking a bell in the canvas strikes it and starts the sound, the wavefront and the bar display; Peal plays a rising and falling phrase with setTimeout; Hum bell strikes the largest; Strike one picks a bell at random. Responsive: the two-card panel and the two-column section stack under 860px.
+
+DESCRIPTION:
+Six bells that actually sound. Each one is eight partials at the ratios a real bell has — hum, prime, tierce, quint, nominal and three above — each with its own gain and its own decay, detuned slightly so they are not perfectly harmonic. The bar display is driven by the same partial table that drives the audio, and the bells swing and send gold wavefronts across the tower when you strike them.
+
+MAJOR VISUAL TECHNIQUES:
+- Additive bell synthesis with eight inharmonic partials and per-partial decay
+- Partial amplitude bars driven by the same data as the audio graph
+- Bell bodies drawn as bezier curves with a bronze gradient
+- Pendulum swing integrated per frame with damping
+- Expanding wavefront rings with fading stroke alpha
+- Star field and arched tower drawn procedurally on canvas
+
+INTENDED INTERACTION MODEL:
+Ring the bells. Click them in the tower, play the peal, or strike one at random; watch the partials decay and the bell swing itself still.

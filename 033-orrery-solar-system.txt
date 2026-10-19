@@ -1,0 +1,19 @@
+TITLE: ORRERY — a clockwork solar system
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ORRERY — a clockwork solar system". Art direction: a brass orrery under a dark dome. Palette: space #05060d, ink #eef1ff, dim #7d85a8, gold #ffd08a, hairline rgba(255,255,255,.12). A fixed layer of seventy twinkling stars sits behind everything. Layout: a header with a glowing dot, the wordmark and four pill buttons (Running / Pause / Trails / Reset); a bordered stage holding a 1000×620 inline SVG where the Sun is a radial-gradient disc, eight orbit rings are drawn as hairline circles, and each planet is a group positioned by a transform with a small label beside it — Saturn also carries an elliptical ring. Below, a two-column region: on the left a two-by-two fact panel that updates when a planet is selected, plus a "Time" panel with an orbital-speed slider (0.05× to 3×) and a scale slider (0.5× to 2×); on the right a "Bodies" list of the eight planets with colour dots and periods, the selected row highlighted. Then a two-column essay on Kepler's second law and why the periods are real while the distances are compressed, and a footer. Interaction: clicking a planet in the SVG or a row in the list selects it, enlarges it, and rewrites the fact panel with its diameter, moon count, day length and year; the speed slider changes the rate of the whole system; the scale slider rebuilds the orbits and keeps the selection; Running and Pause toggle the animation; Trails fades the orbit rings; Reset returns the angle to zero. The orbital periods are the real ones (Mercury 0.24, Venus 0.62, Earth 1, Mars 1.88, Jupiter 11.9, Saturn 29.5, Uranus 84, Neptune 164.8 years) while the orbital radii are compressed so all eight fit on one plate, and the orbits are drawn as ellipses to suggest a tilted view. Responsive: the two-column region stacks under 920px and the fact panel becomes a single column under 520px.
+
+DESCRIPTION:
+A solar system that tells the truth about time and lies about space. The periods are exact, so Mercury sprints and Neptune crawls exactly as they do in the sky; the distances are compressed logarithmically, because otherwise four outer planets would sit a pixel off the edge. Clicking any planet enlarges it and pulls its real statistics into a four-panel readout, and the speed slider lets you run the whole system at up to three times real time.
+
+MAJOR VISUAL TECHNIQUES:
+- Inline SVG solar system with a radial-gradient Sun and hairline orbit rings
+- Elliptical orbit projection (y-axis compressed 0.52) to suggest a tilted plate
+- Transform-based planet positioning driven by a shared angle and per-planet period
+- Radial-gradient star field with a fixed twinkling layer behind the content
+- Saturn's ring drawn as a rotated SVG ellipse
+- Selection state that enlarges a planet and repopulates a fact panel
+- Speed and scale sliders that rebuild the geometry on change
+
+INTENDED INTERACTION MODEL:
+Explore and accelerate. Click a planet in the diagram or a row in the list to inspect it; drag the speed slider to change the rate of the whole system and the scale slider to open up or compress the orbits; pause and resume the motion; fade the trails to see the bare mechanism; reset the angle. The essay below is there to be read.

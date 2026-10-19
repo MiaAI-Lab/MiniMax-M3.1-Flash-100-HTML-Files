@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨 — SUMI, a study of one brush</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#f4f0e6;--ink:#16130f;--grey:#8b8478;--red:#b03a2e;}
+  body{background:var(--paper);color:var(--ink);font-family:"Hiragino Mincho ProN","Songti SC",Georgia,serif;
+    overflow-x:hidden;}
+  .fibre{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.05' numOctaves='5'/><feColorMatrix type='saturate' values='0'/></filter><rect width='240' height='240' filter='url(%23n)' opacity='.45'/></svg>");}
+
+  .page{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:6vh 5vw 12vh;}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+    padding-bottom:22px;border-bottom:1px solid rgba(22,19,15,.16);margin-bottom:5vh;}
+  .brand{font-size:1.6rem;letter-spacing:.3em;}
+  .brand small{display:block;font-size:10px;letter-spacing:.34em;color:var(--grey);margin-top:8px;}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid rgba(22,19,15,.3);color:var(--ink);padding:9px 16px;
+    cursor:pointer;font-family:inherit;font-weight:400;font-size:10.5px;line-height:1;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .tools button:hover,.tools button.on{background:var(--ink);color:var(--paper);}
+
+  .hero{display:grid;grid-template-columns:.78fr 1.22fr;gap:4vw;align-items:center;}
+  .copy .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--red);}
+  .copy h1{font-size:clamp(2.6rem,6vw,4.8rem);line-height:1.02;letter-spacing:.02em;margin:20px 0 20px;}
+  .copy p{font-size:1rem;line-height:2.1;color:#3b352c;max-width:40ch;}
+  .copy p+p{margin-top:1.2em;}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;padding-top:22px;
+    border-top:1px solid rgba(22,19,15,.16);}
+  .meta u{display:block;text-decoration:none;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--grey);}
+  .meta s{display:block;text-decoration:none;font-size:1.15rem;margin-top:6px;}
+
+  .canvas{position:relative;background:#faf7f0;border:1px solid rgba(22,19,15,.14);border-radius:2px;
+    padding:14px;box-shadow:0 30px 60px -34px rgba(22,19,15,.6);}
+  .canvas svg{width:100%;height:auto;display:block;}
+  .stroke{fill:none;stroke:#16130f;stroke-linecap:round;stroke-linejoin:round;
+    filter:url(#bleed);}
+  .stroke.red{stroke:var(--red);}
+  .drip{fill:#16130f;}
+  .inkcaption{display:flex;justify-content:space-between;gap:12px;padding:12px 4px 2px;font-size:10px;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--grey);flex-wrap:wrap;}
+
+  .studies{padding:9vh 5vw 0;display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .study{border-top:2px solid var(--ink);padding-top:16px;}
+  .study .n{font-size:10px;letter-spacing:.3em;color:var(--red);margin-bottom:12px;}
+  .study svg{width:100%;height:auto;display:block;}
+  .study h3{font-size:1.15rem;margin:14px 0 8px;font-weight:400;letter-spacing:.06em;}
+  .study p{font-size:.88rem;line-height:1.9;color:#4a4338;}
+
+  .seq{margin-top:10vh;border-top:1px solid rgba(22,19,15,.16);padding-top:4vh;display:grid;
+    grid-template-columns:.8fr 1.2fr;gap:4vw;align-items:center;}
+  .seq h2{font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.15;}
+  .seq ol{display:grid;gap:0;counter-reset:s;}
+  .seq li{list-style:none;display:grid;grid-template-columns:40px 1fr;gap:16px;padding:16px 0;
+    border-bottom:1px solid rgba(22,19,15,.12);font-size:.95rem;line-height:1.9;}
+  .seq li::before{counter-increment:s;content:counter(s,decimal-leading-zero);color:var(--red);
+    font-size:11px;letter-spacing:.16em;}
+  footer{margin-top:9vh;padding-top:24px;border-top:1px solid rgba(22,19,15,.16);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--grey);}
+
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:34px;}.studies{grid-template-columns:1fr;}
+    .seq{grid-template-columns:1fr;gap:26px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="fibre"></div>
+
+<div class="page">
+  <header>
+    <div class="brand">墨<small>Sumí — one brush, four loads</small></div>
+    <div class="tools">
+      <button class="on" id="draw">Draw</button>
+      <button id="wet">Wet ink</button>
+      <button id="clear">Clear</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="copy">
+      <div class="k">Studies in pressure</div>
+      <h1>Four strokes,<br>one hour</h1>
+      <p>Ink loaded on a brush does not apply evenly. The hairs hold a reservoir, the tip holds almost nothing, and the paper decides how much of it stays.</p>
+      <p>Each stroke below was made in a single movement — 始筆 (shihitsu, the beginning of the brush) to 収筆 (shūhitsu, the lifting). What follows the lift is called <em>飛白</em>, the flying white.</p>
+      <div class="meta">
+        <div><u>Brush</u><s>Shinzan 2号</s></div>
+        <div><u>Ink</u><s>Sumī, pine soot</s></div>
+        <div><u>Paper</u><s>Kozo, 42 gsm</s></div>
+        <div><u>Humidity</u><s>58 %</s></div>
+      </div>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 640 420" aria-label="Four brush strokes">
+        <defs>
+          <filter id="bleed" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="3" result="n2"/>
+            <feDisplacementMap in="SourceGraphic" in2="n2" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+
+        <path class="stroke" id="s1" stroke-width="34" d="M92 330 C150 250 200 200 268 168 C330 140 400 150 470 196 C520 230 556 250 600 246"/>
+        <path class="stroke" id="s2" stroke-width="20" d="M110 130 C170 118 230 126 286 112 C330 101 372 104 420 96"/>
+        <path class="stroke red" id="s3" stroke-width="12" d="M120 380 C210 392 300 384 390 394 C460 402 520 396 580 404"/>
+        <path class="stroke" id="s4" stroke-width="46" d="M470 60 C500 120 520 170 512 230 C506 280 520 320 560 350"/>
+        <g id="drips"></g>
+      </svg>
+      <div class="inkcaption"><span>Plate I — pressure, release, lift</span><span>sumi on kōzo</span></div>
+    </div>
+  </section>
+</div>
+
+<section class="studies">
+  <article class="study">
+    <div class="n">STUDY 01</div>
+    <svg viewBox="0 0 200 130">
+      <path class="stroke" stroke-width="16" d="M20 100 C60 40 140 40 180 96"/>
+      <path class="stroke" stroke-width="4" d="M20 112 C70 84 130 84 180 108"/>
+    </svg>
+    <h3>横 — the horizontal</h3>
+    <p>Pulled from left to right, the brush travels flat and the ink thins towards the end. The tail is the record of a slow hand.</p>
+  </article>
+  <article class="study">
+    <div class="n">STUDY 02</div>
+    <svg viewBox="0 0 200 130">
+      <path class="stroke" stroke-width="14" d="M100 14 C92 60 96 90 100 120"/>
+      <path class="stroke" stroke-width="3" d="M84 22 C80 60 84 92 86 116"/>
+    </svg>
+    <h3>縦 — the vertical</h3>
+    <p>Drawn downward, gravity helps. The line swells at the top, thins in the middle, and gathers again where the wrist stops.</p>
+  </article>
+  <article class="study">
+    <div class="n">STUDY 03</div>
+    <svg viewBox="0 0 200 130">
+      <path class="stroke" stroke-width="22" d="M26 104 C70 40 130 40 174 100"/>
+      <path class="stroke" stroke-width="6" d="M40 112 C84 70 126 66 166 106"/>
+    </svg>
+    <h3>点 — the dot</h3>
+    <p>One press of the tip. The hardest mark to make, because the brush must leave the paper without a decision in it.</p>
+  </article>
+</section>
+
+<div class="page">
+  <section class="seq">
+    <div>
+      <h2>The five movements of a single stroke</h2>
+    </div>
+    <ol>
+      <li><span><b>着筆</b> — the brush touches down at an angle, and the reservoir of ink begins to move toward the tip.</span></li>
+      <li><span><b>行筆</b> — the hand travels. Speed determines width: fast strokes starve, slow strokes flood.</span></li>
+      <li><span><b>頓挫</b> — a pause. The brush is pressed, the ink spreads, and a dark knot is left in the line.</span></li>
+      <li><span><b>収筆</b> — the brush is lifted and drawn back through the stroke, which is what produces the pale flying-white tail.</span></li>
+      <li><span><b>留白</b> — the space left behind is part of the painting, and often the better half of it.</span></li>
+    </ol>
+  </section>
+</div>
+
+<footer>
+  <span>墨 — Sumí, a study of one brush</span>
+  <span>Paper, ink, four strokes</span>
+</footer>
+
+<script>
+(function(){
+  var paths=[].slice.call(document.querySelectorAll('.stroke'));
+  var drips=document.getElementById('drips');
+
+  function prepare(){
+    paths.forEach(function(p){
+      var L=p.getTotalLength();
+      p.style.strokeDasharray=L;
+      p.style.strokeDashoffset=L;
+      p.style.transition='stroke-dashoffset 2.4s cubic-bezier(.45,.05,.2,1)';
+    });
+  }
+  function draw(){
+    paths.forEach(function(p,i){
+      p.style.transition='none';
+      p.style.strokeDashoffset=p.getTotalLength();
+      // force reflow
+      void p.getBoundingClientRect();
+      p.style.transition='stroke-dashoffset 2.4s cubic-bezier(.45,.05,.2,1)';
+      setTimeout(function(){ p.style.strokeDashoffset=0; }, 120*i);
+    });
+  }
+  prepare();
+  setTimeout(draw,350);
+
+  // wet ink: add drips and thicken the bleed
+  document.getElementById('wet').addEventListener('click',function(){
+    this.classList.toggle('on');
+    if(this.classList.contains('on')){
+      var svg=document.getElementById('s1').ownerSVGElement;
+      drips.innerHTML='';
+      for(var i=0;i<14;i++){
+        var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        var x=60+Math.random()*520, y=120+Math.random()*200;
+        var r=0.8+Math.random()*3.4;
+        c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',r);
+        c.setAttribute('class','drip');
+        c.setAttribute('opacity',(0.25+Math.random()*0.5).toFixed(2));
+        drips.appendChild(c);
+      }
+      paths.forEach(function(p){ p.style.filter='url(#rough)'; p.style.opacity='.92'; });
+    }else{
+      drips.innerHTML='';
+      paths.forEach(function(p){ p.style.filter='url(#bleed)'; p.style.opacity='1'; });
+    }
+  });
+
+  document.getElementById('draw').addEventListener('click',function(){ draw(); });
+  document.getElementById('clear').addEventListener('click',function(){
+    paths.forEach(function(p){ p.style.transition='none'; p.style.strokeDashoffset=p.getTotalLength(); });
+  });
+
+  // pointer adds a soft grey wash of ink where it moves over the plate
+  var svg=document.getElementById('s1').ownerSVGElement;
+  var wash=null;
+  svg.addEventListener('pointermove',function(e){
+    if(!wash){
+      wash=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      wash.setAttribute('r','26');
+      wash.setAttribute('fill','#16130f');
+      wash.setAttribute('opacity','.05');
+      svg.appendChild(wash);
+    }
+    var r=svg.getBoundingClientRect();
+    var vb=svg.viewBox.baseVal;
+    var loc={ x:(e.clientX-r.left)/r.width*vb.width+vb.x, y:(e.clientY-r.top)/r.height*vb.height+vb.y };
+    wash.setAttribute('cx',loc.x); wash.setAttribute('cy',loc.y);
+  });
+})();
+</script>
+</body>
+</html>

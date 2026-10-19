@@ -1,0 +1,19 @@
+TITLE: ROOM 4B — 02:40
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ROOM 4B — 02:40", a lo-fi study room at nearly three in the morning. Art direction: dim, warm, quiet, painterly. Palette: wall #1a1f2b, floor #2a2118, warm lamp #f5b96a, cool window #6f8fd0, ink #e8e2d6, dim #8a8474. Layout: a full-height scene built entirely from CSS — a wall gradient, a wooden floor with plank lines, a framed window on the left containing a moon, a city skyline of dark blocks whose lit windows are a repeating gradient, and forty falling rain streaks; on the right, a desk with a lamp (an angled arm, a head, a blurred cone of warm light and an elliptical pool on the desk), a cup, a stack of two books, and a potted plant whose five leaves are rotated ellipses of different lengths. Overlaid at the top-left is a HUD: a letterspaced room label, a very large light-weight clock showing the real current time in warm amber, and a line of prose. Below the scene, a glass player bar (translucent fill, hairline border, backdrop blur) with a play button that morphs between a triangle and a pause symbol, a twelve-bar equaliser and a track title with a progress bar; then a small footer line. Interaction: the clock runs on the system time; the play button toggles the equaliser animation and advances the progress bar; clicking the progress bar is not needed — the player just runs. Responsive: under 760px the window and desk shrink and the clock reduces in size.
+
+DESCRIPTION:
+A room, at night, drawn entirely in CSS: a window with a moon and a skyline of lit towers, rain running down the glass, a desk lamp throwing a warm cone and an elliptical pool across the wood, a cup with a thread of steam, two books, and a plant whose leaves are five rotated ellipses. The clock in the corner is the system clock, so the room is genuinely 02:40 only if it is 02:40, and the little player bar underneath is the only thing on the page that moves.
+
+MAJOR VISUAL TECHNIQUES:
+- CSS room: wall gradient, floor gradient with plank lines
+- Window with moon, skyline blocks and lit-window repeating gradient
+- Forty animated rain streaks with randomised timing
+- Desk lamp with a blurred warm light cone and an elliptical light pool
+- Plant built from five rotated border-radius ellipses in a clip-path pot
+- Glass player bar with backdrop blur over a dark room
+- Morphing play/pause glyph via clip-path
+
+INTENDED INTERACTION MODEL:
+Sit in it. The clock tells the real time, the rain falls, the equaliser runs when you press play. That is the whole interaction, and it is deliberate.

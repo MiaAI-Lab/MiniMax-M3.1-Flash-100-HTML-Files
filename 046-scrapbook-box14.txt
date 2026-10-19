@@ -1,0 +1,19 @@
+TITLE: BOX 14 — a scrapbook of small summers
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "BOX 14 — a scrapbook of small summers". Art direction: a cardboard box of photographs on a table. Palette: kraft #c9b391, photo paper #f3ece0, ink #2e2a24, date-sticker red #c0452f, dim #8a7d68. A fixed layer of inline SVG feTurbulence in multiply blend gives the kraft board its fibrous texture. Type: a handwriting stack (Bradley Hand, Segoe Print, Comic Sans MS) for captions and headings, with Helvetica Neue for the small printed footer and the date stickers. Layout: a centred header with a hand-lettered "Box 14" and a printed subtitle, above a dashed rule; then a responsive grid of nine Polaroids, each tilted by a different few degrees (set with nth-child rules), with a white photo frame, a red date sticker in the corner, two strips of translucent yellow tape at the top corners, and a handwritten caption under the image area. Each Polaroid's image is a canvas painting built from a four-colour palette: a sky gradient, a sun disc, horizon bands, four small figures and film grain, finished with a vignette. Below the grid, a torn note sheet with two paragraphs and a signature. Interaction: every photograph starts covered by a horizontal scramble overlay (a repeating black-and-white stripe in overlay blend, like an undeveloped print) which clears away when you hover the Polaroid and returns when you leave; clicking a Polaroid repaints it as a fresh print and leaves it developed. Responsive: the grid becomes two columns under 600px and one under 420px.
+
+DESCRIPTION:
+Nine Polaroids from seven summers, each one a small canvas painting with grain, a vignette and a four-colour palette, and each one initially covered in the horizontal static of a print that has not developed yet. Hovering develops it; the static returns when you leave, because that is how the actual thing works. The Polaroids sit at slightly different angles on kraft board, taped down, with red date stickers in the corners, and the captions are handwritten.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas "photographs" built from gradients, bands, figures, noise grain and a radial vignette
+- Per-photograph four-colour palettes
+- Scramble overlay as a repeating black-and-white stripe in overlay blend
+- Per-item rotation using nth-child rules to create a hand-laid-out scatter
+- Translucent tape strips with drop shadows at the Polaroid corners
+- Rotated red date stickers in a printed sans face
+- Fixed feTurbulence kraft texture in multiply blend
+
+INTENDED INTERACTION MODEL:
+Develop the prints. Hover a Polaroid and the static clears; leave and it returns; click to repaint the image and keep it developed. Everything else is a static scrapbook.

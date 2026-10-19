@@ -1,0 +1,18 @@
+TITLE: FERROUS — the shape of a magnet
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "FERROUS — the shape of a magnet". Art direction: laboratory, dark slate, iron filings, two pole colours. Palette: ground #0e1116, ink #e7ebf0, dim #7a828e, hairline rgba(231,235,240,.13), red #e0564a, blue #5b8fe0, iron #c3cad2. Layout: a header with a two-colour bar logo and a monospaced model line; then a hero with an iron kicker, a huge light-weight headline with one red bold word, and a paragraph; then a bordered stage holding a 1200×620 canvas that draws the iron filings over the field with the bar magnets drawn on top, plus an absolutely positioned monospace HUD; then a control band of two sliders (Filings density, Magnet strength) and four buttons (Add a magnet / Clear / Field lines / Two in opposition); then a six-item readout strip giving the number of magnets, the field strength and direction at the centre of the canvas, the number of null points found by sampling, and the separation of the first two magnets; then a two-column section pairing an essay on field lines being a useful fiction with a note on Gilbert's two-pole model; and a footer. The field is real: each bar magnet is represented as two point poles, one at each end, and the field at any point is the vector sum of the inverse-square contributions of every pole of every magnet. The filings are a grid of short line segments, each drawn in the local direction of the field with its opacity set by the field strength — which is exactly what a real filing does, since each one is a little compass needle. Interaction: dragging a magnet moves it; double-clicking a magnet reverses its polarity; Add a magnet puts a new one in at random; Field lines integrates streamlines from both poles of every magnet; Two in opposition sets a pair of like poles facing. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+Iron filings, computed rather than photographed. Every filing on the page is a short line drawn in the local direction of the magnetic field, with its opacity set by the strength of the field — which is exactly what a real filing is, since each one is a tiny compass needle that swivels to align. The field itself is the sum of inverse-square contributions from point poles at the ends of each bar magnet, so the shape of the pattern is the shape of the real field, and the bare wedge between two like poles is genuine.
+
+MAJOR VISUAL TECHNIQUES:
+- Two-point-pole representation of a bar magnet with inverse-square field
+- Filings drawn as a grid of short segments aligned with the local field
+- Opacity mapped to field strength, mimicking a real scatter of filings
+- Streamline integration for the field-line overlay
+- Null-point detection by sampling the field on a grid
+- Gradient-shaded magnet bodies with coloured poles
+
+INTENDED INTERACTION MODEL:
+Arrange the magnets. Drag them, double-click to reverse a polarity, add more, turn on the field lines, and read the field at the centre of the page.

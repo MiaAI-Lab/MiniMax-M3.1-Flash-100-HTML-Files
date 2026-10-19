@@ -1,0 +1,19 @@
+TITLE: CALDERA — an eruption in three acts
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "CALDERA — an eruption in three acts", a page about a dormant volcano. Art direction: heat and ash. Palette: ground #0a0507, ink #f3e2d8, dim #8f6d66, lava #ff5a1f, hairline rgba(243,226,216,.14). A fixed full-viewport canvas draws the scene behind everything: a sky gradient that changes with the act, a dark volcanic cone drawn as a path, an eruption column of additive particles rising from the crater with buoyancy and turbulence, and drifting ash rectangles once the eruption starts. Layout: a header with a pulsing lava dot, the wordmark, and three pill buttons (Dormant / Erupt / Collapse); a hero with a kicker, a huge light-weight headline whose second line is bold, and a paragraph; a fixed instrument panel at the top right (which becomes static on small screens) showing chamber pressure, seismic activity and ash fall, each with a value and a progress bar; three act cards (Dormant / Eruption / Collapse) that are themselves clickable and highlight when active; a four-column facts strip (height, last eruption, rock, plates); and a footer. Interaction: the three header buttons and the three act cards both switch the act, which repaints the sky gradient, changes the particle emission rate, starts or stops the ash fall, and rewrites the instrument readings and their bars; switching back to Dormant clears the particles. The particle system is real: each particle has buoyancy, turbulence, a life value and a colour of either ember orange or hot yellow, drawn additively and growing as it cools. Responsive: the instrument panel stops being fixed below 900px, the act cards and facts become one or two columns.
+
+DESCRIPTION:
+A volcano you can set off. The act buttons change the whole page: Dormant is a cold black cone under a dim red-brown sky with a slow wisp of steam; Eruption is a night sky burning orange with a column of glowing particles climbing eleven kilometres and ash starting to fall across the viewport; Collapse is a grey, post-eruption ash sky with the summit gone. The instrument panel reads out chamber pressure, seismic activity and the height of the ash column, and the bars move when you change acts.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas particle column with buoyancy, turbulence, life decay and additive compositing
+- Act-dependent sky gradients (dormant / eruption / collapse)
+- Ash fall as a separate particle layer of drifting translucent rectangles
+- Volcanic cone drawn as a canvas path with a crater notch
+- Fixed instrument panel with progress bars driven by the act
+- Bold/light contrast inside a single very large headline
+- Clickable act cards that mirror the header controls
+
+INTENDED INTERACTION MODEL:
+Choose an act and watch the world change. The header buttons and the act cards do the same thing, so the choice is available wherever the eye is. Everything else — the canvas, the readings, the ash — follows the selection automatically. No other interaction exists.

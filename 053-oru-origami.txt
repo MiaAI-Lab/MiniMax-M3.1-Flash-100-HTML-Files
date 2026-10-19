@@ -1,0 +1,19 @@
+TITLE: ORU — one sheet, thirty folds
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ORU — one sheet, thirty folds", an origami study. Art direction: crisp Japanese instructional diagram. Palette: ground #eceae3, paper #fdfcf8, ink #1d1c18, dim #8a877d, hairline rgba(29,28,24,.16), red #b8342a, blue #2a4f8f. Layout: a header with a wide-tracked wordmark, a four-quadrant diamond logo and the sheet specification; then a two-column hero — on the left a kicker, a huge light-weight headline with one bold line, a paragraph, a five-row numbered list of the folding sequence (square the sheet, collapse to a base, narrow the legs, reverse fold head and tail, fold the wings) and three buttons; on the right a bordered paper sheet holding a 400×400 inline SVG, and beneath it two sliders (fold 0–100%, shade 0–1). Below: a two-column note on why the crane is taught first, and a footer. The SVG is drawn entirely from polygons: a crease diagram of eight radial lines, the square's border and both diagonals drawn as dashed hairlines, the folded square base as three overlapping quadrilaterals in four paper tones that shrink and rotate as the fold slider increases, and the finished crane as a body, two wings, a neck, a head and a tail with a small red eye. Interaction: the Fold slider interpolates between the flat sheet and the finished bird, fading the square's opacity down and the bird's up, and scales and rotates the base; the Shade slider changes the paper's brightness; the Creases button toggles the dashed crease lines; Fold and Unfold jump the slider to either end. Responsive: the hero stacks under 900px and the note becomes one column.
+
+DESCRIPTION:
+An origami diagram that actually unfolds. Drag the slider and the crane comes apart: the square base shrinks and rotates away, the bird's opacity rises, and the dashed crease lines of the original 30 cm sheet stay underneath the whole time so you can always see where the hinges are. The paper is drawn in four close tones with heavy ink outlines, the way a printed folding diagram is, and the red eye is the only colour on the page.
+
+MAJOR VISUAL TECHNIQUES:
+- Origami drawn as four paper tones with heavy ink polygon outlines
+- Fold-state interpolation between a flat sheet and a finished bird
+- Dashed crease diagram (radials, border, both diagonals) as the permanent underlay
+- Scale and rotation transform applied to the square base as it folds
+- Red eye as the single accent colour
+- Hairline dashed fold list and hard offset-shadow buttons
+- Brightness filter driven by a shade slider
+
+INTENDED INTERACTION MODEL:
+Fold and unfold. Drag the Fold slider to watch the bird assemble or come apart; use Shade for the light; toggle the Creases; or press Fold and Unfold for the extremes. The list on the left is the recipe the slider is replaying.

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MÉTROLINE — a neon transit map</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#07080e;--ink:#e9ecf5;--dim:#7d8398;--line:rgba(233,236,245,.14);
+    --l1:#ff3b6b;--l2:#3bb1ff;--l3:#ffd23f;--l4:#4fe08a;--l5:#c46bff;--l6:#ff8a3d;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.42em;text-transform:uppercase;}
+  .brand .m{width:26px;height:26px;border:4px solid var(--l2);border-radius:50%;display:block;position:relative;}
+  .brand .m::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;
+    background:var(--l2);border-radius:50%;box-shadow:0 0 14px var(--l2);}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .tools button.on{background:var(--l2);border-color:var(--l2);color:#04101c;font-weight:700;}
+
+  .stage{position:relative;margin-top:24px;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+    background:radial-gradient(ellipse 70% 60% at 50% 45%,#0e1322,#07080e 75%);}
+  body.day .stage{background:radial-gradient(ellipse 70% 60% at 50% 45%,#e8ecf5,#c9d0e2 75%);}
+  .stage svg{width:100%;height:auto;display:block;}
+  .line{fill:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;transition:.4s;}
+  body.night .line{filter:drop-shadow(0 0 8px currentColor);}
+  .st{stroke:#07080e;stroke-width:3.5;cursor:pointer;transition:.25s;}
+  body.day .st{stroke:#eef1f8;}
+  .st:hover{r:8;}
+  .stl{font-size:9px;fill:var(--dim);letter-spacing:.12em;text-transform:uppercase;pointer-events:none;}
+  .card{position:absolute;right:18px;top:18px;width:230px;border-radius:16px;padding:18px;
+    background:rgba(7,8,14,.82);border:1px solid var(--line);backdrop-filter:blur(12px);}
+  body.day .card{background:rgba(255,255,255,.86);color:#12141c;}
+  .card .l{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  .card h3{font-size:1.1rem;margin:8px 0 6px;font-weight:500;}
+  .card p{font-size:.82rem;color:var(--dim);line-height:1.7;}
+
+  .legend{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;}
+  .lg{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;
+    cursor:pointer;transition:.3s;}
+  .lg:hover{border-color:var(--lc);transform:translateY(-3px);}
+  .lg i{width:26px;height:6px;border-radius:99px;background:var(--lc);display:block;flex:none;
+    box-shadow:0 0 10px var(--lc);}
+  .lg b{font-weight:500;font-size:.92rem;}
+  .lg span{display:block;font-size:.74rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
+
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:.85fr 1.15fr;gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.15;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.legend{grid-template-columns:1fr 1fr;}.note{grid-template-columns:1fr;}.card{position:static;width:auto;margin:14px;}}
+  @media(max-width:560px){.legend{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="m"></span>Métroline</div>
+    <div class="tools">
+      <button class="on" id="night">Night</button>
+      <button id="day">Day</button>
+      <button id="labels">Labels</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <svg id="map" viewBox="0 0 1200 640" aria-label="Transit map"></svg>
+    <div class="card">
+      <div class="l" id="cLine">Line 1</div>
+      <h3 id="cName">Saint-Ouen</h3>
+      <p id="cText">Northern terminus. Four-car units, every four minutes at rush hour.</p>
+    </div>
+  </div>
+
+  <section class="legend" id="legend"></section>
+
+  <section class="note">
+    <div><h2>A map is a promise<br>about a journey</h2></div>
+    <div>
+      <p>Harry Beck drew the first London Underground diagram in 1931, and the thing he noticed was that a geographically accurate map is a map people cannot use. Distance on the ground has nothing to do with how long the journey takes or how easy it is to change lines.</p>
+      <p>So the diagram lies, deliberately and in every direction, and in exchange it tells you the only three things that matter: which lines you can take, where they cross, and what the interchange is called. Everything here follows that rule — the angles are all multiples of 45 degrees, the spacing is constant, and geography has been left at the door.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Métroline — a transit diagram</span>
+    <span>Six lines · 41 stations · no geography</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('map');
+  var LINES=[
+    {n:'1',c:'#ff3b6b',pts:[[120,120],[300,120],[300,300],[520,300],[520,480],[900,480]],
+     st:['Saint-Ouen','Place Verte','Musée','Halles','Gare Nord','Pont Neuf'],type:'North–south'},
+    {n:'2',c:'#3bb1ff',pts:[[120,520],[340,520],[340,300],[640,300],[640,140],[1080,140]],
+     st:['La Membrane','Belvédère','Assemblée','République','Bellevue','Aéroport'],type:'East–west'},
+    {n:'3',c:'#ffd23f',pts:[[200,580],[200,380],[420,380],[420,200],[700,200],[700,420],[1000,420]],
+     st:['Cimetière','Temple','Halles','Diderot','Bastille','Bois','Vieux-Port'],type:'Diagonal'},
+    {n:'4',c:'#4fe08a',pts:[[520,480],[520,260],[860,260],[860,560]],
+     st:['Gare Nord','Opera','Vieux-Port','Belvédère'],type:'Orbital'},
+    {n:'5',c:'#c46bff',pts:[[180,120],[620,120],[620,340],[1000,340]],
+     st:['La Membrane','Halles','République','Vieux-Port'],type:'Express'},
+    {n:'6',c:'#ff8a3d',pts:[[760,120],[760,540],[1040,540]],
+     st:['Bellevue','Ivry','Bois','Aéroport'],type:'Northern'}
+  ];
+  var showLabels=true;
+
+  function el(tag,attrs){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    return e;
+  }
+  function build(){
+    svg.innerHTML='';
+    // background grid
+    var g=el('g',{stroke:'rgba(233,236,245,.05)','stroke-width':'1'});
+    for(var x=0;x<=1200;x+=40) g.appendChild(el('line',{x1:x,y1:0,x2:x,y2:640}));
+    for(var y=0;y<=640;y+=40) g.appendChild(el('line',{x1:0,y1:y,x2:1200,y2:y}));
+    svg.appendChild(g);
+
+    LINES.forEach(function(L){
+      var d='M'+L.pts.map(function(p){return p[0]+' '+p[1];}).join(' L');
+      var path=el('path',{d:d,class:'line',stroke:L.c,style:'color:'+L.c});
+      svg.appendChild(path);
+      // stations along the line at each point
+      L.pts.forEach(function(p,i){
+        var c=el('circle',{cx:p[0],cy:p[1],r:6,class:'st',fill:'#07080e'});
+        c.addEventListener('mouseenter',function(){ show(L,i); });
+        c.addEventListener('click',function(){ show(L,i); });
+        svg.appendChild(c);
+        if(showLabels && L.st[i]){
+          var t=el('text',{x:p[0]+11,y:p[1]-9,class:'stl'});
+          t.textContent=L.st[i];
+          svg.appendChild(t);
+        }
+      });
+    });
+  }
+  function show(L,i){
+    document.getElementById('cLine').textContent='Line '+L.n+' · '+L.type;
+    document.getElementById('cName').textContent=L.st[i]||'—';
+    var mins=Math.abs(L.pts[i][0]-L.pts[0][0])/90+Math.abs(L.pts[i][1]-L.pts[0][1])/90;
+    document.getElementById('cText').textContent=
+      L.st[i]+' — '+Math.max(1,Math.round(mins))+' minutes from '+L.st[0]+
+      ', with '+(i>2?'two':'one')+' interchange'+(i>2?'s':'')+' on the way.';
+  }
+
+  var leg=document.getElementById('legend');
+  LINES.forEach(function(L){
+    var d=document.createElement('div');
+    d.className='lg'; d.style.setProperty('--lc',L.c);
+    d.innerHTML='<i></i><div><b>Line '+L.n+'</b><span>'+L.type+'</span></div>';
+    d.addEventListener('mouseenter',function(){ show(L,0); });
+    leg.appendChild(d);
+  });
+
+  build();
+  document.getElementById('night').addEventListener('click',function(){
+    document.body.classList.remove('day'); document.body.classList.add('night');
+    this.classList.add('on'); document.getElementById('day').classList.remove('on');
+  });
+  document.getElementById('day').addEventListener('click',function(){
+    document.body.classList.add('day'); document.body.classList.remove('night');
+    this.classList.add('on'); document.getElementById('night').classList.remove('on');
+  });
+  document.getElementById('labels').addEventListener('click',function(){
+    showLabels=!showLabels; this.classList.toggle('on',showLabels); build();
+  });
+  document.body.classList.add('night');
+})();
+</script>
+</body>
+</html>

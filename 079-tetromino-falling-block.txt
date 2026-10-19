@@ -1,0 +1,18 @@
+TITLE: TETROMINO — the falling block
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "TETROMINO — the falling block", a complete playable falling-block puzzle. Art direction: arcade, dark, acid green accent. Palette: ground #0e0d14, board #08080d, ink #efecf4, dim #7d7a8c, hairline rgba(239,236,244,.14), accent #c8ff4d. Layout: a header with a four-square logo mark and a monospaced rule line; then a hero with an acid kicker, a huge light-weight headline with one bold word, and a paragraph; then a game panel — a bordered two-column board with a 300×600 canvas and a game-over overlay on the left, and a 180px column on the right holding a Next preview canvas, a Score box with five live readouts, and a Keys box; then a row of three buttons (Pause / Restart / Ghost on); then a two-column section pairing an essay on why the seven-bag matters with a note on the scoring; and a footer. The game is genuinely correct: a ten by twenty board, a seven-bag randomiser that deals one of each tetromino from a shuffled bag, matrix rotation of the piece shape, wall kicks tried at nine offsets so a rotation in a tight space succeeds, a ghost piece showing the landing row, line clears worth 100, 300, 500 and 800 multiplied by the level, and the level raised every ten lines which also shortens the drop interval. Interaction: the arrow keys move, rotate and soft drop, space hard drops for points, P pauses and R restarts; clicking and dragging on the board also works, with a tap rotating the piece. Responsive: the game panel and the two-column section stack under 860px.
+
+DESCRIPTION:
+A complete, fair falling-block game. The seven-bag randomiser means the longest drought is thirteen pieces, wall kicks at nine offsets mean a rotation in a tight space works, and the ghost piece shows exactly where the piece will land. Clearing four lines is worth 800 and is the only moment in the game that feels like winning rather than tidying.
+
+MAJOR VISUAL TECHNIQUES:
+- Seven-bag randomiser with a shuffled bag of one of each tetromino
+- Matrix rotation of piece shapes with nine-offset wall kicks
+- Ghost piece rendered at the simulated landing row
+- Four-tier line-clear scoring multiplied by the level
+- Level-driven drop interval with a floor
+- Grid-stroked board canvas with a game-over overlay
+
+INTENDED INTERACTION MODEL:
+Play it. Arrow keys to move, rotate and soft drop, space to hard drop, P to pause, R to restart, and the board itself is also a touch control.

@@ -1,0 +1,25 @@
+TITLE: DIAL — the sundial that knows
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "DIAL — the sundial that knows". Art direction: engraved stone and bronze, warm paper, precise instrument. Palette: background #f3efe4, stone #e3dccb, ink #22201a, dim #7c7463, hairline rgba(34,32,26,.24), bronze #9a6b2f. Layout: a header with a bold uppercase wordmark and a monospaced description under a 2px rule; then a hero with a bronze kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a bordered box split into a large 820×620 canvas on the left and a 260px column of two instrument boxes on the right (Sun: declination, hour angle, altitude, azimuth, shadow length and the hour the shadow reads; Place: latitude, day, equation of time, sunrise and sunset); then a control band of three sliders (Latitude, Day of year, Solar time) and three buttons (Show the analemma / Hour lines / Now); then a two-column section pairing an essay on why the hour lines are not evenly spaced with a note on the analemma; and a footer. The astronomy is real: the declination comes from the Sun's ecliptic longitude computed from the day of year, the altitude and azimuth come from the spherical triangle with the hour angle, the shadow is drawn along the anti-solar azimuth with a length of the gnomon height divided by the tangent of the altitude, and the hour lines for the day are each solved from the same equations rather than being spaced evenly. The analemma is drawn by tracing the nine-o'clock shadow tip across all three hundred and sixty-five days. Interaction: the three sliders change the latitude, the season and the time and everything recomputes; Now sets the controls from the browser clock; the analemma and hour-line buttons toggle those layers. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+A sundial that actually works, computed from spherical astronomy rather than drawn. The declination comes from the Sun's ecliptic longitude, the shadow is laid along the anti-solar azimuth with its length set by the tangent of the altitude, and the hour lines are each solved individually — which is why they bunch towards noon and spread towards the horizon instead of sitting in tidy thirty-degree sectors. The analemma is traced from the same equations at a fixed nine o'clock.
+
+MAJOR VISUAL TECHNIQUES:
+- Solar declination from ecliptic longitude and the obliquity of the ecliptic
+- Spherical-triangle altitude and azimuth with the hour angle
+- Shadow direction and length from the tangent of the altitude
+- Analemma traced across 365 days at a fixed hour
+- Equation of time from the standard four-term series
+- Sunrise and sunset from the hour-angle cosine
+MAJOR VISUAL TECHNIQUES:
+- Solar declination from ecliptic longitude and the obliquity of the ecliptic
+- Spherical-triangle altitude and azimuth with the hour angle
+- Shadow direction and length from the tangent of the altitude
+- Analemma traced across 365 days at a fixed hour
+- Equation of time from the standard four-term series
+- Sunrise and sunset from the hour-angle cosine
+
+INTENDED INTERACTION MODEL:
+Read the dial. Move the latitude, the day of the year and the time, turn the analemma and the hour lines on and off, and set the controls to now.

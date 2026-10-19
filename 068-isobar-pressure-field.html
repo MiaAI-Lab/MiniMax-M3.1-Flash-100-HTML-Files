@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISOBAR — the pressure field</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#071018;--ink:#dceaf2;--dim:#6f8ba0;--line:rgba(220,234,242,.14);--cy:#4fd6e0;--warm:#ff9f5a;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50%;border:2px solid var(--cy);display:block;position:relative;}
+  .brand i:after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--cy);opacity:.35;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--cy);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:52ch;}
+
+  .chart{margin-top:4vh;border:1px solid var(--line);position:relative;background:
+    linear-gradient(rgba(220,234,242,.05) 1px,transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg,rgba(220,234,242,.05) 1px,transparent 1px) 0 0/40px 40px;}
+  .chart canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:12px;left:12px;font:400 11px/1.7 "Courier New",monospace;color:var(--cy);
+    background:rgba(7,16,24,.7);padding:10px 14px;border:1px solid var(--line);}
+  .hud b{font-weight:400;color:var(--warm);}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--cy);color:var(--cy);background:rgba(79,214,224,.08);}
+  .slider{margin-left:auto;display:flex;align-items:center;gap:10px;font:400 10.5px/1 "Courier New",monospace;
+    letter-spacing:.14em;color:var(--dim);}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:120px;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--cy);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--cy);cursor:pointer;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .obs{border-top:1px solid var(--line);}
+  .obs div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;}
+  .obs span{color:var(--dim);}
+  .obs b{color:var(--warm);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}.slider{margin-left:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Isobar</div>
+    <div class="meta">Synoptic chart · 500 hPa · 1200Z</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Meteorology</div>
+    <h1>Every line on<br>this chart is<br><b>one number</b></h1>
+    <p>An isobar joins points of equal atmospheric pressure. A synoptic chart is nothing but a pile of these — twelve, fifteen, twenty lines, each one four millibars apart — and from their shape a forecaster reads the whole state of the sky at a glance.</p>
+  </section>
+
+  <section class="chart">
+    <canvas id="cv" width="1200" height="620"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn on" id="run">Running</button>
+    <button class="btn" id="spin">Spin the system</button>
+    <button class="btn" id="wind">Wind on</button>
+    <div class="slider">SYSTEM STRENGTH <input type="range" id="st" min="20" max="140" value="85"></div>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>How to read<br>a pressure field</h2>
+      <p>A closed set of isobars means a pressure centre. Tightly packed isobars mean a strong gradient, and the gradient is what makes the wind: air accelerates from high to low and is deflected by the Earth's rotation, which is why the Northern Hemisphere turns clockwise around a high and anticlockwise around a low.</p>
+      <p>So the chart is not decoration. The curvature tells you which way the system is spinning, the spacing tells you how fast it will move, and the shape tells you what the weather will be when it arrives.</p>
+    </div>
+    <div>
+      <h2>Observation</h2>
+      <div class="obs">
+        <div>Centre <span>LOW 982 hPa</span></div>
+        <div>Gradient <b id="g">18.4 hPa / 1000 km</b></div>
+        <div>Geostrophic wind <b id="w">31 kt</b></div>
+        <div>Vertical motion <b id="v">ascent</b></div>
+        <div>Precipitation <b id="pr">moderate</b></div>
+        <div>Next observation <span>1200Z</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Isobar — the pressure field</span>
+    <span>Contours computed live · no map images</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var running=true, windOn=false, strength=85, angle=0, t=0;
+  var particles=[];
+
+  function initParticles(){
+    particles=[];
+    for(var i=0;i<420;i++){
+      particles.push({x:Math.random()*W,y:Math.random()*H,l:Math.random()*10+4,a:Math.random()*6.283});
+    }
+  }
+  initParticles();
+
+  // pressure field: superposition of a low, a high, and a ridge
+  function pressure(x,y){
+    var nx=(x-W*0.42)/W, ny=(y-H*0.5)/H;
+    var low=Math.exp(-(nx*nx+ny*ny)*7.0);
+    var mx=(x-W*0.78)/W, my=(y-H*0.32)/H;
+    var high=Math.exp(-(mx*mx+my*my)*14.0);
+    var wave=0.10*Math.sin(x*0.011+angle)*Math.cos(y*0.009-angle*0.7);
+    return 1013 + (high*36 - low*46*strength/85) + wave*22;
+  }
+  function contourLevel(i){ return 966 + i*4; }
+
+  function drawContours(){
+    var step=4;
+    var levels=[];
+    for(var i=0;i<20;i++) levels.push(contourLevel(i));
+    levels.forEach(function(L){
+      ctx.beginPath();
+      // marching squares over a coarse grid
+      var gx=0;
+      for(var y=step;y<H-step;y+=step){
+        for(var x=step;x<W-step;x+=step){
+          var a=pressure(x,y), b=pressure(x+step,y), c=pressure(x+step,y+step), d=pressure(x,y+step);
+          var idx=(a>L?8:0)|(b>L?4:0)|(c>L?2:0)|(d>L?1:0);
+          if(idx===0||idx===15) continue;
+          var pts=[];
+          function lerp(p,q){ return p+(L-p)/(q-p); }
+          var top=[x+lerp(a,b)*step,y], right=[x+step,y+lerp(b,c)*step],
+              bottom=[x+lerp(d,c)*step,y+step], left=[x,y+lerp(a,d)*step];
+          switch(idx){
+            case 1: case 14: pts=[left,bottom]; break;
+            case 2: case 13: pts=[bottom,right]; break;
+            case 3: case 12: pts=[left,right]; break;
+            case 4: case 11: pts=[top,right]; break;
+            case 6: case 9: pts=[top,bottom]; break;
+            case 7: case 8: pts=[left,top]; break;
+            case 5: pts=[left,top,right,bottom]; break;
+            case 10: pts=[left,bottom,right,top]; break;
+          }
+          for(var k=0;k+1<pts.length;k+=2){
+            ctx.moveTo(pts[k][0],pts[k][1]); ctx.lineTo(pts[k+1][0],pts[k+1][1]);
+          }
+        }
+      }
+      var warm = (L>1004);
+      ctx.strokeStyle = warm? 'rgba(255,159,90,'+(0.18+(L-1004)/60*0.5).toFixed(2)+')'
+                             : 'rgba(79,214,224,'+(0.10+(1004-L)/40*0.45).toFixed(2)+')';
+      ctx.lineWidth = warm?1.6:1.2;
+      ctx.stroke();
+    });
+  }
+  function drawWind(){
+    ctx.strokeStyle='rgba(220,234,242,.32)'; ctx.lineWidth=1;
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i];
+      var x=p.x,y=p.y;
+      var e=3;
+      var px=pressure(x+e,y), py=pressure(x,y+e);
+      var gx=(px-pressure(x-e,y))/(2*e), gy=(py-pressure(x,y-e))/(2*e);
+      var len=Math.sqrt(gx*gx+gy*gy)||1;
+      var vx=-gy/len, vy=gx/len;
+      p.x+=vx*2.4; p.y+=vy*2.4;
+      if(p.x<0)p.x+=W; if(p.x>W)p.x-=W; if(p.y<0)p.y+=H; if(p.y>H)p.y-=H;
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-vx*p.l*0.5,p.y-vy*p.l*0.5); ctx.stroke();
+    }
+  }
+  function label(){
+    // label the centre
+    ctx.font='11px "Courier New",monospace';
+    ctx.fillStyle='rgba(255,159,90,.9)';
+    ctx.fillText('L 982',W*0.42-14,H*0.5+4);
+    ctx.fillStyle='rgba(79,214,224,.9)';
+    ctx.fillText('H 1049',W*0.78-14,H*0.32+4);
+  }
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    if(windOn) drawWind();
+    drawContours();
+    label();
+    // hud
+    var g=12+strength*0.09;
+    document.getElementById('g').textContent=g.toFixed(1)+' hPa / 1000 km';
+    var kt=Math.round(g*1.9);
+    document.getElementById('w').textContent=kt+' kt';
+    document.getElementById('v').textContent=strength>105?'strong ascent':'ascent';
+    document.getElementById('pr').textContent=strength>115?'heavy':(strength>75?'moderate':'light');
+  }
+  function loop(){
+    if(running){ angle+=0.004; t+=0.01; }
+    frame();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('run').addEventListener('click',function(){
+    running=!running; this.classList.toggle('on',running); this.textContent=running?'Running':'Paused';
+  });
+  document.getElementById('spin').addEventListener('click',function(){ angle+=0.9; });
+  document.getElementById('wind').addEventListener('click',function(){
+    windOn=!windOn; this.classList.toggle('on',windOn);
+  });
+  document.getElementById('st').addEventListener('input',function(){
+    strength=parseInt(this.value,10);
+  });
+})();
+</script>
+</body>
+</html>

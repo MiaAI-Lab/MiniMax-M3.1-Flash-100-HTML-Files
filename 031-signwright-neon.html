@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNWRIGHT — a neon sign workshop</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--brick:#2a1a16;--ink:#0d0908;--neon:#ff3b6b;--neon2:#41e0ff;--neon3:#ffd166;--dim:#8b7a72;}
+  body{background:var(--ink);color:#f0e9e3;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wall{position:fixed;inset:0;z-index:0;}
+  .wall .bricks{position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,0,0,.35) 1px,transparent 1px),
+      linear-gradient(180deg,#33201b,#221512);
+    background-size:100% 26px, 62px 26px, 100% 100%;
+    background-position:0 0, 0 0, 0 0;}
+  .wall .bricks::after{content:"";position:absolute;inset:0;opacity:.4;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.6'/></svg>");
+    mix-blend-mode:overlay;}
+  .wall .glow{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 55% 45% at 50% 42%,rgba(255,59,107,.16),transparent 70%);transition:background .6s;}
+
+  .wrap{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid rgba(240,233,227,.16);}
+  .mark{font-size:12px;letter-spacing:.4em;text-transform:uppercase;font-weight:700;}
+  .mark span{color:var(--neon);}
+  .tag{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .stage{position:relative;margin-top:30px;border:1px solid rgba(240,233,227,.12);border-radius:20px;overflow:hidden;
+    background:radial-gradient(ellipse 70% 60% at 50% 45%,#2c1c18,#150e0c 75%);}
+  .stage svg{width:100%;height:auto;display:block;}
+  .tube{fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .glowlayer{filter:blur(10px);opacity:.75;}
+  .core{filter:drop-shadow(0 0 6px currentColor);}
+  .flicker{animation:flick 7s infinite;}
+  @keyframes flick{0%,96%,100%{opacity:1;}97%{opacity:.25;}97.6%{opacity:.9;}98.2%{opacity:.4;}99%{opacity:1;}}
+
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;}
+  .card{border:1px solid rgba(240,233,227,.14);border-radius:18px;padding:22px;}
+  .card h2{font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;font-weight:500;}
+  .label{display:block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+  input[type=text]{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(240,233,227,.18);
+    border-radius:10px;padding:12px 14px;color:#f0e9e3;font:400 1.05rem/1.3 inherit;outline:none;transition:.3s;}
+  input[type=text]:focus{border-color:var(--neon);background:rgba(255,59,107,.08);}
+  .swatches{display:flex;gap:9px;flex-wrap:wrap;}
+  .sw{width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.25s;position:relative;}
+  .sw:hover{transform:scale(1.1);}
+  .sw.on{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.18);}
+  .sw::after{content:"";position:absolute;inset:0;border-radius:6px;box-shadow:0 0 18px currentColor;opacity:.75;}
+  .toggles{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .tg{border:1px solid rgba(240,233,227,.24);background:transparent;color:#f0e9e3;padding:10px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.2em;text-transform:uppercase;transition:.25s;}
+  .tg:hover{border-color:var(--neon);color:var(--neon);}
+  .tg.on{background:var(--neon);border-color:var(--neon);color:#140a0d;font-weight:700;}
+  .readout{font-family:"Courier New",monospace;font-size:12px;line-height:2;color:#9b8b82;
+    border-left:2px solid var(--neon);padding-left:14px;margin-top:18px;}
+  .readout b{color:var(--neon3);font-weight:400;}
+
+  .swatches2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:6vh;}
+  .ex{border:1px solid rgba(240,233,227,.12);border-radius:16px;overflow:hidden;background:#140d0b;}
+  .ex .pic{height:120px;display:grid;place-items:center;}
+  .ex .cap{padding:14px 16px;font-size:11.5px;letter-spacing:.1em;color:#b6a79e;}
+  .ex .cap b{display:block;color:#f0e9e3;font-weight:500;margin-bottom:3px;letter-spacing:.04em;}
+
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid rgba(240,233,227,.14);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:880px){.controls{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wall"><div class="bricks"></div><div class="glow" id="wallglow"></div></div>
+
+<div class="wrap">
+  <header>
+    <div class="mark">Signwright<span>·</span>Neon Workshop</div>
+    <div class="tag">Tube 8mm · argon/mercury · est. 1961</div>
+  </header>
+
+  <section class="stage">
+    <svg id="sign" viewBox="0 0 1000 420" aria-label="Neon sign"></svg>
+  </section>
+
+  <section class="controls">
+    <div class="card">
+      <h2>The sign</h2>
+      <label for="txt">Words</label>
+      <input type="text" id="txt" value="OPEN LATE" maxlength="18">
+      <label style="margin-top:18px">Tube colour</label>
+      <div class="swatches" id="sws">
+        <div class="sw on" data-c="#ff3b6b" style="background:#ff3b6b;color:#ff3b6b"></div>
+        <div class="sw" data-c="#41e0ff" style="background:#41e0ff;color:#41e0ff"></div>
+        <div class="sw" data-c="#ffd166" style="background:#ffd166;color:#ffd166"></div>
+        <div class="sw" data-c="#8affc1" style="background:#8affc1;color:#8affc1"></div>
+        <div class="sw" data-c="#c07bff" style="background:#c07bff;color:#c07bff"></div>
+        <div class="sw" data-c="#ffffff" style="background:#ffffff;color:#ffffff"></div>
+      </div>
+      <div class="toggles">
+        <button class="tg on" id="on">Powered</button>
+        <button class="tg" id="flick">Flicker</button>
+        <button class="tg" id="arrow">Add arrow</button>
+        <button class="tg" id="frame">Add frame</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Worksheet</h2>
+      <div class="readout" id="readout"></div>
+      <div style="margin-top:16px">
+        <label>Tube length (m)</label>
+        <input type="range" id="len" min="1" max="20" value="7" style="width:100%">
+        <label style="margin-top:14px">Transformer</label>
+        <input type="range" id="tr" min="0" max="4" value="1" style="width:100%">
+      </div>
+    </div>
+  </section>
+
+  <section class="swatches2">
+    <div class="ex"><div class="pic"><svg viewBox="0 0 200 120"><path class="tube glowlayer" d="M40 90 L40 40 L100 40 L100 90 L160 90 L160 40"
+      stroke="#ff3b6b" stroke-width="8" style="color:#ff3b6b"></path>
+      <path class="tube core" d="M40 90 L40 40 L100 40 L100 90 L160 90 L160 40"
+      stroke="#ffe3ec" stroke-width="3" style="color:#ff3b6b"></path></svg></div>
+      <div class="cap"><b>Single stroke</b>One continuous tube, 6 bends</div></div>
+    <div class="ex"><div class="pic"><svg viewBox="0 0 200 120"><ellipse class="tube glowlayer" cx="100" cy="60" rx="58" ry="30"
+      stroke="#41e0ff" stroke-width="8" style="color:#41e0ff"></ellipse>
+      <ellipse class="tube core" cx="100" cy="60" rx="58" ry="30" stroke="#e6fbff" stroke-width="3" style="color:#41e0ff"></ellipse></svg></div>
+      <div class="cap"><b>Ellipse</b>Bent on a former, 3.2 m</div></div>
+    <div class="ex"><div class="pic"><svg viewBox="0 0 200 120"><path class="tube glowlayer" d="M30 60 Q100 -20 170 60 Q100 140 30 60 Z"
+      stroke="#ffd166" stroke-width="8" style="color:#ffd166"></path>
+      <path class="tube core" d="M30 60 Q100 -20 170 60 Q100 140 30 60 Z" stroke="#fff4d0" stroke-width="3" style="color:#ffd166"></path></svg></div>
+      <div class="cap"><b>Eye</b>Two forms, one tube</div></div>
+  </section>
+
+  <footer>
+    <span>Signwright — neon workshop</span>
+    <span>Type in the box. The tube bends to fit.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var svg=document.getElementById('sign');
+  var NS='http://www.w3.org/2000/svg';
+  var colour='#ff3b6b', powered=true, flicker=false, arrow=false, frame=false;
+  var word='OPEN LATE';
+
+  function make(tag,attrs){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    return e;
+  }
+
+  function build(){
+    svg.innerHTML='';
+    var text=word.toUpperCase();
+    var n=text.length||1;
+    // fit the word across the board
+    var pad=60, usable=1000-pad*2;
+    var cell=usable/n;
+    var paths=[];
+    var startX=pad+cell/2;
+
+    // per-letter double-stroke paths (blocky neon letters)
+    for(var i=0;i<n;i++){
+      var x=startX+i*cell, y=150;
+      var w=Math.min(cell*0.68,74), h=110;
+      var ch=text[i];
+      if(ch===' '){continue;}
+      var d='M'+(x-w/2)+' '+(y+h)+' L'+(x-w/2)+' '+y+' L'+(x+w/2)+' '+y+' L'+(x+w/2)+' '+(y+h);
+      if('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(ch)<0){
+        d='M'+(x-w/2)+' '+(y+h)+' L'+(x-w/2)+' '+y+' L'+(x+w/2)+' '+y+' L'+(x+w/2)+' '+(y+h);
+      }
+      paths.push(d);
+    }
+    var d=paths.join(' ');
+
+    if(frame){
+      var fr='M40 70 L40 30 L960 30 L960 70 M40 350 L40 390 L960 390 L960 350';
+      svg.appendChild(make('path',{d:fr,class:'tube glowlayer',stroke:colour,'stroke-width':10,style:'color:'+colour}));
+      svg.appendChild(make('path',{d:fr,class:'tube core',stroke:'#fff','stroke-width':4,style:'color:'+colour}));
+    }
+    if(arrow){
+      var ar='M840 330 L940 330 L900 290 M940 330 L900 370';
+      svg.appendChild(make('path',{d:ar,class:'tube glowlayer',stroke:colour,'stroke-width':8,style:'color:'+colour}));
+      svg.appendChild(make('path',{d:ar,class:'tube core',stroke:'#fff','stroke-width':3,style:'color:'+colour}));
+    }
+
+    var g=make('g',{class:(flicker?'flicker':'')});
+    g.appendChild(make('path',{d:d,class:'tube glowlayer',stroke:colour,'stroke-width':16,style:'color:'+colour}));
+    g.appendChild(make('path',{d:d,class:'tube glowlayer',stroke:colour,'stroke-width':26,style:'color:'+colour,opacity:.5}));
+    g.appendChild(make('path',{d:d,class:'tube core',stroke:'#fff8fa','stroke-width':6,style:'color:'+colour}));
+    svg.appendChild(g);
+
+    svg.style.opacity = powered? '1':'0.12';
+    document.getElementById('wallglow').style.background =
+      'radial-gradient(ellipse 55% 45% at 50% 42%, rgba('+hexRGB(colour)+',0.22), transparent 70%)';
+    update();
+  }
+
+  function hexRGB(h){
+    var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+    return r+','+g+','+b;
+  }
+
+  function update(){
+    var bends=Math.max(0,(word.length-1)*4);
+    document.getElementById('readout').innerHTML=
+      'text .............. <b>'+(word.length||0)+' characters</b><br>'+
+      'tube .............. <b>'+(document.getElementById('len').value)+'.0 m</b><br>'+
+      'bends ............. <b>'+bends+'</b><br>'+
+      'tube colour ....... <b>'+colour.toUpperCase()+'</b><br>'+
+      'transformer ....... <b>'+['9kV 30mA','13kV 30mA','15kV 60mA','18kV 60mA','30kV 120mA'][+document.getElementById('tr').value]+'</b><br>'+
+      'state ............. <b>'+(powered?'energised':'off')+'</b>';
+  }
+
+  document.getElementById('txt').addEventListener('input',function(){
+    word=this.value||' '; build();
+  });
+  document.getElementById('sws').addEventListener('click',function(e){
+    var s=e.target.closest('.sw'); if(!s) return;
+    this.querySelectorAll('.sw').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on'); colour=s.dataset.c; build();
+  });
+  document.getElementById('on').addEventListener('click',function(){
+    powered=!powered; this.classList.toggle('on',powered); build();
+  });
+  document.getElementById('flick').addEventListener('click',function(){
+    flicker=!flicker; this.classList.toggle('on',flicker); build();
+  });
+  document.getElementById('arrow').addEventListener('click',function(){
+    arrow=!arrow; this.classList.toggle('on',arrow); build();
+  });
+  document.getElementById('frame').addEventListener('click',function(){
+    frame=!frame; this.classList.toggle('on',frame); build();
+  });
+  ['len','tr'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update);
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>

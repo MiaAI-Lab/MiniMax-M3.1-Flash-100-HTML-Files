@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELLUM — the Cartographer's Complaint</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#12100c;--ink:#e6dcc4;--dim:#93886f;--line:rgba(230,220,196,.15);--gold:#d3ab55;--blood:#a3342a;--moss:#6f7f4a;}
+  body{background:var(--bg);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;overflow-x:hidden;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;font-family:"Helvetica Neue",Arial,sans-serif;
+    display:flex;align-items:center;gap:12px;}
+  .brand i{width:20px;height:20px;border:1.5px solid var(--gold);transform:rotate(45deg);display:block;position:relative;}
+  .brand i::after{content:"";position:absolute;inset:5px;background:var(--gold);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);font-family:"Helvetica Neue",Arial,sans-serif;}
+
+  .stage{position:relative;margin-top:26px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    background:#1a1610;}
+  .stage svg{width:100%;height:auto;display:block;}
+  .foglayer{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 60% 40% at 30% 60%,rgba(200,190,165,.18),transparent 65%),
+      radial-gradient(ellipse 50% 35% at 72% 40%,rgba(200,190,165,.13),transparent 60%);
+    animation:fogdrift 26s ease-in-out infinite;}
+  @keyframes fogdrift{0%,100%{transform:translateX(-2%) scale(1.04);}50%{transform:translateX(2%) scale(1.1);}}
+  .vig{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 40%,rgba(10,8,5,.85) 100%);}
+  .legend{position:absolute;left:16px;bottom:14px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dim);font-family:"Helvetica Neue",Arial,sans-serif;line-height:2;}
+  .legend b{color:var(--gold);font-weight:400;}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:5vw;padding:7vh 0 0;}
+  .cols h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:400;line-height:1.16;margin-bottom:16px;}
+  .cols p{color:#b3a68a;line-height:1.95;font-size:.98rem;}
+  .cols p+p{margin-top:1.1em;}
+  .places{display:grid;gap:2px;margin-top:8px;}
+  .pl{display:grid;grid-template-columns:24px 1fr auto;gap:12px;padding:10px 8px;border-bottom:1px dotted rgba(230,220,196,.2);
+    font-size:.9rem;cursor:pointer;transition:.25s;align-items:baseline;}
+  .pl:hover{background:rgba(211,171,85,.09);}
+  .pl u{text-decoration:none;color:var(--gold);font-size:10.5px;letter-spacing:.1em;}
+  .pl i{font-style:italic;color:var(--dim);font-size:.8rem;}
+  .pl b{font-weight:400;color:var(--blood);font-size:.78rem;letter-spacing:.08em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  @media(max-width:880px){.cols{grid-template-columns:1fr;gap:34px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Vellum</div>
+    <div class="meta">The Cartographer's Complaint · sheet IX</div>
+  </header>
+
+  <div class="stage">
+    <svg id="map" viewBox="0 0 1200 700" aria-label="A dark fantasy map"></svg>
+    <div class="foglayer"></div>
+    <div class="vig"></div>
+    <div class="legend">
+      Roads <b>·····</b><br>
+      Ruins <b>✕</b> · Watchtowers <b>▲</b> · Fen <b>≋</b>
+    </div>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>They asked for a map<br>of the Marches and I<br>gave them one.</h2>
+      <p>Three hundred miles of fen, forest and low hill between the Wall and the sea, and every one of those miles has been walked by somebody with a reason. I have marked the reasons.</p>
+      <p>What I have not marked is the part where the road stops being a road. The cartographers of the College would have it that a map is a set of distances, and the distances are true, and the result is useless. A map is a set of intentions.</p>
+    </div>
+    <div>
+      <div class="places" id="places"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Vellum — the Cartographer's Complaint</span>
+    <span>Every road on this map was walked</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('map');
+  var PLACES=[
+    {n:'Greyhaven',k:'Walled town',d:'3 days from the Wall',x:250,y:250,w:0},
+    {n:'The Drowned Chapel',k:'Ruin',d:'tide reaches the door at spring',x:470,y:420,w:1},
+    {n:'Kettle Barrow',k:'Watchtower',d:'signal visible, weather permitting',x:640,y:190,w:2},
+    {n:'Hollowmere',k:'Fen',d:'no road. do not attempt after dark',x:760,y:470,w:1},
+    {n:'Sallow Gate',k:'Crossing',d:'ferry by arrangement',x:930,y:330,w:0},
+    {n:'The Cold Stones',k:'Ruin',d:'older than the Marches',x:1090,y:180,w:1},
+    {n:'Bishopstead',k:'Abbey',d:'the brothers keep a fine library',x:360,y:560,w:2},
+    {n:'Ninefold Wood',k:'Forest',d:'take a guide. take two',x:560,y:620,w:1}
+  ];
+  var COLORS={road:'#c9b98e',fen:'#5d6b4a',ruin:'#a3342a',watch:'#d3ab55',sea:'#3d4a4f'};
+
+  function el(tag,attrs,parent){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+  function build(){
+    svg.innerHTML='';
+    // sea
+    el('rect',{x:0,y:0,width:1200,height:700,fill:'#1d1912'},svg);
+    // fen hatching
+    var fen=el('g',{stroke:COLORS.fen,'stroke-width':1,opacity:.5},svg);
+    for(var f=0;f<200;f++){
+      var fx=560+Math.random()*420, fy=380+Math.random()*240;
+      el('path',{d:'M'+fx+' '+fy+' q 8 -6 16 0 t 16 0',fill:'none'},fen);
+    }
+    // coastline
+    el('path',{d:'M0 0 L1200 0 L1200 120 C1050 150 980 200 930 300 C880 400 900 520 820 600 C760 660 700 690 660 700 L0 700 Z',
+      fill:COLORS.sea,opacity:.55},svg);
+    // roads
+    var roads=el('g',{stroke:COLORS.road,fill:'none','stroke-width':2,'stroke-linecap':'round',opacity:.8},svg);
+    var paths=[
+      'M120 640 C220 600 300 520 360 430 C420 340 520 300 600 240 C700 165 800 150 900 180 C1000 210 1060 160 1120 120',
+      'M360 430 C300 330 260 260 250 200 C240 140 200 90 160 40',
+      'M600 240 C640 320 700 380 760 440 C820 500 880 560 930 600',
+      'M250 200 C360 160 470 140 560 120 C660 100 760 90 860 70',
+      'M360 430 C470 470 560 520 700 540'
+    ];
+    paths.forEach(function(d){ el('path',{d:d,'stroke-dasharray':'9 7'},roads); });
+    // mountains
+    var mt=el('g',{stroke:'#7a6c4e',fill:'none','stroke-width':1.4,opacity:.85},svg);
+    for(var m=0;m<14;m++){
+      var mx=80+Math.random()*460, my=60+Math.random()*200, r=18+Math.random()*26;
+      el('path',{d:'M'+(mx-r)+' '+my+' L'+mx+' '+(my-r)+' L'+(mx+r)+' '+my},mt);
+    }
+    // forest
+    var fo=el('g',{stroke:'#4e5c3a','stroke-width':1.4,fill:'none',opacity:.9},svg);
+    for(var t=0;t<40;t++){
+      var tx=480+Math.random()*300, ty=560+Math.random()*100;
+      el('path',{d:'M'+tx+' '+ty+' l 0 -14 M'+tx+' '+(ty-6)+' l -7 8 M'+tx+' '+(ty-6)+' l 7 8'},fo);
+    }
+    // places
+    PLACES.forEach(function(p,i){
+      var g=el('g',{transform:'translate('+p.x+' '+p.y+')',class:'place',style:'cursor:pointer'},svg);
+      if(p.w===0){
+        el('circle',{r:6,fill:'none',stroke:COLORS.road,'stroke-width':2},g);
+        el('circle',{r:2,fill:COLORS.road},g);
+      }else if(p.w===1){
+        el('path',{d:'M-6 -6 L6 6 M6 -6 L-6 6',stroke:COLORS.ruin,'stroke-width':2.4},g);
+      }else{
+        el('path',{d:'M0 -9 L7 7 L-7 7 Z',fill:'none',stroke:COLORS.watch,'stroke-width':2},g);
+      }
+      var t=el('text',{x:12,y:4,'font-size':13,fill:'#e6dcc4','letter-spacing':'0.06em'},g);
+      t.textContent=p.n;
+      g.addEventListener('pointerenter',function(){ g.setAttribute('opacity','.6'); });
+      g.addEventListener('pointerleave',function(){ g.setAttribute('opacity','1'); });
+    });
+    // compass
+    var comp=el('g',{transform:'translate(1090 590)'},svg);
+    el('circle',{r:44,fill:'none',stroke:COLORS.road,'stroke-width':1.4,opacity:.7},comp);
+    el('circle',{r:36,fill:'none',stroke:COLORS.road,'stroke-width':0.8,opacity:.5},comp);
+    el('path',{d:'M0 -40 L8 0 L0 40 L-8 0 Z',fill:COLORS.road,opacity:.85},comp);
+    el('text',{x:-5,y:-48,'font-size':15,fill:COLORS.gold},comp).textContent='N';
+  }
+  build();
+
+  var list=document.getElementById('places');
+  PLACES.forEach(function(p,i){
+    var d=document.createElement('div');
+    d.className='pl';
+    d.innerHTML='<u>'+String(i+1).padStart(2,'0')+'</u><span>'+p.n+' <i>— '+p.k+'</i></span><b>'+p.d+'</b>';
+    d.addEventListener('click',function(){
+      list.querySelectorAll('.pl').forEach(function(x){x.style.background='';});
+      d.style.background='rgba(211,171,85,.12)';
+      var g=svg.querySelectorAll('.place')[i];
+      g.setAttribute('opacity','.55');
+      setTimeout(function(){ g.setAttribute('opacity','1'); },700);
+    });
+    list.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>

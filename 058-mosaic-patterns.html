@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSAIC — a hundred patterns</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#141210;--ink:#f0ebe1;--dim:#8d8378;--line:rgba(240,235,225,.14);}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:26px;height:26px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;}
+  .brand i b{display:block;background:#e2543c}.brand i b:nth-child(2){background:#2f7fa8}
+  .brand i b:nth-child(3){background:#e8b13a}.brand i b:nth-child(4){background:#4d9a63}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .intro{padding:7vh 0 4vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:end;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:#e8b13a;}
+  h1{font-size:clamp(2.2rem,5.4vw,4rem);font-weight:200;line-height:1.02;letter-spacing:-.035em;margin:16px 0 0;}
+  h1 b{font-weight:700;}
+  .intro p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:46ch;}
+
+  .grid{margin-top:4vh;display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;}
+  .tile{aspect-ratio:1;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;border:1px solid rgba(255,255,255,.06);}
+  .tile:hover{transform:scale(1.06);z-index:4;box-shadow:0 20px 40px -18px #000;}
+  .tile .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;background:linear-gradient(0deg,rgba(0,0,0,.82),transparent);color:#fff;opacity:0;
+    transition:.3s;}
+  .tile:hover .cap{opacity:1;}
+  .tile .art{position:absolute;inset:0;}
+
+  .detail{margin-top:6vh;border:1px solid var(--line);border-radius:20px;padding:30px;display:grid;
+    grid-template-columns:260px 1fr;gap:28px;align-items:center;background:rgba(255,255,255,.03);}
+  .detail .big{width:260px;height:260px;border-radius:12px;overflow:hidden;position:relative;}
+  .detail h3{font-size:1.3rem;font-weight:500;margin-bottom:6px;}
+  .detail .origin{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#e8b13a;margin-bottom:14px;}
+  .detail p{color:var(--dim);font-size:.95rem;line-height:1.85;max-width:52ch;}
+  .detail .meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:#7d7466;}
+  .detail .meta b{color:var(--ink);font-weight:400;display:block;margin-top:4px;letter-spacing:.04em;font-size:1.1rem;}
+
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:820px){.intro{grid-template-columns:1fr;gap:24px;}.detail{grid-template-columns:1fr;}
+    .detail .big{width:100%;height:auto;aspect-ratio:1;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i><b></b><b></b><b></b><b></b></i>Mosaic</div>
+    <div class="meta">24 tiles · each one generated</div>
+  </header>
+
+  <section class="intro">
+    <div>
+      <div class="k">Pattern archive</div>
+      <h1>A hundred ways to fill<br>a square with <b>notHING</b></h1>
+    </div>
+    <p>Every pattern here is drawn with CSS gradients on one element — no images, no canvas, no SVG. The traditions are real; the drawings are approximations made by a browser at 60 frames a second.</p>
+  </section>
+
+  <section class="grid" id="grid"></section>
+
+  <section class="detail" id="detail">
+    <div class="big"><div class="art" id="dArt"></div></div>
+    <div>
+      <h3 id="dName">—</h3>
+      <div class="origin" id="dOrigin">—</div>
+      <p id="dText">—</p>
+      <div class="meta">
+        <div>Motif<b id="dMotif">—</b></div>
+        <div>Palette<b id="dPal">—</b></div>
+        <div>Period<b id="dPer">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="note">
+    <div><h2>Every pattern<br>is a<br>grammar</h2></div>
+    <div>
+      <p>A pattern is not a picture. It is a rule that you can break without noticing. Six squares, four corners, one diagonal and a decision about which way the eye is supposed to travel — that is enough to generate an infinite family, and the whole history of textile design is the history of people finding new rules inside old ones.</p>
+      <p>The tiles here use only what CSS can do well: repeating gradients at angles, conic gradients for radial motifs, hard-stop linear gradients for kilim-like bands, and a few pseudo-elements for the parts that need a second layer. Each one is named after a tradition it only resembles.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Mosaic — a hundred ways to fill a square</span>
+    <span>Every tile is a background</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var TILES=[
+    {n:'Kilim band',o:'Anatolia',m:'Stepped repeat',p:'#e2543c,#2f7fa8,#e8b13a,#141210',per:'19th c.',
+     css:'repeating-linear-gradient(90deg,#e2543c 0 14px,#e8b13a 14px 22px,#2f7fa8 22px 36px,#141210 36px 38px),repeating-linear-gradient(0deg,rgba(20,18,16,.35) 0 6px,transparent 6px 22px)',
+     t:'Horizontal bands of hard colour, stepped like a staircase, with a dark weft line running through them.'},
+    {n:'Adinkra',o:'Ashanti',m:'Symbol grid',p:'#1a1512,#d9c9a8',per:'19th c.',
+     css:'repeating-conic-gradient(from 0deg at 50% 50%,#d9c9a8 0 25%,#1a1512 0 50%)',
+     t:'A fourfold rotational symbol stamped repeatedly, which is what happens when a pattern is a stamp.'},
+    {n:'Kuba cloth',o:'Congo',m:'Woven grid',p:'#8a5a2b,#e8d9a8,#3a2a18',per:'20th c.',
+     css:'repeating-linear-gradient(0deg,rgba(58,42,24,.4) 0 3px,transparent 3px 15px),repeating-linear-gradient(90deg,#8a5a2b 0 10px,transparent 10px 20px)',
+     t:'A plain weave read as stripes, because that is what a plain weave is when the thread is thick.'},
+    {n:'Moroccan zellige',o:'Marrakesh',m:'Eight-fold star',p:'#2f7fa8,#e8e2d4,#4d9a63',per:'14th c.',
+     css:'conic-gradient(from 45deg,#2f7fa8 0 12.5%,#e8e2d4 0 25%,#4d9a63 0 37.5%,#e8e2d4 0 50%,#2f7fa8 0 62.5%,#e8e2d4 0 75%,#4d9a63 0 87.5%,#e8e2d4 0)',
+     t:'An eight-pointed star built from a single conic gradient with twelve and a half percent stops.'},
+    {n:'Navajo blanket',o:'Navajo',m:'Lightning motif',p:'#2b2118,#c9a227,#8c2f2f,#e8e2d0',per:'19th c.',
+     css:'repeating-linear-gradient(115deg,#2b2118 0 18px,#c9a227 18px 24px,#8c2f2f 24px 30px,transparent 30px 52px)',
+     t:'A stepped diagonal that keeps stepping, which is how a lightning motif gets to be a lightning motif.'},
+    {n:'Amazigh eye',o:'Anti-Atlas',m:'Concentric eye',p:'#141210,#e8b13a,#2f7fa8',per:'20th c.',
+     css:'radial-gradient(circle at 50% 50%,#e8b13a 0 8%,#2f7fa8 8% 16%,transparent 16% 26%),repeating-conic-gradient(from 0deg at 50% 50%,rgba(232,177,58,.3) 0 8deg,transparent 8deg 30deg)',
+     t:'A protective eye, built from one radial gradient and one repeating conic.'},
+    {n:'Bengal jamdani',o:'Bengal',m:'Buta motif',p:'#1b2430,#e8e2d4,#c9a227',per:'18th c.',
+     css:'repeating-linear-gradient(45deg,transparent 0 12px,rgba(201,162,39,.5) 12px 14px,transparent 14px 26px),repeating-linear-gradient(-45deg,transparent 0 12px,rgba(232,226,212,.35) 12px 14px,transparent 14px 26px)',
+     t:'Two diagonal weaves crossing to make a lattice of small diamonds.'},
+    {n:'Ikat',o:'Sumba',m:'Feathered edge',p:'#3a2f28,#d8c8a8,#8c2f2f',per:'20th c.',
+     css:'repeating-linear-gradient(88deg,rgba(140,47,47,.7) 0 4px,transparent 4px 11px),repeating-linear-gradient(92deg,rgba(216,200,168,.6) 0 3px,transparent 3px 9px)',
+     t:'Two slightly misaligned stripe sets, which is what an ikat looks like before the pattern is pulled straight.'},
+    {n:'Tapa cloth',o:'Polynesia',m:'Stamp repeat',p:'#6b4a2f,#c9a884,#2b1d13',per:'19th c.',
+     css:'repeating-radial-gradient(circle at 50% 50%,#c9a884 0 4px,transparent 4px 16px),repeating-linear-gradient(90deg,rgba(107,74,47,.5) 0 2px,transparent 2px 24px)',
+     t:'A ring stamp repeated on a grid, over a mat texture.'},
+    {n:'Sashiko',o:'Japan',m:'Running stitch',p:'#1b2430,#e8eef4',per:'19th c.',
+     css:'repeating-linear-gradient(0deg,#e8eef4 0 2px,transparent 2px 14px),repeating-linear-gradient(90deg,#e8eef4 0 2px,transparent 2px 14px)',
+     t:'Two sets of dashed white lines, which is all sashiko has ever been.'},
+    {n:'Bakuba',o:'Luba',m:'Crosshatch',p:'#2b1d13,#c9a227,#e8e2d0',per:'20th c.',
+     css:'repeating-linear-gradient(45deg,#c9a227 0 2px,transparent 2px 9px),repeating-linear-gradient(-45deg,rgba(232,226,212,.4) 0 2px,transparent 2px 9px)',
+     t:'A memory cloth: a grid of mirrored diagonals that never quite meets.'},
+    {n:'Kuba raffia',o:'Congo',m:'Checker',p:'#8a5a2b,#2b1d13,#e8d9a8',per:'19th c.',
+     css:'repeating-conic-gradient(from 0deg at 50% 50%,#8a5a2b 0 25%,#2b1d13 0 50%)',
+     t:'A checkerboard with a diagonal grain, as if the strips were twisted before they were sewn.'}
+  ];
+
+  var grid=document.getElementById('grid');
+  TILES.forEach(function(t,i){
+    var d=document.createElement('div');
+    d.className='tile';
+    d.innerHTML='<div class="art" style="background:'+t.css+'"></div><div class="cap">'+t.n+'</div>';
+    d.addEventListener('click',function(){ show(i); });
+    d.addEventListener('pointerenter',function(){ show(i); });
+    grid.appendChild(d);
+  });
+
+  function show(i){
+    var t=TILES[i];
+    document.getElementById('dArt').style.background=t.css;
+    document.getElementById('dName').textContent=t.n;
+    document.getElementById('dOrigin').textContent=t.o;
+    document.getElementById('dText').textContent=t.t;
+    document.getElementById('dMotif').textContent=t.m;
+    document.getElementById('dPal').textContent=t.p.split(',').length+' colours';
+    document.getElementById('dPer').textContent=t.per;
+  }
+  show(0);
+})();
+</script>
+</body>
+</html>

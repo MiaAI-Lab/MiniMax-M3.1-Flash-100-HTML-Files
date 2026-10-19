@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLASMA CLAY — a soft operations console</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#eef0f6;--c1:#ff8fab;--c2:#7c6cf5;--c3:#5ac8fa;--c4:#f9c74f;--c5:#43c59e;
+    --ink:#3a3f55;--dim:#8a90a6;--shadow:rgba(146,154,180,.45);--light:rgba(255,255,255,.95);
+  }
+  body{background:var(--bg);color:var(--ink);font-family:"Nunito","Segoe UI",system-ui,sans-serif;overflow-x:hidden;
+    min-height:100vh;padding:30px 18px 70px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:26px;}
+  .brand{display:flex;align-items:center;gap:13px;font-size:1.05rem;font-weight:800;letter-spacing:-.01em;}
+  .brand .blob{width:42px;height:42px;border-radius:16px;
+    background:linear-gradient(140deg,var(--c2),var(--c3));
+    box-shadow:6px 6px 14px var(--shadow),-4px -4px 12px var(--light);
+    position:relative;transform:rotate(-8deg);}
+  .brand .blob::after{content:"";position:absolute;inset:13px;border-radius:50%;background:rgba(255,255,255,.55);}
+  .pill{background:var(--bg);border-radius:99px;padding:10px 18px;font-size:12px;font-weight:700;color:var(--dim);
+    box-shadow:inset 3px 3px 7px var(--shadow),inset -3px -3px 7px var(--light);}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px;}
+  .c1{grid-column:span 4;} .c2{grid-column:span 4;} .c3{grid-column:span 4;}
+  .c4{grid-column:span 8;} .c5{grid-column:span 4;}
+
+  .clay{background:var(--bg);border-radius:26px;padding:22px;
+    box-shadow:9px 9px 20px var(--shadow),-9px -9px 20px var(--light);}
+  .clay.hollow{box-shadow:inset 6px 6px 14px var(--shadow),inset -6px -6px 14px var(--light);}
+  .clay h3{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;font-weight:800;}
+  .big{font-size:2.6rem;font-weight:800;letter-spacing:-.03em;line-height:1;}
+  .small{font-size:.86rem;color:var(--dim);line-height:1.7;}
+
+  .orb{width:100%;aspect-ratio:1;max-width:190px;margin:6px auto 0;border-radius:50%;position:relative;
+    box-shadow:inset -8px -8px 18px rgba(146,154,180,.4),inset 8px 8px 18px rgba(255,255,255,.9);
+    display:grid;place-items:center;}
+  .orb i{width:52%;height:52%;border-radius:50%;
+    background:conic-gradient(from 210deg,var(--c1),var(--c4),var(--c5),var(--c2),var(--c1));
+    box-shadow:6px 6px 14px var(--shadow),-4px -4px 12px var(--light);
+    animation:spin 9s linear infinite;display:block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .orb b{position:absolute;font-size:1.6rem;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.25);}
+
+  .bars{display:grid;gap:14px;}
+  .bar{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:.86rem;font-weight:700;}
+  .track{grid-column:1/-1;height:12px;border-radius:99px;box-shadow:inset 3px 3px 7px var(--shadow),inset -3px -3px 7px var(--light);
+    overflow:hidden;}
+  .track i{display:block;height:100%;border-radius:99px;transition:width .6s cubic-bezier(.2,.9,.2,1);}
+
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .tile{border-radius:20px;padding:18px;text-align:center;
+    box-shadow:6px 6px 14px var(--shadow),-6px -6px 14px var(--light);transition:transform .3s;}
+  .tile:hover{transform:translateY(-5px);}
+  .tile .ic{width:46px;height:46px;border-radius:15px;margin:0 auto 12px;
+    box-shadow:inset 3px 3px 7px rgba(0,0,0,.12),inset -3px -3px 7px rgba(255,255,255,.7);
+    display:grid;place-items:center;font-size:19px;color:#fff;}
+  .tile b{display:block;font-size:1.3rem;font-weight:800;letter-spacing:-.02em;}
+  .tile span{font-size:.76rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
+
+  .tasks{display:grid;gap:12px;}
+  .task{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:16px;
+    box-shadow:inset 3px 3px 7px var(--shadow),inset -3px -3px 7px var(--light);
+    transition:.3s;cursor:pointer;}
+  .task:hover{transform:translateX(4px);}
+  .task .av{width:40px;height:40px;border-radius:14px;flex:none;display:grid;place-items:center;
+    color:#fff;font-weight:800;font-size:14px;
+    box-shadow:4px 4px 9px var(--shadow),-3px -3px 8px var(--light);}
+  .task .tx{flex:1;min-width:0;}
+  .task .tx b{display:block;font-size:.92rem;font-weight:800;}
+  .task .tx span{font-size:.76rem;color:var(--dim);}
+  .task .pill2{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;padding:6px 12px;
+    border-radius:99px;box-shadow:3px 3px 7px var(--shadow),-3px -3px 7px var(--light);}
+
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:16px;}
+  .day{text-align:center;padding:12px 4px;border-radius:16px;
+    box-shadow:inset 3px 3px 7px var(--shadow),inset -3px -3px 7px var(--light);}
+  .day span{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .day b{display:block;font-size:1.1rem;font-weight:800;margin-top:4px;}
+  .day i{display:block;height:6px;border-radius:99px;margin-top:8px;background:var(--c2);}
+
+  @media(max-width:900px){.c1,.c2,.c3,.c4,.c5{grid-column:span 12;}.tiles{grid-template-columns:1fr;}}
+  @media(max-width:520px){.week{grid-template-columns:repeat(4,1fr);}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="blob"></span>Plasma Clay</div>
+    <div class="pill">Week 42 · 4 teammates · all good</div>
+  </header>
+
+  <div class="grid">
+    <section class="clay c1">
+      <h3>Throughput</h3>
+      <div class="big" id="v1">8,412</div>
+      <div class="small">requests handled today</div>
+      <div class="orb" style="margin-top:18px"><i></i><b id="v2">94%</b></div>
+    </section>
+
+    <section class="clay c2">
+      <h3>Sources</h3>
+      <div class="bars" id="bars"></div>
+    </section>
+
+    <section class="clay c3">
+      <h3>This week</h3>
+      <div class="week" id="week"></div>
+      <div class="small" style="margin-top:14px">Longest streak: <b>9 days</b> without a rollback.</div>
+    </section>
+
+    <section class="clay c4">
+      <h3>Team</h3>
+      <div class="tiles" style="margin-bottom:18px">
+        <div class="tile"><div class="ic" style="background:linear-gradient(140deg,var(--c1),var(--c2))">◐</div>
+          <b>4</b><span>design</span></div>
+        <div class="tile"><div class="ic" style="background:linear-gradient(140deg,var(--c3),var(--c5))">◑</div>
+          <b>11</b><span>build</span></div>
+        <div class="tile"><div class="ic" style="background:linear-gradient(140deg,var(--c4),var(--c1))">◒</div>
+          <b>7</b><span>open tickets</span></div>
+      </div>
+      <div class="tasks" id="tasks"></div>
+    </section>
+
+    <section class="clay c5 hollow">
+      <h3>Notes</h3>
+      <p class="small">Clay surfaces read as one continuous piece of moulded material. Every element on this page is the same background colour, and every edge is made from the same pair of shadows — one warm, one cold. Change the accent and the whole page changes material, not just colour.</p>
+      <div class="clay" style="margin-top:18px;padding:16px;border-radius:20px;">
+        <div class="small">Try it: the sliders on the right of the console are live, and the tiles on the left of it are clickable.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SRC=[['Wind',42,'#7c6cf5'],['Solar',24,'#f9c74f'],['Hydro',18,'#43c59e'],['Gas',11,'#ff8fab'],['Other',5,'#5ac8fa']];
+  var bars=document.getElementById('bars');
+  SRC.forEach(function(s){
+    var d=document.createElement('div');
+    d.className='bar';
+    d.innerHTML='<span>'+s[0]+'</span><span>'+s[1]+'%</span><div class="track"><i style="width:'+s[1]+'%;background:'+s[2]+'"></i></div>';
+    bars.appendChild(d);
+  });
+
+  var week=document.getElementById('week');
+  var days=[['M',72,'#7c6cf5'],['T',88,'#5ac8fa'],['W',54,'#f9c74f'],['T',96,'#43c59e'],
+            ['F',61,'#ff8fab'],['S',40,'#7c6cf5'],['S',33,'#5ac8fa']];
+  days.forEach(function(d){
+    var e=document.createElement('div');
+    e.className='day';
+    e.innerHTML='<span>'+d[0]+'</span><b>'+d[1]+'</b><i style="background:'+d[2]+';width:'+d[1]+'%"></i>';
+    week.appendChild(e);
+  });
+
+  var TASKS=[
+    {n:'Ines Kovač',r:'ship the pricing page',s:'design',c:'#ff8fab'},
+    {n:'Tomas Brandt',r:'migrate the billing job',s:'build',c:'#5ac8fa'},
+    {n:'Ada Okonkwo',r:'triage 7 open tickets',s:'support',c:'#f9c74f'},
+    {n:'Ren Takahashi',r:'review the new palette',s:'design',c:'#43c59e'}
+  ];
+  var tasks=document.getElementById('tasks');
+  TASKS.forEach(function(t){
+    var d=document.createElement('div');
+    d.className='task';
+    d.innerHTML='<div class="av" style="background:linear-gradient(140deg,'+t.c+',rgba(255,255,255,.65))">'+t.n.split(' ')[0][0]+t.n.split(' ')[1][0]+'</div>'+
+      '<div class="tx"><b>'+t.n+'</b><span>'+t.r+'</span></div>'+
+      '<div class="pill2" style="color:'+t.c+'">'+t.s+'</div>';
+    d.addEventListener('click',function(){
+      d.querySelector('.pill2').textContent='done';
+      d.querySelector('.pill2').style.color='var(--c5)';
+    });
+    tasks.appendChild(d);
+  });
+
+  var v=8000;
+  setInterval(function(){
+    v+=Math.floor(Math.random()*140)-40;
+    document.getElementById('v1').textContent=v.toLocaleString('en-US');
+    document.getElementById('v2').textContent=(92+Math.floor(Math.random()*6))+'%';
+  },2200);
+})();
+</script>
+</body>
+</html>

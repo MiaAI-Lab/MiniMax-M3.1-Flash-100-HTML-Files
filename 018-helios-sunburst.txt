@@ -1,0 +1,19 @@
+TITLE: HELIOS — an energy sunburst
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that is a modern dark-mode grid-operations dashboard called "HELIOS". Art direction: precise, calm data instrument. Palette: near-black ground #0d1117, panel #141a24, ink #e6edf3, dim label #7d8899, hairline rgba(255,255,255,.1), and six source colours — amber #f2b544, blue #4aa8ff, green #5ddba0, rose #f06b8a, violet #a887ff, seafoam #8ad3c8. Layout: a header with a glowing dot, the wordmark and a Day/Week/Month segmented control; a two-column grid where the left card holds the headline total, a large SVG sunburst (six petals computed as annular sectors with a 64px inner radius and a 168px outer radius, a hairline inner ring and a centred total) and a clickable legend list with per-source values; the right column holds a 2×2 statistic tile grid (carbon intensity, peaker usage, losses, renewable share), an output card with an inline SVG area-and-line sparkline plus hour tick labels and a range slider, and a compact source feed. Data is simulated but coherent: an hour-of-day model gives solar a sine day curve, wind a slower wave, gas a night-load curve and hydro a small ripple; the range slider and the Day/Week/Month tabs re-derive every number, the sunburst geometry and the sparkline. Derived figures (carbon intensity, losses, peaker share) are computed from the same source values. Interaction: hovering a petal or its legend row highlights that source, dims the other petals and highlights the matching legend row; the hour slider scrubs the whole model; the tab control changes the multiplier. Responsive: the grid becomes a single column under 900px and the statistic tiles stack under 520px.
+
+DESCRIPTION:
+A dashboard where the hero visualisation is a sunburst rather than a pie: each generation source is an annular sector sized by its share of the day's output, drawn from computed arc geometry so the petals meet exactly. The data model is honest enough to be useful — solar dies at midnight, gas peaks in the evening, and carbon intensity falls as the renewable share rises — so scrubbing the hour slider visibly reshapes the whole page.
+
+MAJOR VISUAL TECHNIQUES:
+- SVG annular-sector sunburst built from arc commands with a large-arc flag
+- Coherent hourly generation model (solar sine, wind wave, gas night-load, hydro ripple)
+- Inline SVG sparkline with a gradient area fill and a leading dot
+- Cross-highlighting between the sunburst petals and the legend rows via a shared data-id
+- Dimming of non-hovered petals using a container class
+- Segmented tab control with a sliding active pill
+- 2×2 statistic grid with hairline dividers created by a 1px background gap
+
+INTENDED INTERACTION MODEL:
+Two ways in. Hovering a petal or a legend row isolates that source in the sunburst. Scrubbing the hour slider re-derives the model and redraws the sunburst, the sparkline, the totals, the derived statistics and the feed. The Day/Week/Month tabs scale the whole model. Nothing requires a click, and everything responds within a frame.

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAW MATERIAL — A Brutalist Manifesto</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#e8e2d4;--ink:#111;--red:#e03b12;--yellow:#f5c518;--blue:#1b3fd8;--green:#0f7a3d;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  /* heavy halftone paper texture */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.42;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='d'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23d)' opacity='.55'/></svg>");
+  }
+  .tape{position:fixed;width:190px;height:34px;background:rgba(245,197,24,.72);z-index:60;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);font:700 10px/34px "Helvetica Neue",sans-serif;letter-spacing:.3em;
+    text-align:center;color:#3a2a00;transform:rotate(-4deg);}
+  .tape.a{top:64px;left:-40px;}
+  .tape.b{top:640px;right:-46px;transform:rotate(5deg);}
+
+  .rule{height:14px;background:var(--ink);width:100%;}
+  .rule.thin{height:4px;}
+
+  header{padding:26px 4vw 20px;display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:16px;border-bottom:4px solid var(--ink);}
+  .logo{font-size:clamp(2rem,5vw,3.6rem);font-weight:900;letter-spacing:-.05em;line-height:.8;}
+  .logo span{color:var(--red);}
+  .meta{font:700 11px/1.7 "Courier New",monospace;letter-spacing:.1em;text-align:right;text-transform:uppercase;}
+
+  .hero{padding:0 4vw;}
+  h1{
+    font-size:clamp(3rem,13.5vw,12rem);font-weight:900;line-height:.82;letter-spacing:-.055em;
+    text-transform:uppercase;padding:34px 0 10px;}
+  h1 .l2{display:block;color:var(--paper);-webkit-text-stroke:3px var(--ink);}
+  h1 .l3{display:block;}
+
+  .strike{position:relative;display:inline-block;}
+  .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:.1em;background:var(--red);
+    transform:rotate(-2.2deg);transform-origin:left;}
+
+  .lede{display:grid;grid-template-columns:1.6fr 1fr;gap:5vw;padding:30px 0 40px;border-top:4px solid var(--ink);}
+  .lede p{font-size:clamp(1rem,1.7vw,1.35rem);line-height:1.55;font-weight:500;max-width:52ch;}
+  .lede p+p{margin-top:1em;}
+  .lede .side{font:700 12px/1.9 "Courier New",monospace;letter-spacing:.06em;border-left:4px solid var(--ink);padding-left:18px;text-transform:uppercase;}
+
+  .blocks{display:grid;grid-template-columns:repeat(4,1fr);}
+  .blk{padding:30px 24px;border-right:4px solid var(--ink);min-height:290px;position:relative;}
+  .blk:last-child{border-right:none;}
+  .blk:nth-child(1){background:var(--red);color:var(--paper);}
+  .blk:nth-child(2){background:var(--yellow);}
+  .blk:nth-child(3){background:var(--blue);color:var(--paper);}
+  .blk:nth-child(4){background:var(--green);color:var(--paper);}
+  .blk h3{font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:900;letter-spacing:-.04em;text-transform:uppercase;line-height:.9;margin-bottom:16px;}
+  .blk p{font:500 14px/1.65 "Helvetica Neue",sans-serif;}
+  .blk .idx{position:absolute;bottom:18px;right:20px;font:900 46px/1 "Helvetica Neue",sans-serif;opacity:.28;}
+  .blk:hover .idx{opacity:.6;transform:rotate(-8deg);transition:.3s;}
+
+  .manifesto{padding:56px 4vw;}
+  .manifesto h2{font-size:clamp(2rem,6vw,4.4rem);font-weight:900;letter-spacing:-.045em;text-transform:uppercase;line-height:.92;margin-bottom:34px;}
+  .mitem{display:grid;grid-template-columns:70px 1fr 1fr;gap:22px;padding:22px 0;border-top:3px solid var(--ink);
+    transition:background .25s,padding .25s;}
+  .mitem:last-child{border-bottom:3px solid var(--ink);}
+  .mitem:hover{background:var(--yellow);padding-left:16px;padding-right:16px;}
+  .mitem .n{font:900 30px/1 "Helvetica Neue",sans-serif;}
+  .mitem .t{font-size:clamp(1.2rem,2.4vw,1.9rem);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1;}
+  .mitem .d{font-size:15px;line-height:1.6;max-width:46ch;}
+
+  .poster{margin:40px 4vw 60px;border:4px solid var(--ink);padding:34px;background:#fff;position:relative;overflow:hidden;}
+  .poster h2{font-size:clamp(2.4rem,8vw,6rem);font-weight:900;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;margin-bottom:24px;position:relative;z-index:2;}
+  .poster .circle{position:absolute;right:-6%;top:-24%;width:56%;aspect-ratio:1;border-radius:50%;
+    background:var(--red);mix-blend-mode:multiply;}
+  .poster .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:2px;background:var(--ink);
+    border:3px solid var(--ink);position:relative;z-index:2;}
+  .poster .grid div{background:#fff;padding:16px 14px;font:700 12px/1.5 "Courier New",monospace;letter-spacing:.04em;text-transform:uppercase;}
+  .poster .grid div:nth-child(3n){background:var(--yellow);}
+  .poster .grid div:nth-child(4n){background:var(--blue);color:#fff;}
+
+  .marquee{overflow:hidden;border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);background:var(--ink);color:var(--paper);
+    padding:14px 0;white-space:nowrap;}
+  .marquee span{display:inline-block;font-size:clamp(1.6rem,4vw,3rem);font-weight:900;letter-spacing:-.03em;
+    text-transform:uppercase;animation:mv 22s linear infinite;}
+  .marquee span i{font-style:normal;color:var(--yellow);padding:0 .35em;}
+  @keyframes mv{to{transform:translateX(-50%);}}
+
+  footer{padding:30px 4vw 46px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    font:700 11px/1.7 "Courier New",monospace;letter-spacing:.14em;text-transform:uppercase;}
+
+  .stamp{position:fixed;right:5vw;bottom:5vh;z-index:70;border:6px solid var(--red);color:var(--red);
+    font:700 24px/1 "Helvetica Neue",sans-serif;letter-spacing:.2em;padding:14px 20px;transform:rotate(-12deg);
+    opacity:.9;display:none;pointer-events:none;}
+  body.printed .stamp{display:block;}
+  body.printed .poster{background:#f0e9d6;}
+
+  @media(max-width:900px){
+    .lede{grid-template-columns:1fr;}
+    .blocks{grid-template-columns:repeat(2,1fr);}
+    .blk:nth-child(2){border-right:none;}
+    .blk{border-bottom:4px solid var(--ink);}
+    .mitem{grid-template-columns:52px 1fr;}
+    .mitem .d{grid-column:2;}
+    .meta{text-align:left;}
+  }
+  @media(max-width:520px){.blocks{grid-template-columns:1fr;}.blk{border-right:none;}.tape{display:none;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="tape a">DO NOT FOLD</div>
+<div class="tape b">VOL. 01 / 2026</div>
+<div class="rule"></div>
+
+<header>
+  <div class="logo">RAW<span>/</span>MATERIAL</div>
+  <div class="meta">Issue 001 — Manifesto<br>Printed on recycled stock<br>Price: refuses to pay</div>
+</header>
+
+<section class="hero">
+  <h1>
+    <span class="l2">Design</span>
+    <span class="l3"><span class="strike">Without</span> apology</span>
+  </h1>
+  <div class="lede">
+    <div>
+      <p>Every year the interface industry invents a new temperature. Every year the work gets softer, quieter, more apologetic — a wall of rounded rectangles that politely declines to have an opinion.</p>
+      <p><strong>We are against it.</strong> A manifesto for loud, flat, typographically violent design. Raw material means the material is the message: the grid is visible, the borders are real, and the words are set at the size they deserve.</p>
+    </div>
+    <div class="side">
+      01 — Refuse the rounded corner<br>
+      02 — Use the whole typeface<br>
+      03 — Colour is a structural beam<br>
+      04 — If it needs a shadow, build a shadow<br>
+      05 — Ship it before it is comfortable
+    </div>
+  </div>
+</section>
+
+<div class="rule thin"></div>
+<section class="blocks">
+  <div class="blk"><h3>Brutal</h3><p>Hard edges. Flat fields. No gradient that apologises for itself. Structure you can read from across the room.</p><span class="idx">01</span></div>
+  <div class="blk"><h3>Loud</h3><p>Scale is a tool. A heading that fits the box is a heading that says nothing. Set it until it breaks, then let it wrap.</p><span class="idx">02</span></div>
+  <div class="blk"><h3>Honest</h3><p>No glass, no bloom, no fake depth. Every element on screen is doing exactly one job and admitting to it.</p><span class="idx">03</span></div>
+  <div class="blk"><h3>Made</h3><p>Hand-composed, not templated. If it looks like a CMS filled it in, it was wrong from the start.</p><span class="idx">04</span></div>
+</section>
+
+<div class="rule"></div>
+
+<section class="manifesto">
+  <h2>Eleven laws</h2>
+  <div class="mitem"><span class="n">01</span><span class="t">The border is honest</span><span class="d">If a line separates two things, it is four pixels and it is black. No shadows pretending to be lines, no gradients pretending to be space.</span></div>
+  <div class="mitem"><span class="n">02</span><span class="t">Type carries the layout</span><span class="d">Never ask the grid to do what a good typeface can do. Set the headline big enough to be a structural element and the page will arrange itself around it.</span></div>
+  <div class="mitem"><span class="n">03</span><span class="t">Colour is load-bearing</span><span class="d">One red, one yellow, one blue, one green. Each is a beam. Each block is a room. Nothing is decorative.</span></div>
+  <div class="mitem"><span class="n">04</span><span class="t">Motion must explain</span><span class="d">A hover that moves the element is decoration. A hover that shows where the element came from is communication. Choose the second.</span></div>
+  <div class="mitem"><span class="n">05</span><span class="t">Whitespace is structural</span><span class="d">Empty space is not wasted space. It is the pause that makes the loud parts legible. Remove it and the page becomes a poster.</span></div>
+  <div class="mitem"><span class="n">06</span><span class="t">Never centre everything</span><span class="d">Left-align the body. Right-align the metadata. Centre only the single line that has to be centred. Alignment is a hierarchy.</span></div>
+  <div class="mitem"><span class="n">07</span><span class="t">The grid is visible</span><span class="d">Let the columns show through. A reader should be able to feel the structure the same way they feel a table edge.</span></div>
+  <div class="mitem"><span class="n">08</span><span class="t">Ship the weird idea</span><span class="d">The slightly wrong thing is the thing that gets remembered. Perfect is forgettable in a scroll of a hundred perfect pages.</span></div>
+  <div class="mitem"><span class="n">09</span><span class="t">No more than two weights</span><span class="d">Regular and black. If a third weight appears, something is wrong with the hierarchy and the fault is in the copy, not the font.</span></div>
+  <div class="mitem"><span class="n">10</span><span class="t">Sound is optional, silence is not</span><span class="d">Nothing autoplays. Nothing chimes. The page waits for you like a person who has read the room.</span></div>
+  <div class="mitem"><span class="n">11</span><span class="t">Print it</span><span class="d">If the layout falls apart on paper it was never a layout. It was a screen pretending to be a poster.</span></div>
+</section>
+
+<div class="marquee"><span>RAW MATERIAL — NO ROUNDED CORNERS — RAW MATERIAL — NO ROUNDED CORNERS <i>✶</i> RAW MATERIAL — NO ROUNDED CORNERS — RAW MATERIAL — NO ROUNDED CORNERS <i>✶</i></span></div>
+
+<section class="poster">
+  <div class="circle"></div>
+  <h2>Print it<br>or don't</h2>
+  <div class="grid">
+    <div>Paper: 170gsm uncoated</div><div>Ink: 1 black, 4 spot</div><div>Grid: 12 col / 24 gutter</div><div>Type: Helvetica</div>
+    <div>Corner radius: 0</div><div>Shadow: none</div><div>Gridlines: visible</div><div>Edition: 500</div>
+  </div>
+</section>
+
+<footer>
+  <span>Raw Material Collective — Est. 2026</span>
+  <span>Set in Helvetica & Courier</span>
+</footer>
+</body>
+<script>
+(function(){
+  var body=document.body;
+  var stamp=document.createElement('div');
+  stamp.className='stamp';
+  stamp.textContent='PRINTED';
+  body.appendChild(stamp);
+  function toggle(e){
+    if(e && e.target && e.target.closest && e.target.closest('.poster')) body.classList.toggle('printed');
+  }
+  body.addEventListener('click',toggle);
+  document.addEventListener('keydown',function(e){
+    var k=String(e.key).toLowerCase();
+    if(k==='p') body.classList.toggle('printed');
+  });
+})();
+</script>
+</html>

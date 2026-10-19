@@ -1,0 +1,18 @@
+TITLE: QUADRANT — a decision surface
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "QUADRANT — a decision surface". Art direction: Swiss, print-like, argumentative. Palette: paper #f2f0ea, ink #16150f, dim #87837a, hairline rgba(22,21,15,.18), blue #1f5fa8, red #c0392b, gold #d0a02a, green #4f8a5a. Layout: a header with a bold wordmark and a method line; then a hero with a kicker, a huge light-weight headline mixing an 800 weight, and a paragraph; then the matrix itself — a bordered CSS grid with a black axis header across the top (Effort — low → high) and a black vertical axis label down the side (Certainty — low → high) — and four quadrants, each with a large ghosted numeral in the corner, a heading, a paragraph, a coloured bar that grows across the top on hover, and its own accent colour; then a two-card panel: a list of live entries that you can click to move an item to the next quadrant, and a "Test the axes" card that computes and reports an axis-integrity percentage by checking whether high effort actually costs high certainty; then a two-column note arguing that most matrices are just two lists; and a footer. Interaction: clicking an entry cycles it through the quadrants and re-assigns its effort and certainty values, which updates the integrity score; clicking a quadrant filters the list to the items in it. Responsive: the matrix reflows to a single column with a horizontal axis label under 860px, and the panel and note stack.
+
+DESCRIPTION:
+A 2×2 matrix with an argument attached. The four corners are Quick bets, Bets on faith, Exhausted wins and The actual work, and the live list underneath tests the thing that usually goes wrong: when you move an item into a quadrant, the code reassigns its effort and certainty so that the two axes stay in genuine tension, and the integrity score reports how often that trade-off is real. Click a quadrant to filter the list to what is in it.
+
+MAJOR VISUAL TECHNIQUES:
+- Grid matrix with black axis headers and hairline dividers
+- Ghosted oversized numerals in each quadrant corner
+- Growing accent bar along the top of a quadrant on hover
+- Live item list with click-to-cycle quadrant reassignment
+- Computed axis-integrity metric with a percentage readout
+- Inset white panel highlight on the selected quadrant
+
+INTENDED INTERACTION MODEL:
+Use the chart. Click entries to move them between quadrants and watch the integrity score move with them; click a quadrant to filter the list. The prose underneath explains when the whole tool should be thrown away.

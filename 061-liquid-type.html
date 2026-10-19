@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIQUID — type that behaves like matter</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#07080c;--ink:#eef1f7;--dim:#7d8397;--line:rgba(238,241,247,.13);
+        --a:#ff4d9d;--b:#4d8dff;--c:#4de0b8;--d:#ffd166;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50% 50% 50% 6px;background:linear-gradient(140deg,var(--a),var(--b));
+    display:block;box-shadow:0 0 20px rgba(255,77,157,.5);animation:wobble 5s ease-in-out infinite;}
+  @keyframes wobble{0%,100%{border-radius:50% 50% 50% 6px;transform:rotate(0);}50%{border-radius:50% 8% 50% 50%;transform:rotate(40deg);}}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .stage{margin-top:26px;border:1px solid var(--line);border-radius:24px;overflow:hidden;position:relative;
+    background:radial-gradient(ellipse 70% 60% at 50% 45%,#11141d,#06070a 75%);}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;left:20px;top:18px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);line-height:2;}
+  .hud b{color:var(--c);font-weight:400;}
+
+  .word{margin-top:5vh;text-align:center;position:relative;}
+  .word span{display:inline-block;font-size:clamp(2.4rem,9vw,7.4rem);font-weight:800;letter-spacing:-.045em;
+    line-height:1;transition:transform .6s cubic-bezier(.2,.8,.2,1),color .6s;}
+  .word span:hover{transform:translateY(-14px) scale(1.08) rotate(-4deg);color:var(--a);}
+
+  .ctrls{margin-top:4vh;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .c label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .c label b{color:var(--ink);font-weight:400;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(238,241,247,.18);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+    background:#fff;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border:none;border-radius:50%;background:#fff;cursor:pointer;}
+
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.ctrls{grid-template-columns:1fr 1fr;}.note{grid-template-columns:1fr;}}
+  @media(max-width:520px){.ctrls{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Liquid</div>
+    <div class="meta">A type experiment in matter</div>
+  </header>
+
+  <div class="stage">
+    <canvas id="cv" width="1200" height="520"></canvas>
+    <div class="hud">Surface tension <b id="vTension">0.62</b><br>Viscosity <b id="vVisc">0.38</b><br>Drop rate <b id="vRate">40/s</b></div>
+  </div>
+
+  <div class="word" id="word"></div>
+
+  <div class="ctrls">
+    <div class="c"><label>Tension <b id="vT2">0.62</b></label><input type="range" id="tension" min="0" max="100" value="62"></div>
+    <div class="c"><label>Viscosity <b id="vV2">0.38</b></label><input type="range" id="visc" min="0" max="100" value="38"></div>
+    <div class="c"><label>Gravity <b id="vG">0.50</b></label><input type="range" id="grav" min="0" max="200" value="50"></div>
+    <div class="c"><label>Words <b id="vW">LIQUID</b></label><input type="range" id="words" min="3" max="12" value="5"></div>
+  </div>
+
+  <section class="note">
+    <div><h2>Type is a<br>fluid before<br>it is a<br>font</h2></div>
+    <div>
+      <p>Ink does not respect letterforms. It pools at the terminals, thins in the middle of a stroke, and sometimes gets up and leaves. Every calligraphic script is a record of somebody trying to control that, and every modern typeface is a decision to pretend it does not happen.</p>
+      <p>This page pretends the opposite. The word above is a set of particles: each letter is a cloud of drops held together by a surface tension you can set, falling under a gravity you can set, and merging when they touch. Raise the tension and the letters tighten into something you could print. Lower it and they run.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Liquid — type that behaves like matter</span>
+    <span>Canvas metaballs · no images</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('cv'), ctx=cvs.getContext('2d');
+  var W=1200,H=520;
+  var tension=.62, visc=.38, grav=.5, wordCount=5;
+  var WORDS=['LIQUID','MERCURY','INK AND WATER','FORM','WEIGHT','SURFACE','FLOW','LETTER','DROP','VISCOSITY','TENSION','SET'];
+  var drops=[], word='', letterBoxes=[];
+
+  var wordEl=document.getElementById('word');
+  function setWord(){
+    word = WORDS[(wordCount-3)%WORDS.length];
+    var letters=word.split('');
+    wordEl.innerHTML='';
+    letterBoxes=[];
+    letters.forEach(function(ch,i){
+      if(ch===' '){ wordEl.appendChild(document.createTextNode(' ')); return; }
+      var s=document.createElement('span');
+      s.textContent=ch;
+      s.style.transitionDelay=(i*0.03)+'s';
+      wordEl.appendChild(s);
+      letterBoxes.push(s);
+    });
+    document.getElementById('vW').textContent=word;
+    reseed();
+  }
+  function reseed(){
+    drops=[];
+    var n=word.replace(/ /g,'').length;
+    for(var i=0;i<n*70;i++){
+      drops.push({
+        x:Math.random()*W, y:Math.random()*H,
+        vx:rnd(-1,1), vy:rnd(-1,1), r:rnd(2,6)
+      });
+    }
+    function rnd(a,b){return a+Math.random()*(b-a);}
+  }
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // metaball field at low resolution
+    var RES=4, w=Math.ceil(W/RES), h=Math.ceil(H/RES);
+    if(!draw.buf){ draw.buf=document.createElement('canvas'); draw.img=ctx.createImageData(w,h); }
+    if(draw.buf.width!==w||draw.buf.height!==h){ draw.buf.width=w; draw.buf.height=h; draw.img=ctx.createImageData(w,h); }
+    var field=new Float32Array(w*h);
+    for(var y=0;y<h;y++){
+      for(var x=0;x<w;x++){
+        var px=x*RES, py=y*RES, s=0;
+        for(var i=0;i<drops.length;i++){
+          var d=drops[i];
+          var dx=px-d.x, dy=py-d.y;
+          var r=d.r*2.2;
+          s += (r*r)/(dx*dx+dy*dy+40);
+        }
+        field[y*w+x]=s;
+      }
+    }
+    var data=draw.img.data;
+    for(var k=0;k<field.length;k++){
+      var v=field[k];
+      var thr=0.55+tension*0.9;
+      var a=(v-thr)*1.6;
+      if(a<=0){ data[k*4+3]=0; continue; }
+      a=Math.min(1,a);
+      var hue=(190+k%40);
+      data[k*4]=40+ a*90;
+      data[k*4+1]=120+a*120;
+      data[k*4+2]=200+a*55;
+      data[k*4+3]=a*235;
+    }
+    draw.bctx=draw.bctx||draw.buf.getContext('2d');
+    draw.bctx.putImageData(draw.img,0,0);
+    ctx.save();
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(draw.buf,0,0,w,h,0,0,W,H);
+    ctx.restore();
+  }
+
+  var last=performance.now();
+  function loop(t){
+    var dt=Math.min(2.6,(t-last)/16.67); last=t;
+    // physics
+    for(var i=0;i<drops.length;i++){
+      var d=drops[i];
+      d.vy += grav*0.006*dt;
+      d.vx *= (0.99 - visc*0.002*dt);
+      d.vy *= (0.99 - visc*0.002*dt);
+      d.x += d.vx*dt; d.y += d.vy*dt;
+      if(d.y>H+20){ d.y=-20; d.x=Math.random()*W; }
+      if(d.x<0) d.x=W; if(d.x>W) d.x=0;
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  setWord();
+  document.getElementById('words').addEventListener('input',function(){
+    wordCount=+this.value; setWord();
+  });
+  document.getElementById('tension').addEventListener('input',function(){
+    tension=+this.value/100;
+    document.getElementById('vT2').textContent=tension.toFixed(2);
+    document.getElementById('vTension').textContent=tension.toFixed(2);
+  });
+  document.getElementById('visc').addEventListener('input',function(){
+    visc=+this.value/100;
+    document.getElementById('vV2').textContent=visc.toFixed(2);
+    document.getElementById('vVisc').textContent=visc.toFixed(2);
+  });
+  document.getElementById('grav').addEventListener('input',function(){
+    grav=+this.value/100;
+    document.getElementById('vG').textContent=grav.toFixed(2);
+    document.getElementById('vRate').textContent=Math.round(40*grav)+'/s';
+  });
+})();
+</script>
+</body>
+</html>

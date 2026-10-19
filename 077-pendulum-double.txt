@@ -1,0 +1,18 @@
+TITLE: PENDULUM — the double fall
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PENDULUM — the double fall". Art direction: laboratory bench at night, brass and teal on near-black. Palette: ground #0b0d12, ink #e9e6df, dim #7e7f8c, hairline rgba(233,230,223,.13), brass #d8a44a, teal #59c8c0. Layout: a header with an L-shaped logo mark carrying a second angled stroke and a monospaced integration line; then a hero with a brass kicker, a huge light-weight headline with one teal bold word, and a paragraph; then a bordered bench panel holding a 1200×620 canvas and an absolutely positioned monospaced readout in the top right; then a control band of four sliders (Lower mass, Upper mass, Lower length, Upper length) and four buttons (Release / Nudge / Clear trail / Trace on); then a two-column section pairing an essay on why the double pendulum cannot be solved with a state table giving both angles, both angular velocities, the total energy, the energy drift over the run, the trail length and the elapsed time; and a footer. The physics is real: the coupled equations of motion are integrated with a fourth-order Runge-Kutta step of 1/240 s, six substeps per frame, with the standard denominator that keeps the coupling finite at the collinear configuration, and the energy is computed from the full expression including the cross term so the drift readout means something. Interaction: drag either bob to set the angles and the release, Nudge adds a random impulse, Release resets to a fixed high starting angle, Clear trail empties the trail and Trace on toggles the drawing of it. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A double pendulum that is really simulated. The coupled equations are integrated with fourth-order Runge-Kutta six times a frame, and the energy readout is the honest expression including the cross term, so the drift figure tells you how well the integrator is doing. Drag a bob and let go; the teal trail of the lower bob is the only honest way to see what chaos looks like.
+
+MAJOR VISUAL TECHNIQUES:
+- Fourth-order Runge-Kutta integration of the coupled double-pendulum equations
+- Full kinetic and potential energy with the cross term, and a live drift readout
+- Fading trail of the lower bob rendered segment by segment
+- Radial-gradient brass and teal bobs sized by mass
+- Pointer dragging that sets the angles and zeroes the velocities
+- Faint 40px laboratory grid on the back plate
+
+INTENDED INTERACTION MODEL:
+Play with it. Drag the bobs and release, nudge the system, clear the trail or toggle it, and change the masses and lengths to see how the character of the motion changes.

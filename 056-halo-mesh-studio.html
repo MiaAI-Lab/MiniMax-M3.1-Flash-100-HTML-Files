@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HALO — a studio for soft light</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--ink:#f2f1f7;--dim:#a5a2b8;--line:rgba(255,255,255,.14);--c1:#7c5cff;--c2:#ff6ba6;--c3:#43e0d0;--c4:#ffc857;}
+  body{background:#07060e;color:var(--ink);font-family:"Inter","Segoe UI",system-ui,sans-serif;overflow-x:hidden;}
+  .mesh{position:fixed;inset:-20%;z-index:0;filter:blur(70px);opacity:.85;}
+  .mesh i{position:absolute;border-radius:50%;display:block;mix-blend-mode:screen;}
+  .wrap{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:0 5vw 90px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;}
+  .brand{font-size:13px;letter-spacing:.42em;text-transform:uppercase;font-weight:600;}
+  .brand span{color:var(--c3);}
+  nav{display:flex;gap:22px;flex-wrap:wrap;}
+  nav a{color:var(--dim);text-decoration:none;font-size:12px;transition:.25s;}
+  nav a:hover{color:var(--ink);}
+
+  .hero{padding:8vh 0 6vh;max-width:880px;}
+  .k{display:inline-flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ink);background:rgba(255,255,255,.08);border:1px solid var(--line);padding:7px 15px;border-radius:99px;
+    backdrop-filter:blur(10px);}
+  .k i{width:7px;height:7px;border-radius:50%;background:var(--c3);box-shadow:0 0 10px var(--c3);}
+  h1{font-size:clamp(2.6rem,7.4vw,5.6rem);font-weight:200;line-height:1;letter-spacing:-.04em;margin:26px 0 24px;}
+  h1 b{font-weight:700;}
+  .lede{color:var(--dim);font-size:1.06rem;line-height:1.85;max-width:52ch;}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px;}
+  .btn{border-radius:99px;padding:15px 30px;cursor:pointer;font:500 12.5px/1 inherit;letter-spacing:.06em;
+    transition:.3s;border:1px solid transparent;}
+  .btn.p{background:var(--ink);color:#0a0910;font-weight:600;}
+  .btn.p:hover{transform:translateY(-2px);box-shadow:0 14px 30px -14px rgba(255,255,255,.6);}
+  .btn.s{background:rgba(255,255,255,.07);border-color:var(--line);color:var(--ink);backdrop-filter:blur(12px);}
+  .btn.s:hover{background:rgba(255,255,255,.14);}
+
+  .grid{margin-top:8vh;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .card{border:1px solid var(--line);border-radius:20px;padding:26px;background:rgba(255,255,255,.05);
+    backdrop-filter:blur(18px);transition:.4s;}
+  .card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.3);}
+  .card .ic{width:44px;height:44px;border-radius:13px;margin-bottom:18px;display:grid;place-items:center;
+    font-size:19px;background:rgba(255,255,255,.09);}
+  .card h3{font-size:1.05rem;font-weight:600;margin-bottom:8px;}
+  .card p{color:var(--dim);font-size:.9rem;line-height:1.75;}
+  .card .n{font-size:11px;letter-spacing:.24em;color:var(--c3);margin-bottom:12px;display:block;}
+
+  .panel{margin-top:18px;border:1px solid var(--line);border-radius:24px;padding:30px;background:rgba(255,255,255,.04);
+    backdrop-filter:blur(20px);}
+  .panel h2{font-size:1.3rem;font-weight:500;margin-bottom:8px;}
+  .panel p{color:var(--dim);font-size:.95rem;line-height:1.8;max-width:60ch;}
+  .sliders{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:26px;}
+  .s label{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .s label b{color:var(--ink);font-weight:500;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;outline:none;
+    background:rgba(255,255,255,.18);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:#fff;cursor:pointer;box-shadow:0 0 0 4px rgba(255,255,255,.12);}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;background:#fff;cursor:pointer;}
+
+  .strip{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .mini{border-radius:18px;padding:22px;border:1px solid var(--line);background:rgba(255,255,255,.04);}
+  .mini b{display:block;font-size:1.9rem;font-weight:200;letter-spacing:-.03em;}
+  .mini span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.grid,.strip{grid-template-columns:1fr;}.sliders{grid-template-columns:1fr 1fr;}}
+  @media(max-width:520px){.sliders{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="mesh" id="mesh"></div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">Halo <span>·</span> Studio</div>
+    <nav><a href="#work">Work</a><a href="#studio">Studio</a><a href="#contact">Contact</a></nav>
+  </header>
+
+  <section class="hero">
+    <span class="k"><i></i>Available — Spring 2027</span>
+    <h1>Soft light for<br><b>hard problems</b>.</h1>
+    <p class="lede">We are a four-person studio making interfaces that feel like light rather than like software. Colour, motion, and a great deal of restraint.</p>
+    <div class="cta">
+      <button class="btn p">Start a project</button>
+      <button class="btn s">See the work</button>
+    </div>
+  </section>
+
+  <section class="grid" id="work">
+    <article class="card"><div class="ic">◐</div><span class="n">01</span><h3>Identity systems</h3>
+      <p>Logotypes, type families, colour systems and the unglamorous rules that keep them intact for five years.</p></article>
+    <article class="card"><div class="ic">◑</div><span class="n">02</span><h3>Interface design</h3>
+      <p>Products, from the first wireframe to the last easing curve. We ship design systems, not screens.</p></article>
+    <article class="card"><div class="ic">◒</div><span class="n">03</span><h3>Motion</h3>
+      <p>Transitions that explain where a thing came from and where it went. Six to twelve frames, never more.</p></article>
+  </section>
+
+  <section class="panel" id="studio">
+    <h2>The mesh</h2>
+    <p>Everything on this page sits on a field of four drifting colour fields, blurred and composited so they blend like light through a window. Move the sliders and the room changes temperature.</p>
+    <div class="sliders">
+      <div class="s"><label>Hue <b id="vHue">0°</b></label><input type="range" id="hue" min="0" max="360" value="0"></div>
+      <div class="s"><label>Spread <b id="vSpread">60%</b></label><input type="range" id="spread" min="10" max="100" value="60"></div>
+      <div class="s"><label>Blur <b id="vBlur">70px</b></label><input type="range" id="blur" min="10" max="140" value="70"></div>
+      <div class="s"><label>Drift <b id="vDrift">1.0×</b></label><input type="range" id="drift" min="0" max="30" value="10"></div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="mini"><b>41</b><span>Products shipped</span></div>
+    <div class="mini"><b>9</b><span>Years running</span></div>
+    <div class="mini"><b>4</b><span>People, deliberately</span></div>
+  </section>
+
+  <footer id="contact">
+    <span>Halo Studio — Lisbon &amp; Montréal</span>
+    <span>hello@halo.studio</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var mesh=document.getElementById('mesh');
+  var blobs=[
+    {c:'#7c5cff',x:.18,y:.22,s:.42},
+    {c:'#ff6ba6',x:.72,y:.32,s:.36},
+    {c:'#43e0d0',x:.46,y:.78,s:.40},
+    {c:'#ffc857',x:.84,y:.82,s:.26}
+  ];
+  var els=[];
+  blobs.forEach(function(b){
+    var i=document.createElement('i');
+    i.style.background=b.c;
+    mesh.appendChild(i);
+    els.push({el:i,b:b});
+  });
+  var hue=0, spread=60, blur=70, drift=1, t=0;
+
+  function layout(){
+    var W=mesh.clientWidth, H=mesh.clientHeight;
+    els.forEach(function(o){
+      var b=o.b;
+      var d=spread/100;
+      var x=(b.x+(Math.sin(t*0.0004*drift+o.b.s*9))*0.12*d);
+      var y=(b.y+(Math.cos(t*0.00033*drift+o.b.s*7))*0.12*d);
+      var size=b.s*Math.min(W,H)*(0.8+d*0.6);
+      o.el.style.width=size+'px'; o.el.style.height=size+'px';
+      o.el.style.left=(x*W-size/2)+'px';
+      o.el.style.top=(y*H-size/2)+'px';
+      o.el.style.filter='hue-rotate('+hue+'deg)';
+    });
+    mesh.style.filter='blur('+blur+'px)';
+  }
+  function loop(){ t+=16; layout(); requestAnimationFrame(loop); }
+  layout(); requestAnimationFrame(loop);
+
+  document.getElementById('hue').addEventListener('input',function(){
+    hue=+this.value; document.getElementById('vHue').textContent=hue+'°';
+  });
+  document.getElementById('spread').addEventListener('input',function(){
+    spread=+this.value; document.getElementById('vSpread').textContent=spread+'%';
+  });
+  document.getElementById('blur').addEventListener('input',function(){
+    blur=+this.value; document.getElementById('vBlur').textContent=blur+'px';
+  });
+  document.getElementById('drift').addEventListener('input',function(){
+    drift=+this.value/10; document.getElementById('vDrift').textContent=drift.toFixed(1)+'×';
+  });
+})();
+</script>
+</body>
+</html>

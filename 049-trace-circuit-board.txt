@@ -1,0 +1,19 @@
+TITLE: TRACE — a board that thinks
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "TRACE — a board that thinks". Art direction: a green printed circuit board lit from within. Palette: board green #06301f fading to #052317, trace green #2fbf6a, hot trace #8ef0a8, pad black #101a14, ink #d9ffe6, dim #6fa287, hairline rgba(46,191,106,.24). Type: Courier New throughout, monospaced and technical. Layout: a header with a chip-shaped logo and three square-ish buttons (Route / Pulse / Clear); a bordered board panel with a layered background (a radial green bloom, two repeating-linear-grids at 26px pitch for the copper pour, and a deep green gradient) with an inset shadow, containing a 1280×620 inline SVG and a small HUD in the top-right corner reporting nets, pads and signal state; then a four-column specification grid (clock, layers, board size, waypoints); then a two-column note explaining autorouting; and a footer. Interaction: the board is generated in JavaScript — five chip footprints (four ICs and a connector) with pins placed on all four sides, and Manhattan routes computed between the pins of adjacent parts, snapped to a 20px grid, with round caps and joins and a green drop-shadow bloom; a set of vias is scattered as small glowing dots; the Pulse button animates a bright travelling segment along every trace using a dash offset, so you can watch the signal move from pad to pad; Route re-runs the router; Clear resets the board. Responsive: the specification grid becomes two then one column.
+
+DESCRIPTION:
+A printed circuit board that actually routes. Five chip footprints sit on a 20px grid, pins are placed on all four sides, and a router walks Manhattan paths between them — snapping to the grid, choosing whether to go via the x-axis or the y-axis, and dropping vias where the layers have to meet. Press Pulse and a bright segment travels every net at once, which is the closest thing to watching a clock tick that a board can do.
+
+MAJOR VISUAL TECHNIQUES:
+- Grid-snapped Manhattan routing with an x or y via decision
+- SVG traces with round caps, round joins and a coloured drop-shadow bloom
+- Chip footprints with pins distributed across four sides
+- Travelling signal simulated with a dash offset and a short dash pattern
+- Layered board background: radial bloom + two repeating copper grids + inset vignette
+- Vias as small glowing nodes
+- Monospaced technical typography throughout
+
+INTENDED INTERACTION MODEL:
+Route, pulse, clear. Pulse animates the signal down every net; Route re-runs the autorouter; Clear resets the board. The HUD counts nets, pads and the current signal state. Nothing else is interactive.

@@ -1,0 +1,20 @@
+TITLE: MERIDIAN TYPE — a foundry
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) for a fictional type foundry called "MERIDIAN TYPE FOUNDRY" in Lisboa. Art direction: quiet, editorial, print-shop precision. Palette: warm paper #f7f5f0, ink #151412, body grey #57534b, dim #8a857b, hairline rgba(21,20,18,.16), single accent vermilion #b8452c. Layout: a header with a two-weight wordmark and four anchor links; a hero with a letterspaced kicker, a huge light-weight headline that mixes a hairline and an 800 weight on the same line, a paragraph, and a four-item statistics row; then a "try the type" panel on white with three family tabs, a large contenteditable sample line ("Handgloves & Quiet Rivers"), and three sliders (size 16–140px, weight 100–900, tracking −80 to +120 thousandths) with live numeric readouts; then three family cards, each with a large "Aa" specimen art panel, a description, feature tags and a price; then a glyph grid built in JavaScript from a character string (Latin, digits, punctuation, currency, and a set of Latin-Extended characters) where every cell is a clickable square that drops itself into the sample line and shows its Unicode code point in a tooltip; then a three-column licensing table with a highlighted middle tier; then a footer. Interaction: the three family tabs swap the font stack, default weight and default tracking and restyle the sample; the sliders restyle the sample continuously; the sample is directly editable; clicking a glyph inserts it. Responsive: the family cards, slider row and licence table collapse to one column under 900px, and the glyph grid reflows with auto-fill.
+
+DESCRIPTION:
+A foundry that behaves like a type shop rather than a marketing page. The heart of it is a real tester: three family tabs, a contenteditable specimen line and three live sliders, so the visitor can actually judge the type rather than look at a picture of it. Below, a specimen grid of over 130 characters is clickable — each one inserts itself into the line above, which turns the glyph chart into a small tool.
+
+MAJOR VISUAL TECHNIQUES:
+- contenteditable specimen line restyled live by three independent sliders
+- Font-stack switching per family with per-family default weight and tracking
+- JavaScript-generated glyph grid from character strings with Unicode code-point tooltips
+- Click-to-insert glyph interaction linking the chart back to the tester
+- Hairline-ruled editorial grid with one accent colour used sparingly
+- High-contrast two-weight headline mixing a light and an 800 weight
+- Licensing table with a highlighted tier drawn by an inset pseudo-element
+- Tag pills and price rows in a print-catalogue rhythm
+
+INTENDED INTERACTION MODEL:
+Try before you buy. Switch families, drag size / weight / tracking and watch the specimen change, type into the specimen yourself, and click any glyph in the chart to test it. The rest of the page is a catalogue to read.

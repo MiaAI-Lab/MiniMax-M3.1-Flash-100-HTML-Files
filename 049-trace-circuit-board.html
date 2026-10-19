@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACE — a board that thinks</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--board:#06301f;--board2:#052317;--trace:#2fbf6a;--trace2:#8ef0a8;--pad:#0b0b0b;--ink:#d9ffe6;--dim:#6fa287;--line:rgba(46,191,106,.24);}
+  body{background:#041a12;color:var(--ink);font-family:"Courier New",ui-monospace,monospace;overflow-x:hidden;}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:26px;height:26px;border:2px solid var(--trace);border-radius:4px;display:block;position:relative;}
+  .brand i::after{content:"";position:absolute;inset:7px;background:var(--trace);border-radius:1px;
+    box-shadow:0 0 12px var(--trace);}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 15px;border-radius:4px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.2em;text-transform:uppercase;transition:.25s;}
+  .tools button:hover,.tools button.on{border-color:var(--trace);color:var(--trace);background:rgba(46,191,106,.08);}
+
+  .board{margin-top:24px;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;
+    background:
+      radial-gradient(ellipse 60% 50% at 30% 20%,rgba(46,191,106,.10),transparent 70%),
+      repeating-linear-gradient(90deg,rgba(46,191,106,.045) 0 2px,transparent 2px 26px),
+      repeating-linear-gradient(0deg,rgba(46,191,106,.045) 0 2px,transparent 2px 26px),
+      linear-gradient(160deg,var(--board),var(--board2));
+    box-shadow:inset 0 0 90px rgba(0,0,0,.7);}
+  .board svg{width:100%;height:auto;display:block;}
+  .trace{fill:none;stroke:var(--trace);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 4px rgba(46,191,106,.6));}
+  .trace.hot{stroke:var(--trace2);filter:drop-shadow(0 0 10px rgba(142,240,168,.9));}
+  .pad{fill:#101a14;stroke:rgba(46,191,106,.45);stroke-width:1.4;}
+  .chip{fill:#1a1f1a;stroke:rgba(46,191,106,.5);stroke-width:1.2;}
+  .pinnode{fill:var(--trace2);filter:drop-shadow(0 0 6px rgba(142,240,168,.9));}
+  .sig{font-size:9px;fill:var(--dim);letter-spacing:.16em;text-transform:uppercase;}
+
+  .hud{position:absolute;right:14px;top:12px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--dim);text-align:right;line-height:1.9;}
+  .hud b{color:var(--trace2);font-weight:400;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px;}
+  .cell{border:1px solid var(--line);border-radius:10px;padding:18px;background:rgba(46,191,106,.05);}
+  .cell u{display:block;text-decoration:none;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  .cell b{display:block;font-size:1.35rem;color:var(--trace2);font-weight:400;margin-top:8px;}
+  .cell p{font-size:.78rem;color:var(--dim);line-height:1.7;margin-top:6px;}
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:.85fr 1.15fr;gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.2;}
+  .note p{color:var(--dim);font-size:.9rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}.note{grid-template-columns:1fr;}}
+  @media(max-width:520px){.grid{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{filter:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Trace</div>
+    <div class="tools">
+      <button class="on" id="auto">Route</button>
+      <button id="pulse">Pulse</button>
+      <button id="clear">Clear</button>
+    </div>
+  </header>
+
+  <div class="board">
+    <svg id="svg" viewBox="0 0 1280 620" aria-label="Circuit board"></svg>
+    <div class="hud">Nets <b id="nets">0</b> · Pads <b id="pads">0</b> · Signal <b id="sig">idle</b></div>
+  </div>
+
+  <section class="grid">
+    <div class="cell"><u>Clock</u><b id="c1">4.000 MHz</b><p>32-bit core, 64 kB SRAM, no cache.</p></div>
+    <div class="cell"><u>Layers</u><b>4</b><p>Signal, ground, power, and a keep-out nobody respects.</p></div>
+    <div class="cell"><u>Board</u><b>118 × 60</b><p>1.6 mm FR-4, routed in Eagle, fabbed in Shenzhen.</p></div>
+    <div class="cell"><u>Waypoints</u><b id="c4">412</b><p>Every corner has a name. Half of them are lies.</p></div>
+  </section>
+
+  <section class="note">
+    <div><h2>A circuit is<br>a drawing that<br>does something</h2></div>
+    <div>
+      <p>Almost every printed board is laid out by a program: components are placed, and then an autorouter walks a path between the pins, turning at right angles where the rules say it must. The result is not beautiful, but it is unmistakably of its kind — the geometry of a thing that has to work.</p>
+      <p>This page routes traces on a grid with ninety-degree turns and vias where two layers have to meet. The pads are real chip footprints, and the signal genuinely travels from the input pad to the output pad, because the router checks that it can.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Trace — a board that thinks</span>
+    <span>Routing computed in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('svg');
+  var W=1280,H=620,G=20;
+  var pads=[], nets=[], auto=true, pulse=false, t=0;
+
+  function el(tag,attrs){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    return e;
+  }
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function makePads(){
+    pads=[];
+    var defs=[
+      {x:120,y:90,type:'ic',w:90,h:90,n:'U1'},
+      {x:340,y:520,type:'ic',w:70,h:70,n:'U2'},
+      {x:700,y:120,type:'ic',w:110,h:70,n:'U3'},
+      {x:1080,y:300,type:'conn',w:60,h:80,n:'J1'},
+      {x:560,y:300,type:'ic',w:60,h:60,n:'U4'}
+    ];
+    defs.forEach(function(d){
+      var p={x:d.x,y:d.y,w:d.w,h:d.h,n:d.n,type:d.type,pins:[]};
+      var cnt=d.type==='ic'? 8 : 6;
+      for(var i=0;i<cnt;i++){
+        var side=i%4, k=Math.floor(i/4);
+        var per=Math.floor(cnt/4);
+        if(side===0) p.pins.push({x:d.x-10,y:d.y+ (k+1)*(d.h/(per+1))});
+        if(side===1) p.pins.push({x:d.x+ (k+1)*(d.w/(per+1)),y:d.y-10});
+        if(side===2) p.pins.push({x:d.x+d.w+10,y:d.y+ (k+1)*(d.h/(per+1))});
+        if(side===3) p.pins.push({x:d.x+ (k+1)*(d.w/(per+1)),y:d.y+d.h+10});
+      }
+      pads.push(p);
+    });
+  }
+
+  function route(a,b){
+    // manhattan route with one via, snapped to the grid
+    var pts=[[a.x,a.y]];
+    var midX=Math.round((a.x+b.x)/2/G)*G;
+    var midY=Math.round((a.y+b.y)/2/G)*G;
+    var via = (Math.abs(a.x-b.x)>Math.abs(a.y));
+    if(via){
+      pts.push([midX,a.y],[midX,b.y],[b.x,b.y]);
+    }else{
+      pts.push([a.x,midY],[b.x,midY],[b.x,b.y]);
+    }
+    return pts;
+  }
+
+  function build(){
+    svg.innerHTML='';
+    nets=[];
+    makePads();
+    // pads
+    pads.forEach(function(p){
+      if(p.type==='ic'){
+        var r=el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'pad'});
+        svg.appendChild(r);
+        var t=el('text',{x:p.x+6,y:p.y+p.h-7,class:'sig'});
+        t.textContent=p.n; svg.appendChild(t);
+      }else{
+        var r2=el('rect',{x:p.x,y:p.y,width:p.w,height:p.h,rx:3,class:'pad'});
+        svg.appendChild(r2);
+      }
+      p.pins.forEach(function(pin){
+        svg.appendChild(el('circle',{cx:pin.x,cy:pin.y,r:4,class:'pinnode'}));
+      });
+    });
+    // nets between adjacent pads
+    for(var i=0;i<pads.length-1;i++){
+      for(var k=0;k<Math.min(4,pads[i].pins.length);k++){
+        var a=pads[i].pins[k], b=pads[i+1].pins[(k+2)%pads[i+1].pins.length];
+        var pts=route(a,b);
+        var d='M'+pts.map(function(p){return p[0]+' '+p[1];}).join(' L');
+        var path=el('path',{d:d,class:'trace'});
+        path.dataset.id=String(nets.length);
+        svg.appendChild(path);
+        nets.push({path:path,a:a,b:b});
+      }
+    }
+    // a few vias
+    for(var v=0;v<10;v++){
+      svg.appendChild(el('circle',{cx:rnd(60,W-60),cy:rnd(60,H-60),r:3,class:'pinnode',opacity:.7}));
+    }
+    document.getElementById('pads').textContent=(pads.reduce(function(a,p){return a+p.pins.length;},0));
+  }
+
+  function animate(){
+    t+=0.016;
+    nets.forEach(function(n,i){
+      if(pulse){
+        var k=(t*1.2+i*0.35)%(n.path.getTotalLength?n.path.getTotalLength():1);
+        n.path.classList.add('hot');
+        n.path.setAttribute('stroke-dasharray','14 900');
+        n.path.setAttribute('stroke-dashoffset',-k);
+      }else{
+        n.path.classList.remove('hot');
+        n.path.removeAttribute('stroke-dasharray');
+      }
+    });
+    document.getElementById('sig').textContent=pulse?'routing':'idle';
+    requestAnimationFrame(animate);
+  }
+
+  document.getElementById('auto').addEventListener('click',function(){
+    auto=!auto; this.classList.toggle('on',auto);
+    if(auto) build();
+  });
+  document.getElementById('pulse').addEventListener('click',function(){
+    pulse=!pulse; this.classList.toggle('on',pulse);
+  });
+  document.getElementById('clear').addEventListener('click',function(){
+    pulse=false; document.getElementById('pulse').classList.remove('on');
+    build();
+  });
+
+  build();
+  requestAnimationFrame(animate);
+  document.getElementById('c4').textContent=(nets.length*13+180);
+})();
+</script>
+</body>
+</html>

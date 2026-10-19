@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KILN — a firing schedule</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#140f0c;--ink:#f2e8dc;--dim:#96897a;--line:rgba(242,232,220,.14);--ember:#ff7a3c;--clay:#c47a52;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(255,122,60,.08),transparent 62%);}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;background:linear-gradient(180deg,#ffb27a,#7a2d0c);display:block;
+    clip-path:polygon(28% 0,72% 0,100% 100%,0 100%);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--ember);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--ember);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .kiln{margin-top:5vh;border:1px solid var(--line);background:linear-gradient(180deg,#1c1510,#120d09);padding:18px;}
+  .khead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .khead h2{font:400 10px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);}
+  .khead .now{font:400 13px/1 "Courier New",monospace;color:var(--ember);}
+  .kiln canvas{width:100%;height:auto;display:block;background:#0c0806;}
+  .kfoot{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:12px;}
+  .kfoot div{border-top:1px solid var(--line);padding-top:8px;}
+  .kfoot u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .kfoot s{display:block;text-decoration:none;font:400 1.2rem/1.3 "Courier New",monospace;color:var(--ink);margin-top:6px;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--ember);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--ember);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--ember);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--ember);color:var(--ember);background:rgba(255,122,60,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  .cone{border-top:1px solid var(--line);}
+  .cone div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .cone b{color:var(--ember);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Kiln</div>
+    <div class="meta">Skutt KM-1027 · 100 L · cone 6 schedule</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Ceramics</div>
+    <h1>Clay is not<br>made, it is <b>cooked</b></h1>
+    <p>Firing a pot is not drying it. Between 200 and 1000 degrees the clay changes mineral form: quartz flips from one crystal structure to another at 573 degrees, and the whole pot moves on the shelf as it does. Above that, the fluxes melt and the body vitrifies — and if you go too fast, the pot cracks; too slow, and the glaze runs off it.</p>
+  </section>
+
+  <section class="kiln">
+    <div class="khead">
+      <h2>Firing schedule · temperature against time</h2>
+      <span class="now" id="now">IDLE · 20 °C</span>
+    </div>
+    <canvas id="cv" width="1200" height="520"></canvas>
+    <div class="kfoot">
+      <div><u>Elapsed</u><s id="f1">0:00</s></div>
+      <div><u>Temperature</u><s id="f2">20 °C</s></div>
+      <div><u>Ramp</u><s id="f3">—</s></div>
+      <div><u>Stage</u><s id="f4">cold</s></div>
+      <div><u>Atmosphere</u><s id="f5">oxidation</s></div>
+      <div><u>Work</u><s id="f6">0 %</s></div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Target temperature <output id="oa">1220 °C</output></label>
+      <input type="range" id="tgt" min="900" max="1320" value="1220">
+    </div>
+    <div class="fld">
+      <label>Ramp rate <output id="ob">120 °C/h</output></label>
+      <input type="range" id="ramp" min="40" max="300" value="120">
+    </div>
+    <div class="btns">
+      <button class="btn" id="fire">Fire</button>
+      <button class="btn" id="hold">Hold</button>
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="atm">Atmosphere</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The stages<br>a pot goes<br>through</h2>
+      <p><b>Water smoking</b>, up to about 200 °C: the last of the chemically bound water leaves the clay, and it leaves loudly. This is the stage where pots crack, because the steam has nowhere to go if the kiln is closed too early.</p>
+      <p><b>Quartz inversion</b> at 573 °C: the silica in the clay changes crystal structure and expands by about one percent, and every piece in the kiln moves at once. Then <b>sintering</b>, where the body starts to close up, and finally <b>vitrification</b>, where the glaze becomes glass and the pot stops being porous and starts being a thing you can put liquid in.</p>
+    </div>
+    <div>
+      <h2>Cones</h2>
+      <div class="cone">
+        <div>Cone 06 <b>999 °C</b></div>
+        <div>Cone 05 <b>1046 °C</b></div>
+        <div>Cone 04 <b>1063 °C</b></div>
+        <div>Cone 3 <b>1152 °C</b></div>
+        <div>Cone 5 <b>1186 °C</b></div>
+        <div>Cone 6 <b>1222 °C</b></div>
+        <div>Cone 8 <b>1260 °C</b></div>
+        <div>Cone 10 <b>1305 °C</b></div>
+        <div>Worst case <b>50 °C</b></div>
+        <div>Atmosphere <b id="catm">oxidation</b></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Kiln — a firing schedule</span>
+    <span>Schedule simulated · cone chart drawn live</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var L=70,R=24,T=30,B=44;
+  var pw=W-L-R, ph=H-T-B;
+  var MAXH=16; // hours
+  var MAXT=1350;
+  var CONES=[['06',999],['05',1046],['04',1063],['3',1152],['5',1186],['6',1222],['8',1260],['10',1305]];
+
+  var target=1220, ramp=120, atm='oxidation';
+  var t=0, temp=20, running=false, hold=false;
+
+  function schedule(){
+    // returns array of {h, T} breakpoints in hours
+    var segs=[];
+    var t0=0,T0=20;
+    function to(T1, rate, holdH){
+      var h=t0+Math.abs(T1-T0)/rate;
+      segs.push({h:h,T:T1});
+      t0=h; T0=T1;
+      if(holdH){ h=t0+holdH; segs.push({h:h,T:T1}); t0=h; }
+    }
+    to(200, 100, 0.5);
+    to(600, Math.max(ramp*1.1,60), 0);
+    to(target, ramp, 0.25);
+    // controlled cool
+    var coolFrom=target, coolTo=760;
+    var ch=t0+Math.abs(coolFrom-coolTo)/160;
+    segs.push({h:ch,T:coolTo});
+    t0=ch;
+    return segs;
+  }
+  function tempAt(h,segs){
+    if(h<=0) return 20;
+    var T0=20, t0=0;
+    for(var i=0;i<segs.length;i++){
+      if(h<=segs[i].h){
+        var span=segs[i].h-t0;
+        var f=span>0?(h-t0)/span:1;
+        return T0+(segs[i].T-T0)*f;
+      }
+      T0=segs[i].T; t0=segs[i].h;
+    }
+    return segs[segs.length-1].T;
+  }
+  function X(h){ return L+h/MAXH*pw; }
+  function Y(T){ return T+(ph-(T/MAXT*ph)); }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0c0806'; ctx.fillRect(0,0,W,H);
+    var segs=schedule();
+    // grid
+    ctx.strokeStyle='rgba(242,232,220,.07)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var h=0;h<=MAXH;h+=1){ ctx.moveTo(X(h),T); ctx.lineTo(X(h),T+ph); }
+    for(var T2=0;T2<=MAXT;T2+=100){ ctx.moveTo(L,Y(T2)); ctx.lineTo(W-R,Y(T2)); }
+    ctx.stroke();
+    // cone lines
+    ctx.setLineDash([4,5]);
+    CONES.forEach(function(c){
+      ctx.strokeStyle='rgba(196,122,82,.32)';
+      ctx.beginPath(); ctx.moveTo(L,Y(c[1])); ctx.lineTo(W-R,Y(c[1])); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    // axes labels
+    ctx.fillStyle='rgba(242,232,220,.45)'; ctx.font='11px "Courier New",monospace';
+    CONES.forEach(function(c){
+      ctx.fillText('▲ '+c[0], L+6, Y(c[1])-5);
+    });
+    for(var h2=0;h2<=MAXH;h2+=2){ ctx.fillText(h2+'h', X(h2)-8, H-B+20); }
+    ctx.fillText('°C', 8, T+10);
+    // schedule curve
+    ctx.beginPath();
+    var prevT=null;
+    for(var h3=0;h3<=MAXH;h3+=0.02){
+      var T3=tempAt(h3,segs);
+      var px=X(h3), py=Y(T3);
+      if(h3===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.strokeStyle='rgba(255,122,60,.85)'; ctx.lineWidth=2.2; ctx.stroke();
+    // fill under the curve
+    ctx.lineTo(X(MAXH),T+ph); ctx.lineTo(L,T+ph); ctx.closePath();
+    var g=ctx.createLinearGradient(0,T,0,T+ph);
+    g.addColorStop(0,'rgba(255,122,60,.18)'); g.addColorStop(1,'rgba(255,122,60,.02)');
+    ctx.fillStyle=g; ctx.fill();
+    // marker
+    var mt=tempAt(t,segs);
+    var mx=X(t), my=Y(mt);
+    ctx.beginPath(); ctx.arc(mx,my,7,0,6.283); ctx.fillStyle='#ff7a3c'; ctx.fill();
+    ctx.beginPath(); ctx.arc(mx,my,13,0,6.283); ctx.strokeStyle='rgba(255,122,60,.5)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.setLineDash([3,4]);
+    ctx.strokeStyle='rgba(242,232,220,.2)';
+    ctx.beginPath(); ctx.moveTo(L,my); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#ff7a3c'; ctx.font='12px "Courier New",monospace';
+    ctx.fillText(Math.round(mt)+' °C', Math.min(mx+12,W-90), my-10);
+  }
+
+  function stage(T,h){
+    if(T<200) return 'water smoking';
+    if(T<573) return 'organic burn-out';
+    if(T<900) return 'quartz inversion';
+    if(T<target-5) return 'sintering';
+    if(h>0 && Math.abs(T-target)<3) return 'soak';
+    return 'glaze melt';
+  }
+  function coneReached(T){
+    var last='—';
+    CONES.forEach(function(c){ if(T>=c[1]) last=c[0]; });
+    return last;
+  }
+  function update(){
+    var segs=schedule();
+    var mt=tempAt(t,segs);
+    temp=mt;
+    var mm=Math.floor(t), ss=Math.floor((t-mm)*60);
+    document.getElementById('f1').textContent=mm+':'+(ss<10?'0':'')+ss;
+    document.getElementById('f2').textContent=Math.round(mt)+' °C';
+    document.getElementById('f4').textContent=stage(mt,t);
+    document.getElementById('f5').textContent=atm;
+    document.getElementById('f6').textContent=Math.min(100,Math.round(t/MAXH*100))+' %';
+    document.getElementById('now').textContent=(running?'FIRING ':'IDLE ')+'· '+Math.round(mt)+' °C · cone '+coneReached(mt);
+    var r=0;
+    if(running && !hold){
+      var segs2=schedule();
+      var a=tempAt(Math.max(0,t-0.02),segs2), b=tempAt(t,segs2);
+      r=(b-a)/0.02;
+    }
+    document.getElementById('f3').textContent=r>0?('+'+Math.round(r)+' °C/h'):'0 °C/h';
+  }
+
+  function loop(){
+    if(running && !hold){ t+=0.012; if(t>MAXH) t=MAXH; }
+    draw(); update();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById('fire').addEventListener('click',function(){
+    running=true; hold=false; this.classList.add('on');
+    document.getElementById('hold').classList.remove('on');
+  });
+  document.getElementById('hold').addEventListener('click',function(){
+    hold=!hold; this.classList.toggle('on',hold);
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    t=0; running=false; hold=false;
+    document.getElementById('fire').classList.remove('on');
+    document.getElementById('hold').classList.remove('on');
+  });
+  document.getElementById('atm').addEventListener('click',function(){
+    atm = atm==='oxidation'?'reduction':'oxidation';
+    document.getElementById('catm').textContent=atm;
+    this.textContent='Atmosphere: '+atm;
+  });
+  document.getElementById('tgt').addEventListener('input',function(){
+    target=parseInt(this.value,10);
+    document.getElementById('oa').textContent=target+' °C';
+  });
+  document.getElementById('ramp').addEventListener('input',function(){
+    ramp=parseInt(this.value,10);
+    document.getElementById('ob').textContent=ramp+' °C/h';
+  });
+})();
+</script>
+</body>
+</html>

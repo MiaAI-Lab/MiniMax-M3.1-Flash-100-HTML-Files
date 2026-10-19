@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LA ROUE — the great wheel at dusk</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --night:#140a26;--dusk:#3d1548;--ember:#ff7a3d;--gold:#ffd08a;--pink:#ff5c8a;
+    --ink:#f6e9f7;--dim:#b295bd;--teal:#4ad9c4;
+  }
+  body{background:var(--night);color:var(--ink);font-family:"Didot","Bodoni MT",Georgia,serif;
+    overflow-x:hidden;min-height:100vh;}
+  .sky{position:fixed;inset:0;z-index:0;
+    background:radial-gradient(ellipse 120% 70% at 50% 110%,rgba(255,122,61,.35),transparent 60%),
+      linear-gradient(180deg,#0d0620 0%,#241043 42%,#5a1a52 72%,#93354a 90%);}
+  .sky::after{content:"";position:absolute;inset:0;opacity:.5;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='s'><feTurbulence baseFrequency='.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23s)' opacity='.35'/></svg>");
+    mix-blend-mode:overlay;}
+  .stars{position:fixed;inset:0;z-index:1;pointer-events:none;}
+  .star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:tw 3s ease-in-out infinite;}
+  @keyframes tw{0%,100%{opacity:.2;}50%{opacity:.9;}}
+
+  .wrap{position:relative;z-index:5;max-width:1280px;margin:0 auto;padding:0 4vw 90px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid rgba(246,233,247,.14);}
+  .brand{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.46em;text-transform:uppercase;
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  .brand i{width:26px;height:26px;border:2px solid var(--gold);border-radius:50%;display:block;position:relative;}
+  .brand i::after{content:"";position:absolute;inset:6px;background:var(--ember);border-radius:50%;
+    animation:pulse 2.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(.7);opacity:.6;}50%{transform:scale(1);opacity:1;}}
+  .nav{display:flex;gap:8px;flex-wrap:wrap;}
+  .nav button{background:transparent;border:1px solid rgba(246,233,247,.24);color:var(--ink);padding:9px 18px;
+    border-radius:999px;cursor:pointer;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;
+    letter-spacing:.26em;text-transform:uppercase;transition:.3s;}
+  .nav button:hover,.nav button.on{border-color:var(--gold);color:var(--gold);}
+
+  .stage{position:relative;min-height:78vh;display:grid;place-items:center;padding:4vh 0;}
+  .wheelwrap{position:relative;width:min(84vw,620px);aspect-ratio:1;}
+  .wheel{position:absolute;inset:0;border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%,transparent 0 11%,rgba(255,208,138,.16) 11% 11.6%,transparent 11.6% 46%,
+        rgba(255,208,138,.10) 46% 46.6%,transparent 46.6% 97.5%,rgba(255,208,138,.34) 97.5% 100%);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spokes{position:absolute;inset:6%;border-radius:50%;}
+  .spoke{position:absolute;left:50%;top:50%;width:2px;height:46%;margin-left:-1px;transform-origin:top center;
+    background:linear-gradient(180deg,rgba(255,208,138,.85),rgba(255,208,138,.06));}
+  .hub{position:absolute;left:50%;top:50%;width:15%;aspect-ratio:1;transform:translate(-50%,-50%);
+    border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff0d2,#e0a24f 60%,#8a5a1c);
+    box-shadow:0 0 40px rgba(255,160,70,.65), inset 0 -6px 12px rgba(0,0,0,.4);}
+  .hub::after{content:"";position:absolute;inset:36%;border-radius:50%;background:#2a1330;}
+  .cabins{position:absolute;inset:0;}
+  .cabin{position:absolute;left:50%;top:0;width:13%;height:50%;margin-left:-6.5%;
+    transform-origin:50% 100%;transform:rotate(var(--a));}
+  .cabin .box{position:absolute;top:0;left:0;width:100%;aspect-ratio:.86;transform:translateY(-50%);
+    border-radius:14px 14px 18px 18px;
+    background:linear-gradient(180deg,var(--c1),var(--c2));border:2px solid rgba(255,255,255,.5);
+    box-shadow:0 0 24px -4px var(--c2), inset 0 -8px 12px rgba(0,0,0,.3);
+    display:grid;place-items:center;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    letter-spacing:.14em;color:rgba(0,0,0,.55);text-transform:uppercase;transition:.3s;}
+  .cabin:hover .box{transform:scale(1.14);box-shadow:0 0 40px 0 var(--c2);}
+  .cabin .arm{position:absolute;left:50%;top:-6%;width:2px;height:16%;margin-left:-1px;
+    background:rgba(255,208,138,.6);}
+  .stand{position:absolute;left:50%;bottom:-6%;width:64%;height:30%;transform:translateX(-50%);
+    background:linear-gradient(180deg,rgba(40,18,60,.1),rgba(20,10,38,.9));
+    clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);}
+
+  .panel{position:absolute;right:0;top:50%;transform:translateY(-50%);width:min(30vw,300px);
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  .panel .k{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
+  .panel h2{font-size:1.9rem;font-weight:400;margin:12px 0 12px;line-height:1.15;}
+  .panel p{color:var(--dim);font-size:.92rem;line-height:1.85;}
+  .facts{display:grid;gap:8px;margin-top:22px;}
+  .fact{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;letter-spacing:.08em;
+    padding-bottom:9px;border-bottom:1px solid rgba(246,233,247,.14);}
+  .fact span{color:var(--dim);}
+  .fact b{font-weight:500;}
+  .counter{position:absolute;left:0;top:50%;transform:translateY(-50%);font-family:"Helvetica Neue",Arial,sans-serif;
+    writing-mode:vertical-rl;letter-spacing:.4em;text-transform:uppercase;font-size:10px;color:var(--dim);}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:5vh;
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  .card{border:1px solid rgba(246,233,247,.16);padding:26px;border-radius:18px;background:rgba(255,255,255,.04);
+    transition:.4s;}
+  .card:hover{border-color:var(--gold);transform:translateY(-6px);background:rgba(255,208,138,.07);}
+  .card h3{font-family:"Didot",Georgia,serif;font-weight:400;font-size:1.25rem;margin-bottom:10px;}
+  .card p{color:var(--dim);font-size:.88rem;line-height:1.8;}
+  .card .n{font-size:10px;letter-spacing:.3em;color:var(--ember);margin-bottom:14px;display:block;}
+
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid rgba(246,233,247,.14);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:940px){.stage{grid-template-columns:1fr;}.panel{position:static;transform:none;width:100%;
+    margin-top:26px;}.counter{display:none;}.wheelwrap{width:min(82vw,520px);}.cards{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="sky"></div><div class="stars" id="stars"></div>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>La Roue</div>
+    <nav class="nav">
+      <button class="on" id="ride">Ride</button>
+      <button id="stop">Hold</button>
+      <button id="lights">Lights</button>
+    </nav>
+  </header>
+
+  <section class="stage">
+    <div class="counter">Est. 1898 · Quai de la Tournelle</div>
+    <div class="wheelwrap" id="wheelwrap">
+      <div class="stand"></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="spokes" id="spokes"></div>
+      <div class="cabins" id="cabins"></div>
+      <div class="hub"></div>
+    </div>
+    <aside class="panel">
+      <div class="k">Cabin 01</div>
+      <h2 id="cabTitle">The river side</h2>
+      <p id="cabText">Twelve metres up, the Seine is a strip of moving brass and the rooftops of Saint-Michel look like a model railway under a warm lamp.</p>
+      <div class="facts">
+        <div class="fact"><span>Diameter</span><b>58 m</b></div>
+        <div class="fact"><span>Height</span><b>62 m</b></div>
+        <div class="fact"><span>Cabins</span><b id="cabCount">32</b></div>
+        <div class="fact"><span>Rotation</span><b id="speedOut">22 min / turn</b></div>
+        <div class="fact"><span>Tickets</span><b>€12</b></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="cards">
+    <article class="card"><span class="n">01 / NIGHT</span><h3>Sixteen thousand bulbs</h3><p>Replaced in 2014 with warm-white LEDs that flicker at 0.4 hertz — slow enough to read as breathing.</p></article>
+    <article class="card"><span class="n">02 / RIDE</span><h3>Twenty-two minutes</h3><p>One full turn, rising to the top at the halfway mark, where the whole city arranges itself below you in lights.</p></article>
+    <article class="card"><span class="n">03 / NIGHT</span><h3>Closed in wind</h3><p>Above 45 km/h the wheel stops and stays stopped. It has been stopped more often than it has run.</p></article>
+  </section>
+
+  <footer>
+    <span>La Roue — the great wheel at dusk</span>
+    <span>Click a cabin</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var names=['River side','The cathedral','Pont Neuf','Left bank','The lanterns','Ironwork','The lamps',
+             'Quai des Arts','Rooftops','Saint-Michel','The chimney','The barges','Night ferry','The bridges',
+             'City lights','The last gondola'];
+  var texts=[
+    'Twelve metres up, the Seine is a strip of moving brass and the rooftops of Saint-Michel look like a model railway under a warm lamp.',
+    'The stones go black first, then the buttresses, then the crosses. The wheel is at its highest when the cathedral is at its lowest.',
+    'Seven arches, seven lamps, seven bridges that all look identical from above and are not.',
+    'The left bank is quieter and better lit, which is either a compliment or an accusation.',
+    'Every spoke carries its own run of bulbs, and where they meet the hub the light doubles.',
+    'Riveted, painted, repainted every eleven years in a green that no longer exists in any paint tin.',
+    'A string of six hundred bulbs, and the wind moves them.',
+    'The old hall, lit from within, full of people who have just got off the wheel.',
+    'Every roof in Paris is a decision somebody made about where to put the chimney.',
+    'The island where the tower is, and the only part of the view that repeats itself on the other side.',
+    'A brick chimney, and the smoke still going up in the cold.',
+    'Long flat barges with one lamp each, going nowhere in particular.',
+    'The last ferry of the evening, crossing slowly.',
+    'Nine bridges, and the reflection of each one doubles the count.',
+    'Below the rim of the wheel the city stops being a map and becomes a field of light.',
+    'The gondola that goes round last, and is usually empty, and is the best one.'
+  ];
+  var cols=[['#ff8a5c','#ff5c3a'],['#ffd08a','#e8a13c'],['#ff6f9c','#d63f74'],['#5ce0d0','#2aa89c'],
+            ['#b08cff','#7a54d0'],['#ffe27a','#e0b03a']];
+
+  var cabinsEl=document.getElementById('cabins'), spokesEl=document.getElementById('spokes');
+  var N=16, ang=0, speed=360/44; // degrees per second
+  var spinning=true, lights=true;
+
+  for(var i=0;i<N;i++){
+    var a=i*(360/N);
+    var c=document.createElement('div');
+    c.className='cabin';
+    c.style.setProperty('--a',a+'deg');
+    c.style.transform='rotate('+a+'deg)';
+    var box=document.createElement('div');
+    box.className='box';
+    box.style.setProperty('--c1',cols[i%cols.length][0]);
+    box.style.setProperty('--c2',cols[i%cols.length][1]);
+    box.textContent=String(i+1).padStart(2,'0');
+    c.appendChild(box);
+    c.addEventListener('click',function(ev){
+      ev.stopPropagation();
+      var idx=[].indexOf.call(cabinsEl.children, ev.currentTarget);
+      document.getElementById('cabTitle').textContent=names[idx%names.length];
+      document.getElementById('cabText').textContent=texts[idx%texts.length];
+      document.querySelector('.panel .k').textContent='Cabin '+String(idx+1).padStart(2,'0');
+    });
+    cabinsEl.appendChild(c);
+
+    var sp=document.createElement('div');
+    sp.className='spoke';
+    sp.style.transform='rotate('+(a+11.25)+'deg)';
+    spokesEl.appendChild(sp);
+  }
+  document.getElementById('cabCount').textContent=N;
+
+  // stars
+  var stars=document.getElementById('stars');
+  for(var s=0;s<90;s++){
+    var st=document.createElement('div');
+    st.className='star';
+    st.style.left=Math.random()*100+'%';
+    st.style.top=Math.random()*60+'%';
+    st.style.animationDelay=(Math.random()*3).toFixed(2)+'s';
+    stars.appendChild(st);
+  }
+
+  var wheel=document.getElementById('wheel'), spokes=document.getElementById('spokes'), wrap=document.getElementById('wheelwrap');
+  var last=performance.now();
+  function loop(t){
+    var dt=(t-last)/1000; last=t;
+    if(spinning){
+      ang=(ang+speed*dt)%360;
+      wheel.style.transform='rotate('+ang+'deg)';
+      spokes.style.transform='rotate('+ang+'deg)';
+      wrap.querySelectorAll('.cabin').forEach(function(c){
+        var base=parseFloat(c.style.getPropertyValue('--a'));
+        c.style.transform='rotate('+(base+ang)+'deg)';
+      });
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById('ride').addEventListener('click',function(){
+    spinning=true; this.classList.add('on');
+    document.getElementById('stop').classList.remove('on');
+    document.getElementById('speedOut').textContent='22 min / turn';
+  });
+  document.getElementById('stop').addEventListener('click',function(){
+    spinning=false; this.classList.add('on');
+    document.getElementById('ride').classList.remove('on');
+    document.getElementById('speedOut').textContent='held';
+  });
+  document.getElementById('lights').addEventListener('click',function(){
+    lights=!lights; this.classList.toggle('on',lights);
+    document.body.style.setProperty('--glow', lights?'1':'0.25');
+    wheel.style.filter= lights?'none':'brightness(.35)';
+    spokes.style.opacity= lights?'1':'0.2';
+    wrap.querySelectorAll('.cabin .box').forEach(function(b){ b.style.filter= lights?'none':'brightness(.45)'; });
+  });
+  document.getElementById('lights').classList.add('on');
+})();
+</script>
+</body>
+</html>

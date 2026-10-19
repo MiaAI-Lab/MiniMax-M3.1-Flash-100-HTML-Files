@@ -1,0 +1,19 @@
+TITLE: L'ORÉL — an art deco travel poster
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "L'ORÉL — an art deco travel poster". Art direction: 1928 French travel lithograph. Palette: near-black surround #0d0b0a, poster paper #efe3c8, gold #c9a04a, deep sea blue #1d2b3a, vermilion #a83a2a, ink #191410. Type: Didot / Bodoni MT / Georgia for the display, Helvetica Neue for the small letterspaced labels. Layout: a header with a wide-tracked wordmark and a print specification; a two-column hero — on the left a kicker, a large Didone headline with an italic gold line, a paragraph about 1928 ocean crossings, and two gold outline buttons; on the right a 3:4 poster canvas (max-height 88vh) with a deep shadow, containing: a repeating-conic-gradient sunburst of fine gold rays, a gold sun disc with a radial gradient and a glow, an inline SVG ocean liner drawn in flat deep blue with cream portholes and a vermilion funnel, a sea band built from a repeating linear gradient of alternating navy stripes with a 2px gold rule above it, a centred title block (a letterspaced company name, a very large "L'ORÉL", and a subtitle flanked by two gold rules), and a foot block with the route and the fare. Below the hero: a four-column band explaining the decon rules (The sun, The ship, The rule, The type), a two-column essay on the poster as the departure gate, and a footer. Interaction: the sun disc breathes with a slow scale, the sunburst rotates imperceptibly, and everything else is static — the page is a poster, not an interface. Responsive: the hero stacks under 900px, the four-column band becomes 2×2 then one column, and the essay stacks.
+
+DESCRIPTION:
+A single art deco travel poster, faithfully reconstructed in CSS and one inline SVG: the ray burst, the flat gold sun, the liner in profile with its portholes lit, the striped sea, and a title block set in wide Didone capitals with gold rules. The surrounding page is the gallery label — four columns on the poster's own rules and an essay on why a poster like this was the last thing you saw before a ship left. Nothing distracts from the poster, which is exactly the discipline the poster itself was teaching.
+
+MAJOR VISUAL TECHNIQUES:
+- repeating-conic-gradient sunburst with fine gold rays, rotating imperceptibly
+- Radial-gradient gold sun disc with an outer glow, breathing on a slow sine
+- Flat inline SVG ocean liner: hull path, two funnels, cream porthole rectangles, vermilion funnel band
+- Sea built from a repeating linear gradient of alternating navy stripes
+- Single 2px gold rule dividing sea from sky
+- Didone title block with flanking hairline rules and wide tracking
+- 3:4 poster canvas with a deep shadow, isolated on a dark surround
+
+INTENDED INTERACTION MODEL:
+Almost none, deliberately. The sun breathes, the rays turn, and everything else is a fixed image to look at. The two buttons are decorative. This is the one page in the collection that behaves like a framed print.

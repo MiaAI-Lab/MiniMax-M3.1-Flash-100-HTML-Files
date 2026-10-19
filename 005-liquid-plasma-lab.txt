@@ -1,0 +1,20 @@
+TITLE: PLASMA — Liquid Gradient Laboratory
+
+PROMPT:
+Build a self-contained HTML page (all CSS/JS inline, no external fonts, images, CDN or libraries) that is a "PLASMA" liquid-gradient laboratory: a dark violet studio (#0b0714) where the visitor experiments with a live metaball field. The hero is centred with a tiny letter-spaced kicker, a very large light-weight headline whose second word is filled with a four-stop gradient clipped to the text, and a short lead paragraph. The main section is a two-column lab: on the left a rounded 30px stage box (min-height 420px) holding a canvas that renders a real metaball field — a low-resolution scalar field computed in JS (sum of inverse-square contributions from N attractors), thresholded into an isosurface, colour-mapped through a four-stop ramp, written to an ImageData buffer and upscaled with smoothing, then finished with a screen-blended specular sheen; on the right a glassy control column with three range sliders (viscosity, attractor count, flow speed) that each write their value into a live label, a grid of palette swatch buttons, three preset buttons that re-tint the field and randomise the sliders, and an "auto drift" switch. Below the lab a strip of four palette swatch cards with hex codes and a hover overlay blend, then a three-column "method" section, then a footer. Palette: magenta #ff5f9e, indigo #6f5bff, teal #28e0c8, amber #ffcb47. Also render a fixed full-page canvas behind the content carrying a slow, soft version of the same field. Responsive: lab collapses to one column under 980px, method section to one column, stage shrinks under 560px.
+
+DESCRIPTION:
+A hands-on visual laboratory where colour behaves like a fluid. Rather than faking liquid with blurred CSS blobs, the page computes a genuine scalar field on a coarse grid, thresholds it into a metaball isosurface, colour-ramps the result and upscales it with bilinear smoothing. The controls are real: viscosity tightens the isosurface threshold, attractor count changes the number of field sources, flow speed scales the drift, and switching palettes re-maps the ramp live.
+
+MAJOR VISUAL TECHNIQUES:
+- Hand-written metaball field solver (inverse-square radial contributions summed per sample)
+- Isosurface thresholding with alpha ramped from the field value
+- ImageData buffer rendering at 1/3 resolution, upscaled with imageSmoothingQuality: high
+- Four-stop colour ramp interpolated per pixel with alpha blending
+- Layered sine-drift attractor motion using irrational frequency ratios (never visibly loops)
+- Screen-blended specular radial sheen over the field
+- Second fixed background canvas running a slower version of the same field for depth
+- Glass control column (translucent fill + backdrop blur) with gradient range sliders
+
+INTENDED INTERACTION MODEL:
+Everything is directly manipulable. Sliders update the simulation live and echo their numeric value; palette swatches swap the colour ramp across both canvases and the swatch strip; presets randomise sliders and palette together; the auto-drift switch freezes or resumes the simulation loop. An FPS counter in the stage HUD reports real render performance.

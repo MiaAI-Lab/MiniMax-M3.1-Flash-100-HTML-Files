@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELIOS — an energy sunburst</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#0d1117;--panel:#141a24;--ink:#e6edf3;--dim:#7d8899;--line:rgba(255,255,255,.1);
+    --a:#f2b544;--b:#4aa8ff;--c:#5ddba0;--d:#f06b8a;--e:#a887ff;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    overflow-x:hidden;min-height:100vh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:26px 24px 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:20px;
+    border-bottom:1px solid var(--line);margin-bottom:30px;}
+  .brand{display:flex;align-items:center;gap:11px;font-size:12px;letter-spacing:.36em;text-transform:uppercase;}
+  .brand i{width:15px;height:15px;border-radius:50%;background:var(--a);box-shadow:0 0 16px var(--a);display:block;}
+  .brand span{color:var(--dim);}
+  .tabs{display:flex;gap:4px;background:var(--panel);padding:4px;border-radius:10px;}
+  .tabs button{background:transparent;border:none;color:var(--dim);padding:8px 16px;border-radius:7px;cursor:pointer;
+    font-family:inherit;font-weight:500;font-size:11.5px;line-height:1;letter-spacing:.1em;transition:.25s;}
+  .tabs button.on{background:var(--a);color:#241a04;font-weight:700;}
+
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:start;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;}
+  .card h2{font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;font-weight:500;}
+  .card .big{font-size:2.3rem;letter-spacing:-.03em;font-weight:600;margin:6px 0 2px;}
+  .card .sub{font-size:.82rem;color:var(--dim);}
+
+  .sunwrap{position:relative;display:grid;place-items:center;padding:10px 0 4px;}
+  svg.sun{width:100%;max-width:430px;height:auto;overflow:visible;}
+  .petal{cursor:pointer;transition:opacity .3s,transform .5s cubic-bezier(.2,.8,.2,1);transform-origin:center;
+    transform-box:fill-box;}
+  .petal:hover{transform:scale(1.05);}
+  .sunwrap.dim .petal:not(.hot){opacity:.28;}
+  .centertext{position:absolute;text-align:center;pointer-events:none;}
+  .centertext b{display:block;font-size:2rem;letter-spacing:-.03em;}
+  .centertext span{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .legend{display:grid;gap:2px;margin-top:18px;}
+  .lrow{display:grid;grid-template-columns:12px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:9px;
+    cursor:pointer;transition:.22s;font-size:.86rem;}
+  .lrow:hover{background:rgba(255,255,255,.05);}
+  .lrow.hot{background:rgba(255,255,255,.07);}
+  .lrow i{width:12px;height:12px;border-radius:3px;display:block;}
+  .lrow b{font-weight:500;}
+  .lrow span{color:var(--dim);font-variant-numeric:tabular-nums;}
+
+  .right{display:grid;gap:20px;}
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:18px;overflow:hidden;}
+  .stat div{background:var(--panel);padding:20px 22px;}
+  .stat u{display:block;text-decoration:none;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  .stat s{display:block;text-decoration:none;font-size:1.6rem;font-weight:600;margin-top:8px;letter-spacing:-.02em;}
+
+  .spark{height:74px;margin:16px 0 6px;}
+  .spark svg{width:100%;height:100%;overflow:visible;}
+  .tick{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);letter-spacing:.1em;}
+
+  .slider{margin-top:6px;}
+  .slider label{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .slider label b{color:var(--ink);font-weight:500;letter-spacing:.04em;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;outline:none;
+    background:linear-gradient(90deg,var(--a),var(--e));}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;
+    cursor:pointer;box-shadow:0 0 0 3px rgba(255,255,255,.12);}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:none;border-radius:50%;background:#fff;cursor:pointer;}
+
+  .feed{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .feed div{background:var(--panel);padding:13px 18px;display:grid;grid-template-columns:1fr auto;gap:12px;
+    font-size:.84rem;align-items:center;}
+  .feed div span{color:var(--dim);font-size:.78rem;}
+
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:900px){.grid{grid-template-columns:1fr;}}
+  @media(max-width:520px){.stat{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Helios <span>· Grid operator</span></div>
+    <div class="tabs" id="tabs">
+      <button class="on" data-range="day">Day</button>
+      <button data-range="week">Week</button>
+      <button data-range="month">Month</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Generation mix</h2>
+      <div class="big" id="total">412.8 GWh</div>
+      <div class="sub" id="totalSub">Today · 14 sources</div>
+      <div class="sunwrap" id="sunwrap">
+        <svg class="sun" id="sun" viewBox="0 0 400 400" aria-hidden="true"></svg>
+        <div class="centertext"><b id="cval">412.8</b><span id="clabel">GWh today</span></div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <div class="right">
+      <div class="stat">
+        <div><u>Carbon intensity</u><s id="ci">142 g/kWh</s></div>
+        <div><u>Peaker usage</u><s id="pk">18.4 %</s></div>
+        <div><u>Losses</u><s id="ls">4.1 %</s></div>
+        <div><u>Renewable share</u><s id="rn">61 %</s></div>
+      </div>
+
+      <div class="card">
+        <h2>Output</h2>
+        <div class="sub" id="sparkLabel">Last 12 hours</div>
+        <div class="spark">
+          <svg viewBox="0 0 400 74" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f2b544" stop-opacity=".35"/><stop offset="1" stop-color="#f2b544" stop-opacity="0"/>
+            </linearGradient></defs>
+            <path id="sarea" fill="url(#sg)" d=""/>
+            <path id="sline" fill="none" stroke="#f2b544" stroke-width="2" stroke-linejoin="round" d=""/>
+            <circle id="sdot" r="3.5" fill="#fff" cx="0" cy="0"/>
+          </svg>
+        </div>
+        <div class="tick"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>now</span></div>
+        <div class="slider" style="margin-top:20px">
+          <label>Hour of day <b id="hOut">12:00</b></label>
+          <input type="range" id="hour" min="0" max="23" value="12">
+        </div>
+      </div>
+
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Helios — synthetic operations data</span>
+    <span>All figures generated locally</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var SOURCES=[
+    {id:'wind',  name:'Onshore wind',   color:'#4aa8ff', base:96},
+    {id:'solar', name:'Solar array',     color:'#f2b544', base:64},
+    {id:'gas',   name:'Gas turbine',    color:'#f06b8a', base:88},
+    {id:'hydro', name:'Hydro reservoir', color:'#5ddba0', base:52},
+    {id:'nuke',  name:'Nuclear',         color:'#a887ff', base:74},
+    {id:'biom',  name:'Biomass',         color:'#8ad3c8', base:38}
+  ];
+  var svg=document.getElementById('sun');
+  var NS='http://www.w3.org/2000/svg';
+  var petals=[], hour=12, range='day';
+
+  function buildSun(){
+    svg.innerHTML=''; petals=[];
+    var cx=200, cy=200, r0=64, r1=168;
+    var total=SOURCES.reduce(function(a,s){return a+s.value;},0);
+    var ang=0;
+    SOURCES.forEach(function(s){
+      var frac=s.value/total;
+      var span=frac*Math.PI*2;
+      var a0=ang-Math.PI/2, a1=ang+span-Math.PI/2;
+      ang+=span;
+      var gap=0.016;
+      var p=document.createElementNS(NS,'path');
+      var x0=cx+Math.cos(a0+gap)*r0, y0=cy+Math.sin(a0+gap)*r0;
+      var x1=cx+Math.cos(a1-gap)*r0, y1=cy+Math.sin(a1-gap)*r0;
+      var x2=cx+Math.cos(a1-gap)*r1, y2=cy+Math.sin(a1-gap)*r1;
+      var x3=cx+Math.cos(a0+gap)*r1, y3=cy+Math.sin(a0+gap)*r1;
+      p.setAttribute('d','M'+x0+','+y0+' L'+x1+','+y1+' A'+r1+','+r1+' 0 '+(span>Math.PI?1:0)+',1 '+x2+','+y2+
+        ' L'+x3+','+y3+' A'+r0+','+r0+' 0 '+(span>Math.PI?1:0)+',0 '+x0+','+y0+' Z');
+      p.setAttribute('fill',s.color);
+      p.setAttribute('class','petal');
+      p.dataset.id=s.id;
+      svg.appendChild(p);
+      petals.push(p);
+    });
+    // inner ring + hub
+    var ring=document.createElementNS(NS,'circle');
+    ring.setAttribute('cx',cx);ring.setAttribute('cy',cy);ring.setAttribute('r',r0-6);
+    ring.setAttribute('fill','#141a24');ring.setAttribute('stroke','rgba(255,255,255,.12)');
+    svg.appendChild(ring);
+  }
+
+  function compute(h,rg){
+    var solarF=Math.max(0,Math.sin((h-6)/12*Math.PI));
+    var windF=0.55+0.45*Math.sin((h+3)/24*Math.PI*2);
+    var nightLoad=0.72+0.42*Math.sin((h-15)/24*Math.PI*2);
+    var mult = rg==='day'?1:rg==='week'?1.06:1.12;
+    SOURCES.forEach(function(s){
+      var v=s.base;
+      if(s.id==='solar') v=s.base*solarF*1.7;
+      if(s.id==='wind') v=s.base*windF;
+      if(s.id==='gas') v=s.base*(0.45+nightLoad*0.8);
+      if(s.id==='hydro') v=s.base*(0.8+0.2*Math.sin(h/3));
+      s.value=Math.max(2,v*mult);
+    });
+  }
+
+  function fmt(v){ return v>=100? v.toFixed(0) : v.toFixed(1); }
+
+  function render(){
+    compute(hour,range);
+    var total=SOURCES.reduce(function(a,s){return a+s.value;},0);
+    buildSun();
+    document.getElementById('total').textContent=total.toFixed(1)+' GWh';
+    document.getElementById('totalSub').textContent=range.charAt(0).toUpperCase()+range.slice(1)+' · '+SOURCES.length+' sources';
+    document.getElementById('cval').textContent=total.toFixed(1);
+    document.getElementById('clabel').textContent='GWh '+(range==='day'?'today':range);
+    // legend
+    var lg=document.getElementById('legend'); lg.innerHTML='';
+    SOURCES.forEach(function(s){
+      var d=document.createElement('div');
+      d.className='lrow'; d.dataset.id=s.id;
+      d.innerHTML='<i style="background:'+s.color+'"></i><b>'+s.name+'</b><span>'+fmt(s.value)+' GWh</span>';
+      lg.appendChild(d);
+    });
+    // derived stats
+    var rn=(SOURCES[0].value+SOURCES[1].value+SOURCES[3].value+SOURCES[5].value)/total*100;
+    document.getElementById('rn').textContent=Math.round(rn)+' %';
+    document.getElementById('ci').textContent=Math.round(410-rn*3.6)+' g/kWh';
+    document.getElementById('pk').textContent=(SOURCES[2].value/total*100).toFixed(1)+' %';
+    document.getElementById('ls').textContent=(3+ (100-rn)/28).toFixed(1)+' %';
+    // sparkline
+    var pts=[],N=13;
+    for(var i=0;i<N;i++){
+      var hh=(hour-12+i+24)%24;
+      var sav=SOURCES.slice();
+      compute(hh,range);
+      var tot=SOURCES.reduce(function(a,s){return a+s.value;},0);
+      pts.push(tot);
+    }
+    SOURCES.forEach(function(s,i){});
+    compute(hour,range);
+    var mx=Math.max.apply(null,pts), mn=Math.min.apply(null,pts);
+    var d='';
+    pts.forEach(function(p,i){
+      var x=i*400/(N-1), y=70-((p-mn)/((mx-mn)||1))*60;
+      d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+    });
+    document.getElementById('sline').setAttribute('d',d);
+    document.getElementById('sarea').setAttribute('d',d+'L400,74L0,74Z');
+    var last=pts[pts.length-1];
+    document.getElementById('sdot').setAttribute('cx',400);
+    document.getElementById('sdot').setAttribute('cy',70-((last-mn)/((mx-mn)||1))*60);
+    // feed
+    var feed=document.getElementById('feed'); feed.innerHTML='';
+    SOURCES.slice(0,4).forEach(function(s){
+      var d2=document.createElement('div');
+      d2.innerHTML='<div style="display:flex;align-items:center;gap:9px"><i style="width:9px;height:9px;border-radius:2px;background:'+
+        s.color+';display:block"></i>'+s.name+'</div><span>'+fmt(s.value)+' GWh</span>';
+      feed.appendChild(d2);
+    });
+  }
+
+  // hover interactions: highlight petal + legend row
+  function hot(id,on){
+    document.querySelectorAll('.petal').forEach(function(p){ p.classList.toggle('hot', on && p.dataset.id===id); });
+    document.querySelectorAll('.lrow').forEach(function(r){ r.classList.toggle('hot', on && r.dataset.id===id); });
+    document.getElementById('sunwrap').classList.toggle('dim', !!on);
+  }
+  document.getElementById('sun').addEventListener('pointerover',function(e){
+    var p=e.target.closest('.petal'); if(p) hot(p.dataset.id,true);
+  });
+  document.getElementById('sun').addEventListener('pointerout',function(e){
+    if(!e.target.closest('.petal')) return;
+    hot(null,false);
+  });
+  document.getElementById('legend').addEventListener('pointerover',function(e){
+    var r=e.target.closest('.lrow'); if(r) hot(r.dataset.id,true);
+  });
+  document.getElementById('legend').addEventListener('pointerout',function(){
+    hot(null,false);
+  });
+
+  document.getElementById('hour').addEventListener('input',function(){
+    hour=+this.value;
+    document.getElementById('hOut').textContent=String(hour).padStart(2,'0')+':00';
+    render();
+  });
+
+  document.getElementById('tabs').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on'); range=b.dataset.range; render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

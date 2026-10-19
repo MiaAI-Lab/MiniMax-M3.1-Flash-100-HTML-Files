@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERIDIAN — Calibre 9</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#08090b;--ink:#f0ece4;--dim:#8a8579;--gold:#c9a227;--gold2:#f0d47a;--line:rgba(240,236,228,.14);}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    overflow-x:hidden;min-height:100vh;}
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 60% 50% at 50% 42%,rgba(201,162,39,.13),transparent 65%);}
+  .noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");}
+  .wrap{position:relative;z-index:3;max-width:1240px;margin:0 auto;padding:0 4vw 90px;}
+
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid var(--line);}
+  .logo{font-size:12px;letter-spacing:.52em;text-transform:uppercase;}
+  .logo span{color:var(--gold);}
+  nav{display:flex;gap:26px;flex-wrap:wrap;}
+  nav a{color:var(--dim);text-decoration:none;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+    transition:.3s;}
+  nav a:hover{color:var(--gold);}
+
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:6vw;align-items:center;padding:9vh 0 8vh;}
+  .k{font-size:10px;letter-spacing:.44em;text-transform:uppercase;color:var(--gold);}
+  h1{font-family:"Didot","Bodoni MT",Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6.4vw,5rem);
+    line-height:1.02;letter-spacing:.01em;margin:22px 0 24px;}
+  h1 em{font-style:italic;color:var(--gold2);}
+  .lede{color:var(--dim);font-size:1.02rem;line-height:1.95;max-width:46ch;}
+  .lede b{color:var(--ink);font-weight:400;}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px;}
+  .btn{border:1px solid var(--gold);color:var(--gold);background:transparent;padding:15px 32px;cursor:pointer;
+    font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;transition:.4s;position:relative;overflow:hidden;}
+  .btn::before{content:"";position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;
+    transition:transform .45s cubic-bezier(.2,.8,.2,1);z-index:0;}
+  .btn span{position:relative;z-index:1;}
+  .btn:hover{color:#08090b;}
+  .btn:hover::before{transform:scaleX(1);}
+  .btn.solid{background:var(--gold);color:#08090b;}
+  .btn.solid::before{background:var(--gold2);}
+  .btn.solid:hover{color:#08090b;}
+
+  .watch{position:relative;display:grid;place-items:center;padding:10px 0;}
+  .case{width:min(74vw,360px);aspect-ratio:1;border-radius:50%;position:relative;
+    background:conic-gradient(from 210deg,#3a3a3c,#0e0e10 25%,#2e2e30 50%,#0c0c0e 75%,#333335);
+    box-shadow:0 50px 100px -40px #000, inset 0 0 0 2px rgba(240,236,228,.10), inset 0 2px 3px rgba(255,255,255,.16);}
+  .bezel{position:absolute;inset:7%;border-radius:50%;
+    background:radial-gradient(circle at 38% 30%,#232326,#0a0a0c 70%);
+    box-shadow:inset 0 0 0 1px rgba(201,162,39,.45), inset 0 0 30px rgba(0,0,0,.9);}
+  .dial{position:absolute;inset:10%;border-radius:50%;
+    background:radial-gradient(circle at 42% 32%,#1a1a1d,#08080a 72%);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.9);}
+  .markers{position:absolute;inset:12%;}
+  .mk{position:absolute;left:50%;top:0;width:2px;height:7px;margin-left:-1px;background:var(--gold);transform-origin:50% 428%;
+    border-radius:1px;opacity:.9;}
+  .num{position:absolute;inset:0;font-family:"Didot",Georgia,serif;font-size:clamp(13px,2.1vw,20px);color:var(--ink);
+    text-align:center;line-height:1;}
+  .num i{position:absolute;left:50%;top:8%;transform:translateX(-50%);font-style:normal;}
+  .brandmark{position:absolute;left:0;right:0;top:40%;text-align:center;font-size:9.5px;letter-spacing:.36em;
+    text-transform:uppercase;color:var(--dim);}
+  .brandmark b{display:block;color:var(--gold2);font-size:13px;letter-spacing:.3em;margin-bottom:5px;font-weight:400;}
+  .sub{position:absolute;left:0;right:0;bottom:24%;text-align:center;font-size:8px;letter-spacing:.3em;color:#5e5a52;
+    text-transform:uppercase;}
+  .hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:3px;}
+  .hand.h{width:3px;height:33%;margin-left:-1.5px;background:linear-gradient(180deg,var(--ink),#8b8578);}
+  .hand.m{width:2px;height:44%;margin-left:-1px;background:linear-gradient(180deg,var(--ink),#6f6a60);}
+  .hand.s{width:1px;height:48%;margin-left:-.5px;background:var(--gold);}
+  .hand::after{content:"";position:absolute;left:50%;bottom:-3px;width:7px;height:7px;margin-left:-3.5px;
+    border-radius:50%;background:var(--gold);}
+  .crown{position:absolute;right:-7%;top:44%;width:11%;height:7%;border-radius:3px;
+    background:repeating-linear-gradient(90deg,#c9a227 0 3px,#8a6a18 3px 6px);cursor:grab;}
+  .crown:active{cursor:grabbing;}
+  .pusher{position:absolute;inset:0;border-radius:50%;}
+  .pusher.hit{position:absolute;inset:0;border-radius:50%;}
+
+  .specs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .specs div{padding:30px 24px;border-right:1px solid var(--line);}
+  .specs div:last-child{border-right:none;}
+  .specs u{display:block;text-decoration:none;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);}
+  .specs s{display:block;text-decoration:none;font-family:"Didot",Georgia,serif;font-size:1.4rem;margin-top:10px;}
+  .specs p{font-size:.84rem;color:var(--dim);line-height:1.75;margin-top:8px;}
+
+  .section{padding:10vh 0;}
+  .section h2{font-family:"Didot",Georgia,serif;font-weight:400;font-size:clamp(1.7rem,3.4vw,2.6rem);margin-bottom:20px;}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:6vw;}
+  .cols p{color:var(--dim);line-height:1.95;font-size:.98rem;}
+  .cols p+p{margin-top:1.2em;}
+  .mvt{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);}
+  .mvt div{padding:26px 22px;border-right:1px solid var(--line);}
+  .mvt div:last-child{border-right:none;}
+  .mvt h4{font-family:"Didot",Georgia,serif;font-weight:400;font-size:1.1rem;margin-bottom:8px;}
+  .mvt p{font-size:.86rem;color:var(--dim);line-height:1.8;}
+  .mvt .n{font-size:9.5px;letter-spacing:.3em;color:var(--gold);margin-bottom:14px;display:block;}
+
+  .strap{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px;}
+  .swatch{height:120px;border-radius:6px;border:1px solid var(--line);}
+  .swatch div{padding:12px 14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  .swatch div b{color:var(--ink);display:block;letter-spacing:.06em;text-transform:none;font-size:13px;margin-bottom:4px;}
+
+  footer{margin-top:6vh;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:940px){.hero{grid-template-columns:1fr;gap:5vh;}.specs{grid-template-columns:repeat(2,1fr);}
+    .specs div:nth-child(2){border-right:none;}.specs div:nth-child(-n+2){border-bottom:1px solid var(--line);}
+    .cols{grid-template-columns:1fr;}.mvt{grid-template-columns:1fr;}.mvt div{border-right:none;border-bottom:1px solid var(--line);}}
+  @media(max-width:560px){.specs{grid-template-columns:1fr;}.specs div{border-right:none;border-bottom:1px solid var(--line);}
+    .strap{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="noise"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">Meridian <span>Genève</span></div>
+    <nav><a href="#spec">Specification</a><a href="#calibre">Calibre</a><a href="#strap">Straps</a></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="k">Calibre 9 · 39 mm</div>
+      <h1>Time, kept<br>in <em>eight hundred</em> parts</h1>
+      <p class="lede">The Calibre 9 is wound, regulated and finished by a single watchmaker in a workshop with one window. <b>Two hundred and eighty hours</b> of reserve, and a rate you can read in a seismograph.</p>
+      <div class="cta">
+        <button class="btn solid"><span>Reserve a piece</span></button>
+        <button class="btn"><span>Book a viewing</span></button>
+      </div>
+    </div>
+
+    <div class="watch">
+      <div class="case">
+        <div class="bezel"></div>
+        <div class="dial">
+          <div class="markers" id="markers"></div>
+          <div class="num" id="nums"></div>
+          <div class="brandmark"><b>MERIDIAN</b>GENÈVE</div>
+          <div class="sub">Calibre 9 · 28,800 vph</div>
+        </div>
+        <div class="hand h" id="hh"></div>
+        <div class="hand m" id="mh"></div>
+        <div class="hand s" id="sh"></div>
+        <div class="crown" id="crown" title="Drag to wind"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="specs" id="spec">
+    <div><u>Case</u><s>39 mm</s><p>316L steel, 9.2 mm thin, 50 m water resistant.</p></div>
+    <div><u>Movement</u><s>Calibre 9</s><p>Manual wind, 21 jewels, twin barrel, 280 h reserve.</p></div>
+    <div><u>Frequency</u><s>28,800</s><p>Four hertz. The balance beats 8 times a second.</p></div>
+    <div><u>Deviation</u><s>−1 / +3 s</s><p>Per day, in five positions, over thirty days.</p></div>
+  </section>
+
+  <section class="section" id="calibre">
+    <h2>The calibre, described without adjectives</h2>
+    <div class="cols">
+      <div>
+        <p>It is a twin-barrel movement, which means two mainsprings sit side by side rather than one behind the other. The result is a longer, flatter power curve: the watch holds its rate for five minutes when fully wound and still holds it on the last turn of the crown.</p>
+        <p>There is no rotor. A watch that has not been worn for two days will not have kept the time while it sat in a drawer, and a hand wound watch never pretends otherwise.</p>
+      </div>
+      <div>
+        <p>The bridge is finished by hand with a single tool called a black-polish steel: a flat tin charged with emery, worked in a figure-eight until the surface has no measurable reflection at all. It takes four hours and it cannot be undone.</p>
+        <p>Each movement is timed in six positions and on a rocking arm. The result is written on a card and signed, and the card is folded into the case with the watch.</p>
+      </div>
+    </div>
+    <div class="mvt" style="margin-top:38px">
+      <div><span class="n">01 / BRIDGE</span><h4>Black polish</h4><p>Flat surfaces finished to a mirror that reflects nothing — the mark of a single hand working for hours.</p></div>
+      <div><span class="n">02 / GEAR</span><h4>Gold wheels</h4><p>Solid brass, cut with 96 teeth, polished on the flank so the oil sits where it is needed.</p></div>
+      <div><span class="n">03 / JEWEL</span><h4>21 rubies</h4><p>Synthetic corundum in the pivots. Harder than steel, and they hold oil for decades.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="strap">
+    <h2>Straps</h2>
+    <div class="strap">
+      <div class="swatch"><div style="height:120px;background:linear-gradient(135deg,#2a2320,#12100f)"></div>
+        <div><b>Black alligator</b>Hand-stitched, 18 mm</div></div>
+      <div class="swatch"><div style="height:120px;background:linear-gradient(135deg,#6b4a2b,#3a2718)"></div>
+        <div><b>Cognac calf</b>Vegetable tanned, 18 mm</div></div>
+      <div class="swatch"><div style="height:120px;background:linear-gradient(135deg,#8a8f96,#3f454c)"></div>
+        <div><b>Brushed steel</b>Five-link, integrated</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Meridian — Genève</span>
+    <span>Drag the crown to wind the watch</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // hour markers
+  var mk=document.getElementById('markers');
+  for(var i=0;i<60;i++){
+    var d=document.createElement('div');
+    d.className='mk';
+    d.style.transform='rotate('+(i*6)+'deg)';
+    d.style.height=(i%5===0)?'9%':'4%';
+    d.style.opacity=(i%5===0)?'1':'0.4';
+    mk.appendChild(d);
+  }
+  // numerals
+  var nums=document.getElementById('nums');
+  [12,3,6,9].forEach(function(n){
+    var s=document.createElement('i');
+    s.textContent=n;
+    s.style.top='8%';
+    if(n===3) s.style.left='auto'; if(n===6) s.style.top='auto'; if(n===9) s.style.left='auto';
+    if(n===3){s.style.right='7%';s.style.top='50%';s.style.transform='translateY(-50%)';}
+    if(n===6){s.style.top='auto';s.style.bottom='8%';}
+    if(n===9){s.style.left='7%';s.style.top='50%';s.style.transform='translateY(-50%)';}
+    nums.appendChild(s);
+  });
+
+  var hh=document.getElementById('hh'), mh=document.getElementById('mh'), sh=document.getElementById('sh');
+  var wind=0;
+  function tick(){
+    var d=new Date();
+    var h=d.getHours()%12, m=d.getMinutes(), s=d.getSeconds();
+    hh.style.transform='rotate('+((h+m/60)*30)+'deg)';
+    mh.style.transform='rotate('+(m*6+s/60)+'deg)';
+    sh.style.transform='rotate('+(s*6)+'deg)';
+  }
+  tick(); setInterval(tick,1000);
+
+  // wind the crown by dragging it vertically
+  var crown=document.getElementById('crown');
+  var dragging=false,lastY=0;
+  crown.addEventListener('pointerdown',function(e){
+    dragging=true; lastY=e.clientY; crown.setPointerCapture(e.pointerId);
+  });
+  crown.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    var dy=lastY-e.clientY; lastY=e.clientY;
+    if(dy>0){
+      wind=Math.min(100,wind+dy*0.6);
+      crown.style.transform='rotate('+(wind*4)+'deg)';
+    }
+  });
+  window.addEventListener('pointerup',function(){dragging=false;});
+  crown.addEventListener('dblclick',function(){wind=0;crown.style.transform='rotate(0deg)';});
+})();
+</script>
+</body>
+</html>

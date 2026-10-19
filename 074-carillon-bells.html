@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARILLON — a tower of bells</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0c0e1a;--ink:#f2ecdd;--dim:#8a8ca6;--line:rgba(242,236,221,.14);--gold:#e0b451;--bronze:#b3832f;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 60% 45% at 50% 0%,rgba(224,180,81,.09),transparent 62%);}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50% 50% 18% 18%;background:linear-gradient(150deg,#f3d789,var(--bronze));
+    display:block;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--gold);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .tower{margin-top:5vh;border:1px solid var(--line);background:linear-gradient(180deg,#11142a,#0a0c18);
+    padding:16px;position:relative;}
+  .tower canvas{width:100%;height:auto;display:block;cursor:pointer;}
+  .panel{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .box{border:1px solid var(--line);padding:18px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:14px;}
+  .partials{display:flex;align-items:flex-end;gap:7px;height:120px;}
+  .partials div{flex:1;background:linear-gradient(180deg,var(--gold),var(--bronze));height:2%;border-radius:2px 2px 0 0;
+    transition:height .06s linear;}
+  .plabels{display:flex;gap:7px;margin-top:6px;}
+  .plabels span{flex:1;text-align:center;font:400 9px/1.2 "Courier New",monospace;color:var(--dim);}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--gold);color:var(--gold);background:rgba(224,180,81,.1);}
+  .rows div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);border-bottom:1px solid rgba(242,236,221,.07);}
+  .rows div:last-child{border-bottom:none;}
+  .rows b{color:var(--ink);font-weight:400;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.panel{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Carillon</div>
+    <div class="meta">Six bells · 5 octaves · 1.4 tonnes of bronze</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Campanology</div>
+    <h1>A bell is a<br>instrument that<br>plays <b>one note</b><br>and four more</h1>
+    <p>Strike a bell and it does not produce a pitch — it produces a chord that its shape has decided for it. There is a hum an octave below, a prime, a minor third, a fifth, and a nominal two octaves up, each with its own decay time. The bronze is tuned by shaving the inside of the bell a fraction of a millimetre at a time.</p>
+  </section>
+
+  <section class="tower">
+    <canvas id="cv" width="1200" height="520"></canvas>
+  </section>
+
+  <section class="panel">
+    <div class="box">
+      <h2>Partials of the last bell struck</h2>
+      <div class="partials" id="parts"></div>
+      <div class="plabels">
+        <span>hum<br>×0.5</span><span>prime<br>×1</span><span>ter<br>×1.2</span><span>quint<br>×1.5</span>
+        <span>nom<br>×2</span><span>×2.5</span><span>×3</span><span>×4.2</span>
+      </div>
+      <div class="btns" style="margin-top:18px">
+        <button class="btn on" id="peal">Peal</button>
+        <button class="btn" id="hum">Hum bell</button>
+        <button class="btn" id="strike">Strike one</button>
+      </div>
+    </div>
+    <div class="box">
+      <h2>The tower</h2>
+      <div class="rows">
+        <div>Bell <b id="b0">—</b></div>
+        <div>Nominal <b id="b1">—</b></div>
+        <div>Weight <b id="b2">—</b></div>
+        <div>Diameter <b id="b3">—</b></div>
+        <div>Hum note <b id="b4">—</b></div>
+        <div>Ringing <b id="b5">—</b></div>
+        <div>Cast <b id="b6">1908, Amsterdam</b></div>
+        <div>Tower <b>45 m, north transept</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>partials<br>drift</h2>
+      <p>The partials of a real bell are not in harmonic ratios. The hum sits near half the nominal, the prime at the nominal, the tierce a minor third above, the quint a fifth above, and the nominal two octaves up — but each of them is a little sharp or a little flat, and those small errors are what make a bell sound like a bell and not like an organ pipe.</p>
+      <p>Because the hum decays slowest, a struck bell appears to go flat as it rings: the high partials die away within a second or two, leaving the hum and the prime, and the pitch you hear in the last five seconds is a fifth below the pitch you heard in the first.</p>
+    </div>
+    <div>
+      <h2>Carillon</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">A carillon is played from a keyboard, usually by hand on batons connected to ropes and wires, and a good carillonneur can change the tempo of a phrase in real time. Fifty bells is a large instrument; six is a chamber one.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Every bell here is synthesised in the browser: eight partials, each with its own gain and its own exponential decay, summed into one output. Nothing is played back — the sound is generated from the same partial table that lights the bars above it.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Carillon — a tower of bells</span>
+    <span>Audio synthesised with the Web Audio API</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var PARTIALS=[
+    {r:0.5, g:0.60, d:9.0, n:'hum'},
+    {r:1.0, g:0.85, d:6.0, n:'prime'},
+    {r:1.19,g:0.62, d:3.6, n:'tierce'},
+    {r:1.5, g:0.40, d:2.6, n:'quint'},
+    {r:2.0, g:0.52, d:2.2, n:'nominal'},
+    {r:2.5, g:0.22, d:1.3, n:'deciem'},
+    {r:3.0, g:0.16, d:0.9, n:'undeciem'},
+    {r:4.2, g:0.10, d:0.5, n:'double octave'}
+  ];
+  var BELLS=[
+    {n:'Bells 1–2', f:123.47, wt:'2,140 kg', dia:'2,010 mm'},
+    {n:'Bell 3',     f:146.83, wt:'1,320 kg', dia:'1,720 mm'},
+    {n:'Bell 4',     f:174.61, wt:'820 kg',   dia:'1,420 mm'},
+    {n:'Bell 5',     f:207.65, wt:'590 kg',   dia:'1,180 mm'},
+    {n:'Bell 6',     f:246.94, wt:'430 kg',   dia:'1,010 mm'},
+    {n:'Bell 7',     f:293.66, wt:'310 kg',   dia:'860 mm'}
+  ];
+  var audio=null, master=null;
+  var rings=[], swings=[];
+  var lastIdx=-1, ringEnds=0, tNow=0;
+  var barEls=[];
+  var bars=document.getElementById('parts');
+  PARTIALS.forEach(function(p){
+    var d=document.createElement('div'); bars.appendChild(d); barEls.push(d);
+  });
+
+  function ensureAudio(){
+    if(audio) return;
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    audio=new AC();
+    master=audio.createGain();
+    master.gain.value=0.16;
+    master.connect(audio.destination);
+  }
+  function strike(idx){
+    ensureAudio();
+    if(!audio) return;
+    if(audio.state==='suspended') audio.resume();
+    var b=BELLS[idx];
+    var now=audio.currentTime;
+    PARTIALS.forEach(function(p){
+      var osc=audio.createOscillator();
+      var g=audio.createGain();
+      // slight detune so partials are not perfectly harmonic
+      osc.type='sine';
+      osc.frequency.value=b.f*p.r*(1+(Math.random()-0.5)*0.0015);
+      g.gain.setValueAtTime(0,now);
+      g.gain.linearRampToValueAtTime(p.g,now+0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+p.d);
+      osc.connect(g); g.connect(master);
+      osc.start(now); osc.stop(now+p.d+0.1);
+    });
+    lastIdx=idx;
+    ringEnds=tNow+6.5;
+    // visual
+    var bx=BELLS[idx].x, by=BELLS[idx].y;
+    rings.push({x:bx,y:by,t:0});
+    swings.push({x:bx,y:by,a:0.55,v:0});
+    document.getElementById('b0').textContent=b.n;
+    document.getElementById('b1').textContent=b.f.toFixed(2)+' Hz';
+    document.getElementById('b2').textContent=b.wt;
+    document.getElementById('b3').textContent=b.dia;
+    document.getElementById('b4').textContent=(b.f/2).toFixed(2)+' Hz (×0.5)';
+  }
+  function noteName(f){
+    var names=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    var n=Math.round(12*Math.log(f/440)/Math.log(2))+69;
+    return names[((n%12)+12)%12]+(Math.floor(n/12)-1);
+  }
+  // layout the bells
+  (function layout(){
+    var cx=W/2;
+    var order=[0,1,2,3,4,5];
+    // draw them in a stack inside a tower arch
+    BELLS.forEach(function(b,i){
+      b.x = cx + (i%2===0? -1:1)*(40 + Math.floor(i/2)*10);
+      b.y = H*0.78 - i*54;
+    });
+  })();
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    // night sky
+    var sky=ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#141834'); sky.addColorStop(0.55,'#0d1024'); sky.addColorStop(1,'#080a16');
+    ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
+    // stars
+    ctx.fillStyle='rgba(255,255,255,.4)';
+    for(var s=0;s<70;s++){
+      var sx=(s*97)%W, sy=(s*53)%(H*0.6);
+      ctx.fillRect(sx,sy,1.4,1.4);
+    }
+    // tower
+    var tw=W*0.30, tx=(W-tw)/2, ty=H*0.06;
+    ctx.fillStyle='#1c1a24';
+    ctx.beginPath();
+    ctx.moveTo(tx, H); ctx.lineTo(tx, ty+60);
+    ctx.quadraticCurveTo(W/2, ty-70, tx+tw, ty+60);
+    ctx.lineTo(tx+tw, H); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(224,180,81,.25)'; ctx.lineWidth=2; ctx.stroke();
+    // arch opening
+    ctx.fillStyle='#080a12';
+    ctx.beginPath();
+    ctx.moveTo(W/2-160,H); ctx.lineTo(W/2-160, H*0.30);
+    ctx.quadraticCurveTo(W/2, H*0.10, W/2+160, H*0.30);
+    ctx.lineTo(W/2+160,H); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(224,180,81,.18)'; ctx.lineWidth=2; ctx.stroke();
+
+    // waves
+    for(var i=rings.length-1;i>=0;i--){
+      var r=rings[i];
+      r.t+=0.016;
+      if(r.t>1){ rings.splice(i,1); continue; }
+      var rad=r.t*Math.max(W,H)*0.62;
+      ctx.beginPath(); ctx.arc(r.x,r.y,rad,0,6.283);
+      ctx.strokeStyle='rgba(224,180,81,'+(0.42*(1-r.t)).toFixed(3)+')';
+      ctx.lineWidth=2.4*(1-r.t)+0.4; ctx.stroke();
+    }
+    // bells
+    for(var i=swings.length-1;i>=0;i--){
+      var sw=swings[i];
+      sw.v += -sw.a*0.0022;
+      sw.v *= 0.998;
+      sw.a += sw.v;
+      if(Math.abs(sw.a)<0.002 && Math.abs(sw.v)<0.002) swings.splice(i,1);
+    }
+    BELLS.forEach(function(b,i){
+      var ang=0;
+      for(var j=0;j<swings.length;j++){ if(swings[j].x===b.x&&swings[j].y===b.y) ang=swings[j].a; }
+      drawBell(b.x,b.y,ang,b);
+    });
+    // frame
+    ctx.strokeStyle='rgba(242,236,221,.12)'; ctx.lineWidth=1;
+    ctx.strokeRect(.5,.5,W-1,H-1);
+    ctx.fillStyle='rgba(242,236,221,.35)'; ctx.font='12px "Courier New",monospace';
+    ctx.fillText('CLICK A BELL', 18, 26);
+  }
+  function drawBell(x,y,ang,b){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(ang);
+    var w=30+(b.f-120)*0.06;
+    // clapper
+    ctx.strokeStyle='#8a6a2a'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,28); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,30,4,0,6.283); ctx.fillStyle='#8a6a2a'; ctx.fill();
+    // body
+    var g=ctx.createLinearGradient(-w,-24,w,24);
+    g.addColorStop(0,'#6d4f1c'); g.addColorStop(0.35,'#e6c479'); g.addColorStop(0.55,'#f6e2ac');
+    g.addColorStop(0.8,'#b3832f'); g.addColorStop(1,'#5c4118');
+    ctx.fillStyle=g;
+    ctx.beginPath();
+    ctx.moveTo(-w*0.32,-26);
+    ctx.bezierCurveTo(-w*0.9,-4,-w,-14,-w,16);
+    ctx.lineTo(w,16);
+    ctx.bezierCurveTo(w,-14,w*0.9,-4,w*0.32,-26);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(60,40,10,.5)'; ctx.lineWidth=1; ctx.stroke();
+    // lip
+    ctx.fillStyle='rgba(70,48,14,.5)';
+    ctx.fillRect(-w,14,w*2,5);
+    ctx.restore();
+    // label
+    ctx.fillStyle='rgba(242,236,221,.45)'; ctx.font='10px "Courier New",monospace';
+    ctx.textAlign='center';
+    ctx.fillText(noteName(b.f), x, y+42);
+    ctx.textAlign='left';
+  }
+  cv.addEventListener('click',function(e){
+    var r=cv.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
+    var best=-1, bd=1e9;
+    BELLS.forEach(function(b,i){
+      var d=Math.hypot(b.x-x,b.y-y);
+      if(d<bd){bd=d;best=i;}
+    });
+    if(best>=0 && bd<70) strike(best);
+  });
+  document.getElementById('strike').addEventListener('click',function(){
+    strike(Math.floor(Math.random()*BELLS.length));
+  });
+  document.getElementById('hum').addEventListener('click',function(){ strike(0); });
+  document.getElementById('peal').addEventListener('click',function(){
+    var phrase=[0,1,2,3,4,5,4,3,2,1,0,5,0];
+    phrase.forEach(function(i,k){ setTimeout(function(){ strike(i); }, k*340); });
+  });
+
+  function loop(t){
+    tNow=t/1000;
+    // partial bars
+    var left=Math.max(0,ringEnds-tNow);
+    for(var p=0;p<PARTIALS.length;p++){
+      var env=Math.exp(-(6.5-left)*0.5);
+      var h=PARTIALS[p].g*env*(left>0?1:0.06)*100;
+      barEls[p].style.height=Math.max(2,Math.min(100,h))+'%';
+    }
+    document.getElementById('b5').textContent=left>0?(left.toFixed(1)+' s'):'—';
+    draw(t);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

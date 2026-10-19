@@ -1,0 +1,19 @@
+TITLE: BOOT//SEC — vintage machine console
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that emulates a 1979 home computer sitting in a dim room: "ORTHOLUX MODEL 77". Art direction: amber phosphor CRT. Palette: amber #ffb000 on near-black #0a0700, with green #7dff9b for OK statuses, pale amber #ffd67a for headings, red #ff6b5e for errors and a dim brown #7a5410 for inactive chrome. Everything is Courier New monospace. The machine is a rounded bezel with a thick outer shell ring, an inner amber bloom, CRT scanlines (repeating-linear-gradient in multiply blend), a corner vignette, a top bezel strip with the model name, a BIOS badge and three LEDs (two lit, one tied to activity), and a bottom strip listing the hardware and the copyright. On load the machine runs a POST sequence that types line by line with realistic per-line delays: CPU, RAM, ROM, CRT, two floppy drives (one present, one NONE), tape unit and RTC, each ending in OK/NONE, then "POST COMPLETE — 4.21 SECONDS ELAPSED" and a prompt. After POST the user gets a working command prompt "C:\ORTHEX>" with a blinking block cursor, live keyboard input (character-by-character echo, backspace, arrow-key history) and commands: help, dir, ver, mem, spec, time, about, cls and reboot (which clears the screen and replays POST). A row of quick-command buttons under the screen runs any of those commands with one click. Responsive: the CRT fills the width, padding and bezel shrink on small screens, and the button row wraps.
+
+DESCRIPTION:
+A lovingly modelled amber terminal that boots, fails a drive, and then hands you a working prompt. The nostalgia comes from the details rather than the nostalgia filter: the POST takes four seconds, one drive reports NONE, the memory map prints real memory addresses, and the cursor is a hard block that blinks. Everything is text, and the text is the interface.
+
+MAJOR VISUAL TECHNIQUES:
+- CRT illusion: scanline repeating-linear-gradient in multiply blend, radial corner vignette, inner amber glow, outer shell ring
+- Amber phosphor text-shadow bloom on every glyph
+- Colour-coded status classes (ok / warn / err / dim) inside a single <pre> buffer
+- Timed POST sequence with per-line delays and a hardware-detection style table
+- Custom block-cursor implementation with steps() blink animation
+- Keydown/keyup handling for echo, backspace and arrow-key command history
+- LED indicators with box-shadow bloom
+
+INTENDED INTERACTION MODEL:
+Boot first, then command. The POST sequence self-plays on load; the prompt accepts real typed input with history recall via the arrow keys. A row of labelled buttons executes the common commands for visitors who would rather click. REBOOT clears the screen and replays the whole POST sequence, which is the best easter egg on the page.

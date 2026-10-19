@@ -1,0 +1,17 @@
+TITLE: KARESANSUI — a garden of raked sand
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "KARESANSUI — a garden of raked sand". Art direction: quiet, warm sand against near-black, raking light. Palette: ground #0e0d0b, ink #ece7db, dim #857f72, hairline rgba(236,231,219,.13), sand #d9cba6, stone #6d6a63. Layout: a header with a striped logo mark and a monospaced specification line; then a hero with a sand kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding an 1100×560 canvas and an absolutely positioned monospace HUD; then a control band of three sliders (Rake width, Depth of cut, Angle of repose) and three buttons (Rake the garden, Rain, Reset); then a two-column section pairing an essay on what a garden is for with a note on what is actually happening; and a footer. The garden is a height field of two hundred and twenty by a hundred and twelve cells, drawn with a raking light from the upper left so that every groove shows as a highlight on one side and a shadow on the other. The rake is a tool that displaces material sideways: dragging it lowers a line and pushes the displaced sand out to either side, and the stones are impassable so the sand piles against them. After every stroke the field is relaxed, with any neighbouring pair whose height differs by more than the tangent of the angle of repose passing sand downhill until it does not, which is the avalanche that heals a steep cut. Interaction: dragging on the canvas rakes the sand; Rake the garden sweeps concentric lines around every stone; Rain stops the sand from moving; Reset clears the garden. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A dry garden you can actually rake. The sand is a height field with an angle of repose, so a steep cut avalanches and fills itself in while a shallow one keeps its edge — and dragging the rake lowers a line and pushes the displaced sand out to either side, which is what the teeth of a real rake do. Sweep the garden and the pattern comes out around every stone.
+MAJOR VISUAL TECHNIQUES:
+- Height field of 220 by 112 cells for the sand
+- Rake displacement that lowers a line and pushes sand out to the sides
+- Angle-of-repose relaxation between neighbouring cells
+- Raking light from the upper left giving every groove a highlight and a shadow
+- Stones drawn as shaded ellipsoids that the sand cannot cross
+- Concentric rake sweeps generated around every stone
+
+INTENDED INTERACTION MODEL:
+Rake it. Drag across the sand to carve, sweep the whole garden, wet it to stop the sand moving, and reset it when the pattern has gone.

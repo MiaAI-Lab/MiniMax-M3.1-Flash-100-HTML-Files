@@ -1,0 +1,19 @@
+TITLE: Softline — Neumorphic Operations Console
+
+PROMPT:
+Build a self-contained HTML page (all CSS and JS inline; no external fonts, images, CDNs or libraries) that is a neumorphic "Softline" operations console. The whole UI sits on a single pale blue-grey surface (#e6e9f0) and every element is modelled from that same surface: raised cards use paired box-shadows (a white highlight at -9px -9px and a grey shade #c3c7d1 at 9px 9px), pressed/inset wells use the same pair inverted, and nothing has a border or a fill that differs from the background. Layout: a large rounded shell (26px radius) split into a 250px left rail and a content column. The rail has a brand lockup, a five-item vertical nav where the active item sits in an inset well and its small square glyph turns accent blue, and a user card in an inset well. The content column has a title block with a live search field, a row of four KPI cards (each with a label, a large value, a delta line and a small inset icon chip), a two-column row with (a) a throughput area/line chart drawn as inline SVG with two gradient-filled series, axis labels and a legend plus a live-stream toggle, and (b) a traffic-mix donut of three arcs with a centred percentage and a segment legend, then a recent-activity list of four rows with coloured icon tiles, status pills and timestamps. Interaction via inline JS: the chart series re-generate and redraw every 3 seconds while the toggle is on; the donut arcs animate in on load via stroke-dasharray transitions; the live toggle pauses/resumes and swaps its label; nav items switch active state; the search field filters activity rows by text; the "refreshed N ago" caption counts up. Palette: #e6e9f0 surface, #3b4256 ink, #98a0b5 muted, accent #5c7cfa, teal #3ec9a7, amber #f0a44a, alert #e3685f. Responsive: rail becomes a horizontal scrolling nav under 1000px, KPI grid becomes 2 columns under 760px, and the layout compresses under 480px.
+
+DESCRIPTION:
+A calm, tactile operations console rendered entirely in soft UI. Because every surface shares one background colour, depth is communicated only through paired highlight/shadow box-shadows, giving the page the sculpted, single-material feel of moulded plastic. Information density is high but the palette stays quiet, with colour reserved for status: blue, teal, amber and a single alert red.
+
+MAJOR VISUAL TECHNIQUES:
+- Dual box-shadow neumorphism (light source at top-left) with inset variants for wells and pressed states
+- Inline SVG multi-series area/line chart with gradient fills and a leading-dot marker
+- SVG donut chart with three stroke-dasharray arcs, round caps and staggered entry animation
+- CSS-custom-property driven live data updates from a single interval timer
+- Monospace-free system UI type with a strong size hierarchy and letter-spaced micro-labels
+- Grid layouts that reflow from 4 → 2 → 1 columns without losing neumorphic integrity
+- Functional search filtering and toggle state machine
+
+INTENDED INTERACTION MODEL:
+A dashboard that simulates being live. Nav items are clickable and swap the active state. The chart and KPI figures update on a 3-second cadence that can be paused and resumed with the inline switch. The search field filters the activity list live as you type. All controls are keyboard-focusable native elements with visible state changes.

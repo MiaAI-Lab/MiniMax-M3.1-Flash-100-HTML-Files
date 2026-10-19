@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUADRANT — a decision surface</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#f2f0ea;--ink:#16150f;--dim:#87837a;--line:rgba(22,21,15,.18);--a:#1f5fa8;--b:#c0392b;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;font-weight:700;}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 4vh;max-width:760px;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--a);}
+  h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:800;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:48ch;}
+
+  .matrix{margin-top:5vh;display:grid;grid-template-columns:90px 1fr 1fr;grid-template-rows:auto 1fr 1fr;
+    border:1px solid var(--ink);}
+  .ax{background:var(--ink);color:var(--paper);display:grid;place-items:center;padding:12px;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;font-weight:700;}
+  .ax.top{grid-column:2/4;}
+  .ax.left{grid-row:2/4;}
+  .quad{position:relative;padding:26px 24px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);
+    transition:.35s;cursor:pointer;min-height:200px;overflow:hidden;}
+  .quad:nth-child(4){border-right:none;}
+  .quad:nth-child(6){border-bottom:none;}
+  .quad h3{font-size:1.05rem;font-weight:800;letter-spacing:.04em;margin-bottom:10px;}
+  .quad p{font-size:.88rem;line-height:1.75;color:#4c483f;}
+  .quad .n{font-size:2.4rem;font-weight:800;line-height:1;opacity:.14;position:absolute;right:16px;bottom:8px;}
+  .quad:hover{background:#fff;}
+  .quad.hi{background:#fff;box-shadow:inset 0 0 0 3px var(--a);}
+  .quad::after{content:"";position:absolute;left:0;top:0;height:4px;width:0;transition:width .5s;}
+  .quad:hover::after{width:100%;}
+  .q1::after{background:var(--a);} .q2::after{background:var(--b);}
+  .q3::after{background:var(--gold,#d0a02a);} .q4::after{background:#4f8a5a;}
+
+  .panel{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .card{border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff;}
+  .card h2{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;font-weight:600;}
+  .card p{font-size:.9rem;line-height:1.8;color:#4c483f;}
+  .row{display:grid;grid-template-columns:1fr auto;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);
+    font-size:.87rem;align-items:center;}
+  .row b{font-weight:600;}
+  .row span{color:var(--dim);font-size:.8rem;}
+
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;grid-template-columns:.85fr 1.15fr;
+    gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:860px){.matrix{grid-template-columns:60px 1fr;}.ax.top{grid-column:1/3;}
+    .ax.left{grid-row:auto;writing-mode:horizontal-tb;}.quad{grid-column:2;}
+    .panel{grid-template-columns:1fr;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Quadrant</div>
+    <div class="meta">A decision surface · method 2×2</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Strategy</div>
+    <h1>Two axes and<br>four <b>honest</b> corners</h1>
+    <p>The 2×2 matrix is the most used and most misused tool in strategy. It works when both axes are genuine trade-offs — you cannot have more of both — and collapses when one of them is a preference dressed up as a law.</p>
+  </section>
+
+  <section class="matrix">
+    <div class="ax top">Effort — low → high</div>
+    <div class="ax left">Certainty — low → high</div>
+    <div class="quad q1"><div class="n">01</div><h3>Quick bets</h3><p>Low effort, low certainty. Do them constantly and do not write them up. Most of the value in a company comes from a hundred of these and nobody remembers any of them.</p></div>
+    <div class="quad q2"><div class="n">02</div><h3>Bets on faith</h3><p>High effort, low certainty. The hardest quadrant, because the cost lands now and the payoff may never land at all. Cap the number you allow yourself.</p></div>
+    <div class="quad q3"><div class="n">03</div><h3>Exhausted wins</h3><p>Low effort, high certainty. These are the projects everybody agrees about and nobody does. If it is truly certain, it is truly cheap, and you are lying about one of the two.</p></div>
+    <div class="quad q4"><div class="n">04</div><h3>The actual work</h3><p>High effort, high certainty. Do fewer, do them properly, and be able to name the date you finished. Almost nothing on this chart lives here, and that is the point.</p></div>
+  </section>
+
+  <section class="panel">
+    <div class="card">
+      <h2>Live entries</h2>
+      <div id="rows"></div>
+    </div>
+    <div class="card">
+      <h2>Test the axes</h2>
+      <p>Move an item between quadrants by clicking one. The chart is only useful if the axes really are a trade-off — so this one insists: high effort must cost high certainty, and low effort must buy it.</p>
+      <div class="row" style="margin-top:14px"><b>Axis integrity</b><span id="integrity">100%</span></div>
+    </div>
+  </section>
+
+  <section class="note">
+    <div><h2>Most matrices<br>are just<br>two lists</h2></div>
+    <div>
+      <p>Put anything on the horizontal axis and anything on the vertical axis and you have a 2×2. The question is whether moving right is genuinely a trade against moving up. If it is not — if you can have both — then the chart is a priority list wearing a disguise, and it will mislead you precisely when you most need it to be right.</p>
+      <p>So: name both axes, state what you give up by moving along them, and if you cannot state it, throw the chart away and write a list. The list will be boring and it will be correct.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Quadrant — a decision surface</span>
+    <span>Four corners, one honest question</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var ITEMS=[
+    {n:'Redesign the pricing page',e:1,c:2,q:1},
+    {n:'Rewrite the onboarding email',e:1,c:3,q:3},
+    {n:'Build a second data centre',e:3,c:1,q:2},
+    {n:'Fix the tax rounding bug',e:1,c:4,q:3},
+    {n:'Open a Tokyo office',e:3,c:1,q:2},
+    {n:'Upgrade the CI runners',e:2,c:3,q:3},
+    {n:'Commission a brand audit',e:2,c:1,q:1},
+    {n:'Replace the invoice system',e:3,c:3,q:4}
+  ];
+  var rows=document.getElementById('rows');
+  var quadEls=document.querySelectorAll('.quad');
+  function render(){
+    rows.innerHTML='';
+    ITEMS.forEach(function(it,i){
+      var d=document.createElement('div');
+      d.className='row';
+      d.innerHTML='<b>'+it.n+'</b><span>Q'+(it.q+1)+' · e'+it.e+' c'+it.c+'</span>';
+      d.addEventListener('click',function(){
+        it.q=(it.q+1)%4;
+        it.e=it.q===1||it.q===2?3:1;
+        it.c=it.q===0||it.q===2?4:1;
+        render();
+      });
+      rows.appendChild(d);
+    });
+    var bad=ITEMS.filter(function(it){
+      var highEffort=it.e>=3, highCert=it.c>=3;
+      return (highEffort&&!highCert)||(!highEffort&&highCert);
+    }).length;
+    document.getElementById('integrity').textContent=Math.round((1-bad/ITEMS.length)*100)+'%';
+  }
+  quadEls.forEach(function(q,i){
+    q.addEventListener('click',function(){
+      quadEls.forEach(function(x){x.classList.remove('hi');});
+      q.classList.add('hi');
+      var items=ITEMS.filter(function(it){return it.q===i;});
+      if(items.length) log2(items);
+    });
+  });
+  function log2(items){
+    rows.innerHTML='';
+    items.forEach(function(it){
+      var d=document.createElement('div');
+      d.className='row';
+      d.innerHTML='<b>'+it.n+'</b><span>effort '+it.e+' · certainty '+it.c+'</span>';
+      rows.appendChild(d);
+    });
+  }
+  render();
+})();
+</script>
+</body>
+</html>

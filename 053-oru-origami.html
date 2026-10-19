@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORU — one sheet, thirty folds</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#eceae3;--paper:#fdfcf8;--ink:#1d1c18;--dim:#8a877d;--line:rgba(29,28,24,.16);--red:#b8342a;--blue:#2a4f8f;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.46em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;background:conic-gradient(from 0deg,var(--red) 0 25%,var(--ink) 0 50%,var(--blue) 0 75%,var(--red) 0);
+    display:block;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:5vw;padding:6vh 0;align-items:center;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--red);}
+  h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .lede{color:var(--dim);font-size:1rem;line-height:1.9;max-width:44ch;}
+  .folds{margin-top:26px;display:grid;gap:2px;}
+  .frow{display:grid;grid-template-columns:26px 1fr auto;gap:12px;padding:9px 8px;font-size:.85rem;
+    border-bottom:1px solid var(--line);align-items:baseline;}
+  .frow u{text-decoration:none;color:var(--red);font-size:10.5px;letter-spacing:.12em;}
+  .frow span{color:var(--dim);font-size:.78rem;}
+
+  .sheet{position:relative;background:var(--paper);border:1px solid var(--line);box-shadow:0 30px 60px -36px rgba(29,28,24,.6);
+    padding:16px;}
+  .sheet svg{width:100%;height:auto;display:block;}
+  .crease{fill:none;stroke:rgba(29,28,24,.22);stroke-width:1;stroke-dasharray:4 5;}
+  .panelA{fill:#f6f2e8;stroke:#1d1c18;stroke-width:1.6;stroke-linejoin:round;}
+  .panelB{fill:#ece5d6;stroke:#1d1c18;stroke-width:1.6;stroke-linejoin:round;}
+  .panelC{fill:#e0d5bd;stroke:#1d1c18;stroke-width:1.6;stroke-linejoin:round;}
+  .panelD{fill:#d4c5a6;stroke:#1d1c18;stroke-width:1.6;stroke-linejoin:round;}
+  .face{fill:#fdfcf8;stroke:#1d1c18;stroke-width:1.6;}
+  .red{fill:var(--red);} .blue{fill:var(--blue);}
+  .ctrls{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:600;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--ink);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--red);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--red);cursor:pointer;}
+  .btn{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;}
+  .b{border:2px solid var(--ink);background:transparent;color:var(--ink);padding:13px 24px;cursor:pointer;
+    font:700 10.5px/1 inherit;letter-spacing:.24em;text-transform:uppercase;transition:.22s;
+    box-shadow:4px 4px 0 rgba(29,28,24,.15);}
+  .b:hover{background:var(--ink);color:var(--paper);}
+  .b.on{background:var(--red);border-color:var(--red);color:#fff;}
+
+  .note{margin-top:7vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:36px;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Oru</div>
+    <div class="meta">One sheet · 600 g · 30 × 30 cm</div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="k">Origami ·  Trials</div>
+      <h1>One sheet,<br><b>thirty folds</b></h1>
+      <p class="lede">The crane is the easiest thing in the world and the hardest thing to explain. Drag the slider and the bird comes apart into the flat square it started as, one crease at a time.</p>
+      <div class="folds">
+        <div class="frow"><u>01</u><span>Square the sheet, twice</span><span>diagonals + halves</span></div>
+        <div class="frow"><u>02</u><span>Collapse into a preliminary base</span><span>petal fold, twice</span></div>
+        <div class="frow"><u>03</u><span>Narrow the two lower legs</span><span>fold in, fold in</span></div>
+        <div class="frow"><u>04</u><span>Reverse fold the head and tail</span><span>book fold</span></div>
+        <div class="frow"><u>05</u><span>Fold both wings down</span><span>done</span></div>
+      </div>
+      <div class="btn">
+        <button class="b" id="fold">Fold</button>
+        <button class="b" id="unfold">Unfold</button>
+        <button class="b on" id="creases">Creases</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sheet">
+        <svg id="svg" viewBox="0 0 400 400" aria-label="Origami crane"></svg>
+      </div>
+      <div class="ctrls">
+        <div class="ctl"><label>Fold <b id="vFold">0%</b></label><input type="range" id="foldR" min="0" max="100" value="100"></div>
+        <div class="ctl"><label>Shade <b id="vShade">0.55</b></label><input type="range" id="shade" min="0" max="100" value="55"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="note">
+    <div><h2>Why everyone<br>teaches the<br>crane first</h2></div>
+    <div>
+      <p>The crane is not the easiest model in the world; the cup is. But the crane is the first one that makes somebody look up from the table, because it stands up on its own and has a head and a tail, and you made that happen with your hands and no glue.</p>
+      <p>The sequence of folds is also a proof. Each step is a transformation of the previous one, and the reason it works is that the paper has memory: every crease you make is a hinge that a later fold can use. The square at the end of this page is the same square you started with, with thirty hinges in it.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Oru — one sheet, thirty folds</span>
+    <span>SVG · drawn from polygons</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var svg=document.getElementById('svg');
+  var NS='http://www.w3.org/2000/svg';
+  var fold=1, shade=0.55, showCreases=true;
+
+  function el(tag,attrs,parent){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+
+  function build(){
+    svg.innerHTML='';
+    var g=el('g',{},svg);
+    // creases on the flat sheet
+    if(showCreases){
+      var cg=el('g',{},g);
+      for(var i=0;i<8;i++){
+        var a=i*Math.PI/4;
+        el('line',{x1:200-Math.cos(a)*190,y1:200-Math.sin(a)*190,x2:200+Math.cos(a)*190,y2:200+Math.sin(a)*190,
+          class:'crease'},cg);
+      }
+      el('rect',{x:20,y:20,width:360,height:360,class:'crease'},cg);
+      el('line',{x1:20,y1:20,x2:380,y2:380,class:'crease'},cg);
+      el('line',{x1:380,y1:20,x2:20,y2:380,class:'crease'},cg);
+    }
+
+    var s=fold; // 0 = flat, 1 = crane
+    var op=0.25+0.75*s;
+
+    // square base (shrinks and rotates as it folds)
+    var sc=(1-0.34*s);
+    var sq=el('g',{transform:'translate(200 200) rotate('+(s*-6)+') scale('+sc+') translate(-200 -200)'},g);
+    el('polygon',{points:'40,40 360,40 360,360 40,360',class:'panelA',opacity:op},sq);
+    el('polygon',{points:'40,40 200,200 360,40',class:'panelB',opacity:op},sq);
+    el('polygon',{points:'40,360 200,200 360,360',class:'panelC',opacity:op},sq);
+
+    // the bird: body, wings, head, tail
+    var bird=el('g',{opacity:(0.15+0.85*s).toFixed(3)},g);
+    // body
+    el('polygon',{points:'200,120 236,250 200,268 164,250',class:'panelB'},bird);
+    // left wing
+    el('polygon',{points:'200,150 96,214 110,246 200,196',class:'panelA'},bird);
+    // right wing
+    el('polygon',{points:'200,150 304,214 290,246 200,196',class:'panelC'},bird);
+    // head & neck
+    el('polygon',{points:'196,150 200,84 212,78 208,150',class:'panelD'},bird);
+    el('polygon',{points:'206,80 232,58 238,66 214,88',class:'panelD'},bird);
+    // tail
+    el('polygon',{points:'200,252 168,352 200,336 232,352',class:'panelD'},bird);
+    // eye
+    el('circle',{cx:224,cy:66,r:3.4,class:'red'},bird);
+
+    // shading from the crease state
+    svg.style.filter='brightness('+(0.86+shade*0.28).toFixed(2)+')';
+
+    document.getElementById('vFold').textContent=Math.round(fold*100)+'%';
+    document.getElementById('vShade').textContent=shade.toFixed(2);
+  }
+
+  document.getElementById('foldR').addEventListener('input',function(){
+    fold=+this.value/100; build();
+  });
+  document.getElementById('shade').addEventListener('input',function(){
+    shade=+this.value/100; build();
+  });
+  document.getElementById('creases').addEventListener('click',function(){
+    showCreases=!showCreases; this.classList.toggle('on',showCreases); build();
+  });
+  document.getElementById('fold').addEventListener('click',function(){
+    fold=1; document.getElementById('foldR').value=100; build();
+  });
+  document.getElementById('unfold').addEventListener('click',function(){
+    fold=0; document.getElementById('foldR').value=0; build();
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALIMPSEST — what was written before</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#e6dcc3;--page:#ded2b4;--ink:#332a1c;--dim:#7a6c54;--line:rgba(51,42,28,.28);
+    --red:#8e2f22;--blue:#2d4a6b;--gold:#a8802a;}
+  body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;overflow-x:hidden;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 5vw 90px;}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:2px double var(--line);}
+  .brand{font-size:1.3rem;font-variant:small-caps;letter-spacing:.14em;}
+  .meta{font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:9vh 0 4vh;max-width:760px;}
+  .k{font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:var(--red);}
+  h1{font-size:clamp(2.4rem,6.4vw,4.6rem);font-weight:400;line-height:1.02;letter-spacing:-.02em;margin:20px 0 22px;}
+  h1 i{font-style:italic;color:var(--red);}
+  .hero p{color:#5c5140;font-size:1.05rem;line-height:1.95;max-width:52ch;}
+
+  .leaf{position:relative;margin:6vh 0 0;padding:clamp(28px,5vw,64px);background:var(--page);
+    box-shadow:0 30px 60px -34px rgba(51,42,28,.7), inset 0 0 90px rgba(120,96,54,.18);
+    border:1px solid rgba(51,42,28,.35);overflow:hidden;}
+  .leaf:before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(90deg,rgba(51,42,28,.05) 0 1px,transparent 1px 26px);}
+  .layer{position:relative;margin:0 0 clamp(20px,3vw,34px);}
+  .layer:last-child{margin-bottom:0;}
+  .layer .mk{font:400 9.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--dim);display:block;margin-bottom:10px;}
+  .layer h2{font-size:clamp(1.5rem,3.6vw,2.4rem);font-weight:400;line-height:1.2;letter-spacing:-.01em;}
+  .layer p{font-size:1rem;line-height:1.95;color:#5c5140;margin-top:12px;max-width:60ch;}
+  .layer .old{color:#8b7a5d;}
+
+  .scratch{position:relative;margin-top:6vh;border:1px solid var(--line);padding:26px;background:rgba(255,250,235,.35);}
+  .scratch h3{font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:16px;}
+  .erase{position:relative;height:180px;overflow:hidden;border:1px solid var(--line);background:#d8c9a6;
+    cursor:crosshair;}
+  .erase .under{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;
+    color:#6d5c40;font-size:1.05rem;line-height:1.9;font-style:italic;}
+  .erase canvas{position:absolute;inset:0;width:100%;height:100%;}
+  .hint{margin-top:12px;font:400 11.5px/1.6 "Helvetica Neue",Arial,sans-serif;color:var(--dim);}
+  .ctrl{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 16px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.22em;
+    text-transform:uppercase;transition:.25s;}
+  .btn:hover,.btn.on{border-color:var(--red);color:var(--red);background:rgba(142,47,34,.07);}
+
+  .cols{margin-top:7vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3.2vw,2.2rem);font-weight:400;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:#5c5140;font-size:.98rem;line-height:1.95;}
+  .cols p+p{margin-top:1.1em;}
+  .spec{border-top:1px solid var(--line);}
+  .spec div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);
+    font-size:.88rem;}
+  .spec span{color:var(--dim);}
+  footer{margin-top:46px;padding-top:20px;border-top:2px double var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Palimpsest</div>
+    <div class="meta">Cod. Sang. 114 · parchment · five hands</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">On writing over writing</div>
+    <h1>The page you<br>see is the <i>fifth</i><br>one</h1>
+    <p>A palimpsest is a manuscript scraped clean and written on again, so that the earlier text still shows through where the second writer pressed hard, or where the erasure failed. Monks called it a gift: more text on a smaller page, and a way of keeping a secret in plain sight.</p>
+  </section>
+
+  <section class="leaf">
+    <div class="layer">
+      <span class="mk">Layer one · original, c. 1140</span>
+      <h2>On the manner of keeping accounts</h2>
+      <p class="old">Herein the brother who holds the purse shall set down each sum at the hour it is counted, and beside it the name of the house from whence it came, so that the sums may be compared at the Michaelmas audit.</p>
+    </div>
+    <div class="layer">
+      <span class="mk">Layer two · erased c. 1280, recovered</span>
+      <h2>On the matter of the stolen reliquary</h2>
+      <p class="old">Item: a small casket of oak and silver, taken from the chapel of Saint Æthelwold, and not returned. The brother who knows of this is enjoined to say nothing, which is a heavier thing to carry than a casket.</p>
+    </div>
+    <div class="layer">
+      <span class="mk">Layer three · current hand, 1711</span>
+      <h2>On the poor quality of the ink of this place</h2>
+      <p>The ink is very bad. Whatever is written here will not outlast the page, and the page is already older than anyone who has read it. Write large. Write often. Do not bother with a fair copy.</p>
+    </div>
+  </section>
+
+  <section class="scratch">
+    <h3>Erase the top layer</h3>
+    <div class="erase" id="erase">
+      <div class="under">The current hand: <i>Deo gratias, the harvest was poor and the rents are paid in kind, and the boy is still sick, and we have asked again about the casket.</i></div>
+      <canvas id="ecv"></canvas>
+    </div>
+    <p class="hint">Scrub with the pointer. The layer underneath is not stored anywhere except in the pixels you uncover.</p>
+    <div class="ctrl">
+      <button class="btn" id="reset">Restore the surface</button>
+      <button class="btn on" id="reveal">Reveal all</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>script<br>survived</h2>
+      <p>When a monastic scribe erased a page, the knife did not take the parchment with it. It flattened the fibres and left the ink sunk in the skin of the leaf, and under raking light or ultraviolet the earlier writing comes back — not perfectly, but enough.</p>
+      <p>What survives is the part the second writer pressed hardest against, and the part that happened to be in the shadow of the erasure. It is an accidental archive: the parts of the erased text that somebody tried hardest to destroy are the parts we can still read.</p>
+    </div>
+    <div>
+      <h2>Specimen</h2>
+      <div class="spec">
+        <div>Support <span>vellum, 240 × 165 mm</span></div>
+        <div>Script <span>textualis semiquadrata</span></div>
+        <div>Layers recovered <span>five</span></div>
+        <div>Earliest layer <span>c. 1140</span></div>
+        <div>Latest layer <span>1711</span></div>
+        <div>Recovery <span>multispectral imaging</span></div>
+        <div>Erased matter <span>oak and silver</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Palimpsest — what was written before</span>
+    <span>Scrub the surface</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var box=document.getElementById('erase');
+  var cvs=document.getElementById('ecv');
+  var ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+  function resize(){
+    W=box.clientWidth; H=box.clientHeight;
+    cvs.width=W*DPR; cvs.height=H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='#000';
+    ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  var painting=false;
+  function eraseAt(x,y){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath();
+    ctx.arc(x,y,26,0,6.283);
+    ctx.fillStyle='rgba(0,0,0,0.85)';
+    ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+  }
+  function pos(e){
+    var r=box.getBoundingClientRect();
+    var t=e.touches?e.touches[0]:e;
+    return [t.clientX-r.left, t.clientY-r.top];
+  }
+  box.addEventListener('pointerdown',function(e){painting=true;var p=pos(e);eraseAt(p[0],p[1]);});
+  box.addEventListener('pointermove',function(e){ if(!painting)return; var p=pos(e); eraseAt(p[0],p[1]); });
+  window.addEventListener('pointerup',function(){painting=false;});
+  document.getElementById('reset').addEventListener('click',resize);
+  document.getElementById('reveal').addEventListener('click',function(){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+  });
+})();
+</script>
+</body>
+</html>

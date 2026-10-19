@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEDGER//ZERO — decentralised, badly</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#f2f2ee;--ink:#0a0a0a;--acid:#d7ff00;--red:#ff2b00;--blue:#0028ff;--grey:#8a8a84;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    overflow-x:hidden;}
+  .tick{background:var(--ink);color:var(--paper);overflow:hidden;padding:9px 0;white-space:nowrap;}
+  .tick ul{display:flex;gap:0;list-style:none;width:max-content;animation:roll 34s linear infinite;}
+  .tick li{padding:0 26px;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:14px;align-items:center;}
+  .tick li b{color:var(--acid);font-weight:400;}
+  .tick li s{text-decoration:none;color:#7d7d78;}
+  @keyframes roll{to{transform:translateX(-50%);}}
+
+  .wrap{max-width:1340px;margin:0 auto;padding:0 3vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 0;
+    border-bottom:3px solid var(--ink);}
+  .logo{font-size:1.1rem;font-weight:800;letter-spacing:-.03em;display:flex;align-items:center;gap:10px;}
+  .logo .sq{width:18px;height:18px;background:var(--acid);border:2px solid var(--ink);display:block;}
+  nav{display:flex;gap:10px;flex-wrap:wrap;}
+  nav a{color:var(--ink);text-decoration:none;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    border:2px solid var(--ink);padding:9px 16px;font-weight:700;transition:.2s;}
+  nav a:hover{background:var(--ink);color:var(--acid);}
+
+  .hero{display:grid;grid-template-columns:1.25fr .75fr;gap:26px;padding:6vh 0 5vh;align-items:start;}
+  .hero h1{font-size:clamp(2.8rem,8.4vw,7.6rem);font-weight:800;line-height:.86;letter-spacing:-.055em;
+    text-transform:uppercase;}
+  .hero h1 mark{background:var(--acid);color:var(--ink);padding:0 .06em;}
+  .hero h1 s{text-decoration:none;-webkit-text-stroke:3px var(--ink);color:var(--paper);}
+  .hero p{font-size:1.05rem;line-height:1.7;max-width:48ch;margin-top:26px;font-weight:500;}
+  .hero p em{font-style:normal;background:var(--red);color:var(--paper);padding:0 .3em;font-weight:700;}
+  .wallets{display:grid;gap:10px;margin-top:30px;}
+  .wbtn{font-family:inherit;font-weight:800;font-size:12px;line-height:1;letter-spacing:.18em;text-transform:uppercase;padding:16px 20px;border:3px solid var(--ink);
+    background:var(--ink);color:var(--paper);cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+    transition:.18s;}
+  .wbtn:hover{background:var(--acid);color:var(--ink);transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--ink);}
+  .wbtn.alt{background:transparent;color:var(--ink);}
+  .wbtn.alt:hover{background:var(--blue);color:var(--paper);}
+  .wstatus{margin-top:14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);min-height:18px;}
+
+  .tickerbox{border:3px solid var(--ink);background:var(--acid);padding:0;overflow:hidden;}
+  .tickerbox .bar{background:var(--ink);color:var(--paper);padding:9px 14px;font-size:10.5px;letter-spacing:.24em;
+    text-transform:uppercase;display:flex;justify-content:space-between;}
+  .tickerbox .rows{padding:10px 14px;}
+  .trow{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:9px 0;border-bottom:2px solid var(--ink);
+    font-size:13px;font-weight:700;align-items:center;}
+  .trow:last-child{border-bottom:none;}
+  .trow span{font-weight:400;font-size:11px;letter-spacing:.1em;color:#4a4a40;}
+  .trow .up{color:var(--ink);background:var(--acid);}
+  .trow .dn{color:var(--paper);background:var(--red);}
+  .trow em{font-style:normal;padding:2px 7px;font-size:11px;}
+
+  .blocks{display:grid;grid-template-columns:repeat(3,1fr);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);}
+  .blocks div{padding:34px 24px;border-right:3px solid var(--ink);}
+  .blocks div:last-child{border-right:none;}
+  .blocks h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.035em;text-transform:uppercase;
+    line-height:.95;margin-bottom:12px;}
+  .blocks p{font-size:.92rem;line-height:1.7;font-weight:500;}
+  .blocks .n{font-size:3.4rem;font-weight:800;line-height:1;margin-bottom:14px;}
+  .blocks div:nth-child(1){background:var(--blue);color:var(--paper);}
+  .blocks div:nth-child(2){background:var(--paper);}
+  .blocks div:nth-child(3){background:var(--ink);color:var(--paper);}
+
+  .term{border:3px solid var(--ink);margin-top:34px;}
+  .term .bar{background:var(--ink);color:var(--paper);padding:9px 14px;font-size:10.5px;letter-spacing:.24em;
+    text-transform:uppercase;display:flex;justify-content:space-between;}
+  .term pre{margin:0;padding:20px;font:12.5px/1.85 "Courier New",monospace;white-space:pre-wrap;word-break:break-word;}
+  .g{color:#0a7d3c;} .r{color:var(--red);} .y{color:#8a6d00;} .d{color:#6f6f68;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:3px solid var(--ink);}
+  .grid div{padding:30px 22px;border-right:3px solid var(--ink);}
+  .grid div:last-child{border-right:none;}
+  .grid h3{font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:9px;}
+  .grid p{font-size:.86rem;line-height:1.7;color:#3a3a34;}
+  .grid .num{font-size:2rem;font-weight:800;margin-bottom:10px;}
+
+  footer{margin-top:40px;padding:26px 0;border-top:3px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;}
+
+  @media(max-width:960px){.hero{grid-template-columns:1fr;}.blocks{grid-template-columns:1fr;}
+    .blocks div{border-right:none;border-bottom:3px solid var(--ink);}.grid{grid-template-columns:repeat(2,1fr);}
+    .grid div:nth-child(2){border-right:none;}.grid div:nth-child(-n+2){border-bottom:3px solid var(--ink);}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr;}.grid div{border-right:none;border-bottom:3px solid var(--ink);}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="tick"><ul id="tick"></ul></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="sq"></span>LEDGER//ZERO</div>
+    <nav><a href="#">Protocol</a><a href="#">Governance</a><a href="#">Grants</a><a href="#">Docs</a></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Settlement<br>without <s>asking</s><br><mark>permission</mark></h1>
+      <p>Ledger//ZERO is a settlement layer for teams who got tired of <em>invoices</em>. Every payment is a state transition, every state transition is auditable, and nobody needs to be a bank to be a bank.</p>
+      <div class="wallets">
+        <button class="wbtn" id="w1">Connect wallet <span>→</span></button>
+        <button class="wbtn alt" id="w2">Read the whitepaper <span>↓</span></button>
+      </div>
+      <div class="wstatus" id="wstatus">No wallet connected.</div>
+    </div>
+
+    <div class="tickerbox">
+      <div class="bar"><span>Pool liquidity</span><span id="poolTime">block 0</span></div>
+      <div class="rows" id="rows"></div>
+    </div>
+  </section>
+
+  <section class="blocks">
+    <div><div class="n">01</div><h2>Instant, final,<br>no reconciling</h2><p>Balances are state, not a report. There is no ledger to reconcile at the end of the month because there is no separate ledger.</p></div>
+    <div><div class="n">02</div><h2>Identity is<br>optional</h2><p>You do not need a name, an email or a KYC form to receive money. You need an address, and most people have one of those.</p></div>
+    <div><div class="n">03</div><h2>Auditable<br>by default</h2><p>Every event is a signed, ordered log. Anyone can replay the history and arrive at the same balances we do.</p></div>
+  </section>
+
+  <section class="term">
+    <div class="bar"><span>ledger --replay --from 0</span><span>read-only</span></div>
+    <pre id="term"></pre>
+  </section>
+
+  <section class="grid">
+    <div><div class="num">11s</div><h3>Finality</h3><p>One block. One confirmation. No reorganisations, no mempool drama.</p></div>
+    <div><div class="num">$0.0004</div><h3>Median fee</h3><p>Cheap enough that nobody builds a business model on optimising it.</p></div>
+    <div><div class="num">4.1M</div><h3>Settlements / day</h3><p>Mostly payroll, mostly small, mostly boring — which is the point.</p></div>
+    <div><div class="num">100%</div><h3>Open source</h3><p>Client, node and contract. Fork it if the governance is wrong.</p></div>
+  </section>
+
+  <footer>
+    <span>Ledger//Zero — a settlement layer</span>
+    <span>Built in public since 2024</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // top ticker
+  var tick=document.getElementById('tick');
+  var items=[
+    ['L0/USD','4.12','+2.4%'],['L0/EUR','3.78','+0.8%'],['GAS','0.000041','−1.2%'],
+    ['BLOCK','9,481,220','+1'],['NODES','4,318','+12'],['FEES','0.41','flat'],
+    ['TVL','$884M','+6.1%'],['UPTIME','99.99%','flat']
+  ];
+  var html='';
+  for(var r=0;r<2;r++){
+    items.forEach(function(it){
+      html+='<li><b>'+it[0]+'</b><span>'+it[1]+'</span>'+it[2]+'</li>';
+    });
+  }
+  tick.innerHTML=html;
+
+  // live pool rows
+  var rows=document.getElementById('rows');
+  var POOLS=[['L0 / USD','$412.8M','+2.4%'],['L0 / EUR','$188.1M','+0.9%'],['L0 / JPY','$96.4M','−0.3%'],
+             ['L0 / BTC','$71.2M','+4.1%'],['L0 / GOLD','$54.9M','+0.2%'],['L0 / NULL','$0.0M','—']];
+  function renderRows(){
+    rows.innerHTML='';
+    POOLS.forEach(function(p,i){
+      var d=document.createElement('div');
+      d.className='trow';
+      var cls=p[2].indexOf('−')===0?'dn':'up';
+      d.innerHTML='<div>'+p[0]+'</div><div>'+p[1]+'</div><em class="'+cls+'">'+p[2]+'</em>';
+      rows.appendChild(d);
+    });
+  }
+  renderRows();
+  setInterval(function(){
+    POOLS.forEach(function(p,i){
+      var v=parseFloat(p[1].replace(/[^0-9.]/g,''));
+      var ch=(Math.random()-0.48)*v*0.004;
+      var nv=Math.max(0,v+ch);
+      p[1]='$'+nv.toFixed(1)+'M';
+      var pct=(ch/v*100);
+      p[2]=(pct>=0?'+':'−')+Math.abs(pct).toFixed(1)+'%';
+    });
+    renderRows();
+    var b=document.getElementById('poolTime');
+    b.textContent='block '+(9481220+Math.floor(Math.random()*40)).toLocaleString('en-US');
+  },3000);
+
+  // wallet buttons
+  document.getElementById('w1').addEventListener('click',function(){
+    var st=document.getElementById('wstatus');
+    st.textContent='Opening wallet…';
+    setTimeout(function(){
+      var addr='0x'+Array.from({length:4},function(){return Math.floor(Math.random()*65536).toString(16).padStart(4,'0');}).join('')
+        +'…'+Math.floor(Math.random()*65536).toString(16).padStart(4,'0');
+      st.textContent='Connected as '+addr;
+      this.textContent='Wallet connected ✓';
+      this.disabled=true;
+    },900);
+  });
+  document.getElementById('w2').addEventListener('click',function(){
+    document.getElementById('wstatus').textContent='Whitepaper is 1,240 pages. You will read four of them.';
+  });
+
+  // terminal replay
+  var term=document.getElementById('term');
+  var lines=[
+    '<span class="d">replaying 9,481,220 events from genesis…</span>',
+    '  block 0000001  <span class="g">ok</span>   1 event    3 ms',
+    '  block 0471200  <span class="g">ok</span>   2,104 events  41 ms',
+    '  block 0948122  <span class="g">ok</span>   17 events   12 ms',
+    '',
+    '  state root .... <span class="y">0x8f31c04b7a9e2d6f</span>',
+    '  accounts ....... 2,904,118',
+    '  total settled .. <span class="y">$1,331,402,880.14</span>',
+    '  unclaimed ...... 0',
+    '',
+    '  <span class="r">warning:</span> 1 event references a closed contract',
+    '  <span class="g">replay complete — balances match the node in 41 ms</span>'
+  ];
+  var li=0;
+  (function step(){
+    if(li>=lines.length) return;
+    term.innerHTML += lines[li]+'\n';
+    li++;
+    setTimeout(step, li<4?260:120);
+  })();
+})();
+</script>
+</body>
+</html>

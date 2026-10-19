@@ -1,0 +1,18 @@
+TITLE: KILN — a firing schedule
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "KILN — a firing schedule". Art direction: workshop at night, ember glow, kiln brick. Palette: ground #140f0c, ink #f2e8dc, dim #96897a, hairline rgba(242,232,220,.14), ember #ff7a3c, clay #c47a52. Layout: a header with a kiln-shaped logo mark clipped from a polygon and a monospaced kiln specification line; then a hero with an ember kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered kiln panel with a gradient face, a header row naming the chart and a live status line, a 1200×520 canvas, and a six-item readout strip giving elapsed time, temperature, ramp rate, the current stage of the firing, the atmosphere and the percentage of the schedule completed; then a control band of two sliders (Target temperature, Ramp rate) and four buttons (Fire / Hold / Reset / Atmosphere); then a two-column section pairing an essay on the stages a pot goes through with a table of Orton cone bend temperatures; and a footer. The chart is drawn live: an hours-versus-degrees grid, dashed horizontal rules at every cone bend temperature with the cone numbers labelled, the schedule curve traced from the segment list with a translucent gradient fill beneath it, and a marker with a halo and a dashed guide line running to the temperature axis. The schedule itself is a segment list — a slow water-smoking ramp to 200 with a hold, a faster ramp to 600, a controlled climb to the target with a soak, and a controlled cool to 760 — and the temperature at any moment is interpolated from it. Interaction: Fire starts the firing and the marker climbs the curve while the readouts and the stage name update; Hold freezes the climb; Reset returns to 20 degrees; Atmosphere switches between oxidation and reduction; the two sliders rebuild the curve. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A firing schedule you can run. The curve is built from real segments — water smoking to 200 with a hold, a ramp through quartz inversion to 600, a controlled climb to the target with a soak, and a controlled cool — and the marker climbing it updates the elapsed time, the temperature, the ramp rate and the name of the stage the kiln is in. Move the target temperature and the whole curve changes shape underneath the cone lines.
+
+MAJOR VISUAL TECHNIQUES:
+- Segment-based schedule with piecewise interpolation of temperature against time
+- Dashed horizontal cone rules labelled with Orton bend temperatures
+- Translucent gradient fill under the schedule curve
+- Marker with halo and a dashed guide to the temperature axis
+- Stage detection that names water smoking, burn-out, inversion, sintering, soak and glaze melt
+- Clip-path kiln logo and ember-lit radial background
+
+INTENDED INTERACTION MODEL:
+Fire the kiln. Start the schedule, hold it at any point, reset it, change the atmosphere, and re-shape the curve with the target temperature and ramp rate sliders.

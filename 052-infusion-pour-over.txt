@@ -1,0 +1,19 @@
+TITLE: INFUSION — a pour-over, timed
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "INFUSION — a pour-over, timed". Art direction: warm, clinical, a coffee manual. Palette: paper #f4f0e8, card #faf7f1, ink #1e1c18, dim #8a857a, hairline rgba(30,28,24,.16), brew brown #6b4326. Layout: a header with a wide-tracked wordmark, a small dripper-shaped logo and the recipe line (Hario V60 · 22 g · 350 g); then a two-column hero — on the left a kicker, a huge light-weight headline with one bold line, a paragraph, a five-row step list (Bloom / Pour one / Pour two / Wait / Drawdown) that inverts to black as each phase completes, and two buttons; on the right a rig: a conic-gradient progress ring with a recessed inner disc showing the elapsed time and the current phase, and below it a CSS-drawn V60 dripper — a clip-path cone with a coffee bed and a stream that animates while water is being poured. Below: a four-column data band (bloom 50 g, pour one, pour two, drawdown) and a two-column note on why brewing guides should be written in seconds rather than ranges, then a footer. Interaction: pressing Start runs a real three-minute timeline — the ring fills, the clock counts, the phase label changes, the step list ticks over, and the pour stream animates only during the pouring phases; pressing it again pauses, Reset returns to zero, and the button relabels itself to Resume or Brew again. Responsive: the hero stacks under 900px, the data band becomes 2 then 1 column.
+
+DESCRIPTION:
+A pour-over recipe as a stopwatch. Most brewing guides say "around 30 seconds" and "wait until it drops halfway", which is both kind and useless; this one gives you the exact seconds. Press start and the ring fills over three minutes while the phase name, the step list and the pouring stream all advance together, so you can follow the clock with one hand and the kettle with the other.
+
+MAJOR VISUAL TECHNIQUES:
+- Conic-gradient progress ring with a recessed inner disc
+- CSS-drawn V60 cone via clip-path with a coffee bed and a drip
+- Animated pour stream that only runs during the pour phases
+- Step list that inverts to a black "done" state
+- Large tabular-figure clock and a phase label
+- Hard offset-shadow buttons with a press transform
+- Data band and editorial note in a manual-like register
+
+INTENDED INTERACTION MODEL:
+Start, watch, pause, reset. The timer drives everything: the ring, the clock, the phase, the steps and the stream. The Start button becomes Resume, then Brew again when the three minutes are up.

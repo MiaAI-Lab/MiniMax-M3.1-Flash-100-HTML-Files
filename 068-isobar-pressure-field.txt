@@ -1,0 +1,18 @@
+TITLE: ISOBAR — the pressure field
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ISOBAR — the pressure field". Art direction: meteorological chart, cold cyan on deep navy, monospaced instrumentation. Palette: ground #071018, ink #dceaf2, dim #6f8ba0, hairline rgba(220,234,242,.14), cyan #4fd6e0, warm orange #ff9f5a. Layout: a header with a ring-and-dot logo and a monospaced chart line; then a hero with a cyan kicker, a huge light-weight headline whose last line is bold, and a paragraph; then a bordered chart panel with a 40px grid background, a 1200×620 canvas and an absolutely positioned monospace HUD in the top-left corner; then a control row of three monospaced buttons (Running / Spin the system / Wind on) and a labelled strength slider pushed to the right; then a two-column section pairing an essay on reading a pressure field with a live observation table; and a footer. The canvas draws a genuine pressure field: a Gaussian low, a Gaussian high and a travelling sinusoidal ridge are summed into a scalar field, and twenty levels from 966 hPa upward are traced with marching squares over a 4px grid, each segment linearly interpolated along the cell edge. Lines below 1004 hPa are cyan and thin; lines above are warm orange and thicker, which is how a real chart separates cold from warm air. Interaction: Running pauses and resumes the field's slow rotation, Spin the system jumps the ridge phase, Wind on draws four hundred tracer particles that advect along the local gradient rotated ninety degrees to give geostrophic flow, and the strength slider deepens the low and updates the gradient, wind speed, vertical motion and precipitation readouts. Responsive: the columns stack under 860px and the slider returns to the left of the row.
+
+DESCRIPTION:
+A synoptic chart that is actually computed. The pressure field is a sum of a Gaussian low, a Gaussian high and a travelling sinusoidal ridge, and the isobars are traced with marching squares — the same algorithm cartographers use — with each crossing linearly interpolated along the cell edge. Turn on the wind and four hundred tracers advect along the gradient rotated ninety degrees, which is exactly how a geostrophic wind behaves.
+
+MAJOR VISUAL TECHNIQUES:
+- Marching-squares contour extraction with edge interpolation
+- Scalar field built from Gaussian centres plus a travelling wave
+- Cyan-to-orange contour colouring split at 1004 hPa
+- Tracer particles advecting along the rotated pressure gradient
+- Grid-paper chart background built from two repeating linear gradients
+- Live monospace observation table driven by the field parameters
+
+INTENDED INTERACTION MODEL:
+Read the chart. Pause it, spin the system, bring the wind on, and push the strength slider to watch the low deepen and the readouts change with it.

@@ -1,0 +1,18 @@
+TITLE: COMMONWEALTH — a type specimen
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "COMMONWEALTH — a type specimen". Art direction: letterpress, cream stock, black ink, printer's furniture. Palette: paper #efe9dc, ink #191712, dim #7d7669, hairline rgba(25,23,18,.22), red #a8321f. Body type is Times New Roman / Times. Layout: a header with a widely letter-spaced uppercase wordmark and a specimen line under a 3px black rule; then a hero with a red kicker, an enormous bold serif headline set on two lines with tight negative tracking, and a paragraph; then a "type case" — an auto-fill grid of square cells, one per letter of the alphabet in upper and lower case plus the digits, each with a tiny index number in the corner, hairline dividers and a black hover inversion; then a control band of three fields: an Impression depth slider, an Ink coverage slider, and a three-way segmented control (Flat / Embossed / Wet); then a bordered "proof pull" panel with a small caption tag breaking the top border and an enormous display line of type; then a two-column section pairing an essay on the punch, matrix and cast with a specification list; and a footer. Interaction: the impression slider rebuilds the proof's text-shadow stack in real time so the type appears pressed further into the paper, the ink slider drives opacity and the wet-mode blur, and the segmented control switches the treatment between a flat impression, an embossed one with a white highlight above and a dark shadow below, and a wet one that blooms and bleeds. Responsive: the columns stack under 860px and the type case cells shrink under 520px.
+
+DESCRIPTION:
+A type specimen you can pull by hand. The proof line is set at ninety-six point and the impression slider rebuilds its text-shadow stack live — a white highlight above, a dark shadow below, a second contact shadow — so the type visibly sinks further into the paper as you push the slider. Wet mode bleeds the ink outward with a blur. Clicking a sort in the case makes it jump in the proof.
+
+MAJOR VISUAL TECHNIQUES:
+- Live text-shadow stack rebuild for a real embossed impression
+- Ink coverage driving opacity and a bleed blur
+- Letterpress type case grid with hairline dividers and black hover inversion
+- 3px rule above the header and below the footer
+- Enormous display type with tight negative letter-spacing
+- Segmented control drawn from a bordered button row
+
+INTENDED INTERACTION MODEL:
+Pull a proof. Move the impression and ink sliders, switch the setting between flat, embossed and wet, and click sorts in the case to make them jump in the proof line.

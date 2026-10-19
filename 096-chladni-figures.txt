@@ -1,0 +1,17 @@
+TITLE: CHLADNI — the figures in sand
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "CHLADNI — the figures in sand". Art direction: dark laboratory, a steel plate, pale sand, faint heat-map of the mode. Palette: ground #0a0a0c, ink #ece9e2, dim #807d75, hairline rgba(236,233,226,.13), sand #efe6cf. Layout: a header with a square logo mark and a monospaced specification line; then a hero with a sand kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a bordered box split into an 820×620 canvas on the left and a 250px column of two instrument boxes on the right (Mode: the indices m and n, the frequency, the number of node lines, the number of antinodes and the aspect; Sand: the number of grains, how many have settled and how many are still moving); then a control band of three sliders (Mode m, Mode n, Grains) and two buttons (Shake the plate, Clear the sand); then a two-column section pairing an essay on why the sand goes to the nodes with a note on the boundary problem of a free plate; and a footer. The sand is simulated, not animated: the mode of a square plate is the difference of two products of cosines, and every grain that has not yet settled takes a step down the numerical gradient of the square of the displacement, which is exactly what a bouncing grain does on a vibrating plate, and it comes to rest when the displacement is small. The mode field is also drawn faintly beneath the sand in two colours for the two signs. Interaction: the two mode sliders set the indices and reseed the sand; the Grains slider changes the population; Shake the plate releases every grain and stirs the field; Clear the sand starts again. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+Chladni figures made the way they are actually made: by sand. Every grain walks downhill on the gradient of the square of the plate's displacement, so it ends up exactly where the plate is still — and because the mode is the difference of two products of cosines, the figure that emerges has the right number of node lines and the right symmetry. Change the mode and the sand redraws the plate's own picture of itself.
+MAJOR VISUAL TECHNIQUES:
+- Square-plate mode as the difference of two products of cosines
+- Numerical gradient descent of the square of the displacement
+- Grains settling where the displacement is below a threshold
+- Mode field drawn faintly beneath the sand in two colours for the two signs
+- Raking light on the plate gradient
+- Live count of settled and still-moving grains
+
+INTENDED INTERACTION MODEL:
+Rake the plate. Change the mode, change the amount of sand, shake the plate to release the grains, and clear it to begin again.

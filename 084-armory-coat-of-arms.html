@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARMORY — a maker of arms</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#f4f1ea;--ink:#1c1a16;--dim:#7a7367;--line:rgba(28,26,22,.24);--gold:#9b7b2e;--red:#9c2b22;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:2px solid var(--ink);}
+  .brand{font-size:13px;letter-spacing:.42em;text-transform:uppercase;font-weight:700;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:780px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;
+    font-family:Georgia,"Times New Roman",serif;}
+  h1 b{font-weight:700;color:var(--red);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:56ch;font-family:Georgia,serif;}
+
+  .studio{margin-top:5vh;display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start;}
+  .shield{background:linear-gradient(160deg,#fbf8f1,#eae4d6);border:1px solid var(--line);padding:24px;
+    display:grid;place-items:center;min-height:420px;box-shadow:0 26px 50px -34px rgba(28,26,22,.7);}
+  .shield svg{width:100%;max-width:380px;height:auto;display:block;}
+  .panel{display:flex;flex-direction:column;gap:18px;}
+  .group{border:1px solid var(--line);padding:16px;}
+  .group h2{font:400 9.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .opts{display:flex;flex-wrap:wrap;gap:6px;}
+  .opt{border:1px solid var(--line);background:transparent;padding:7px 11px;cursor:pointer;
+    font:400 10px/1 inherit;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);transition:.2s;}
+  .opt:hover{border-color:var(--gold);color:var(--gold);}
+  .opt.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .tinct{display:inline-block;width:26px;height:26px;border:1px solid var(--line);cursor:pointer;padding:0;}
+  .tinct.on{outline:2px solid var(--ink);outline-offset:2px;}
+  .blazon{border:1px solid var(--ink);padding:18px;background:#fbf8f1;}
+  .blazon .lead{font:400 9.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .blazon p{font-family:Georgia,"Times New Roman",serif;font-size:1.12rem;line-height:1.75;}
+  .blazon .rule{height:1px;background:var(--line);margin:14px 0;}
+  .blazon .notes{font:400 11px/1.7 "Courier New",monospace;color:var(--dim);}
+
+  .ctrl{margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 17px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;
+    transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--gold);color:var(--gold);background:rgba(155,123,46,.09);}
+
+  .cols{margin-top:7vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-family:Georgia,serif;font-size:clamp(1.4rem,3vw,2.1rem);font-weight:400;line-height:1.22;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.98rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:700;}
+  footer{margin-top:46px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:880px){.studio{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Armory</div>
+    <div class="meta">A maker of arms · blazon in plain English</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Heraldry</div>
+    <h1>Every coat of<br>arms is a<br><b>sentence</b></h1>
+    <p>Heraldry is a language with a fixed grammar, and the grammar is the point: a shield divided, charged with an ordinary, and blazoned in a precise order that has been more or less unchanged since the thirteenth century. Read a blazon once and you can read any other one ever written.</p>
+  </section>
+
+  <section class="studio">
+    <div class="shield" id="shield"></div>
+    <div class="panel">
+      <div class="group">
+        <h2>Field</h2>
+        <div class="opts" id="divs"></div>
+      </div>
+      <div class="group">
+        <h2>Ordinary</h2>
+        <div class="opts" id="ords"></div>
+      </div>
+      <div class="group">
+        <h2>Charge</h2>
+        <div class="opts" id="chgs"></div>
+      </div>
+      <div class="group">
+        <h2>Tinctures</h2>
+        <div class="opts" id="tincs"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" id="rand">Grant a new arm</button>
+    <button class="btn" id="plain">Plain field</button>
+  </div>
+
+  <section style="margin-top:26px">
+    <div class="blazon">
+      <div class="lead">Blazon</div>
+      <p id="blazon">—</p>
+      <div class="rule"></div>
+      <div class="notes" id="notes">—</div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The rules<br>that make<br>it a<br>language</h2>
+      <p>There are only six tinctures and two classes of them. The <b>metals</b> — gold and silver — and the <b>colours</b> — red, blue, green, black and purple. The rule of tincture says a metal must not be placed on a metal nor a colour on a colour, and it exists because a charge has to be visible against its field, and because in the original context — a banner in a battle — a yellow charge on a red field simply disappeared.</p>
+      <p>And the blazon is always in the same order: <b>field, ordinary, charge</b>. Never charge first, never ordinary before the field. Read it that way and any blazon in English can be parsed.</p>
+    </div>
+    <div>
+      <h2>Why it<br>survived</h2>
+      <p>Heraldry is one of the few medieval systems that never went out of use. It is still in force at the College of Arms in London, it is still used for the coats of arms of the United Kingdom's own departments, and it is still a working international language with its own rules for the treatment of <b>foreign augmentations</b> and <b>differences</b> — the small symbols added to a family's arms to show which son had which.</p>
+      <p>That is remarkable for a device invented to identify people who were wearing armour at a tournament, and it survives because the system is genuinely efficient: a shield is a field of colour, a few strong shapes, and a strict order of description.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Armory — a maker of arms</span>
+    <span>Shield, charges and blazon generated live</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var TIN={
+    or:{n:'Or',c:'#c9a227',m:1}, argent:{n:'Argent',c:'#eceae2',m:1},
+    gules:{n:'Gules',c:'#9c2b22',m:0}, azure:{n:'Azure',c:'#1f4f8f',m:0},
+    vert:{n:'Vert',c:'#1f6b46',m:0}, sable:{n:'Sable',c:'#171614',m:0},
+    purpure:{n:'Purpure',c:'#5a2b6b',m:0}, tenny:{n:'Tenny',c:'#b06a22',m:0},
+    murrey:{n:'Murrey',c:'#7a1f3c',m:0}, celeste:{n:'Celeste',c:'#7fb0d6',m:0}
+  };
+  var DIVS=[
+    {id:'plain',n:'Plain'},
+    {id:'pale',n:'Per pale'},
+    {id:'fess',n:'Per fess'},
+    {id:'bend',n:'Per bend'},
+    {id:'chevron',n:'Per chevron'},
+    {id:'quarter',n:'Quarterly'},
+    {id:'saltire',n:'Per saltire'},
+    {id:'gyronny',n:'Gyronny'}
+  ];
+  var ORDS=[
+    {id:'none',n:'None'},{id:'chief',n:'Chief'},{id:'fess',n:'Fess'},{id:'pale',n:'Pale'},
+    {id:'bend',n:'Bend'},{id:'cross',n:'Cross'},{id:'saltire',n:'Saltire'},{id:'chevron',n:'Chevron'},
+    {id:'bordure',n:'Bordure'},{id:'bendlet',n:'Bendlet'}
+  ];
+  var CHGS=[
+    {id:'none',n:'None'},{id:'star',n:'Mullet'},{id:'crescent',n:'Crescent'},{id:'cross',n:'Cross'},
+    {id:'fleur',n:'Fleur-de-lis'},{id:'tower',n:'Tower'},{id:'lion',n:'Lion'},{id:'eagle',n:'Eagle'},
+    {id:'chevron',n:'Chevron'},{id:'roundel',n:'Roundel'},{id:'escallop',n:'Escallop'},{id:'lozenge',n:'Lozenge'}
+  ];
+  var state={div:'pale',ord:'fess',chg:'star',f1:'azure',f2:'gules',ordC:'or',chgC:'or',bordC:'gules'};
+
+  var W=300,H=380;
+  function shieldPath(){
+    // classic heater shield
+    return 'M40,20 L260,20 L260,170 C260,270 200,330 150,360 C100,330 40,270 40,170 Z';
+  }
+  function escutcheon(){
+    return '<svg viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coat of arms">'+body()+'</svg>';
+  }
+  function body(){
+    var p=shieldPath();
+    var d=state.div, f1=TIN[state.f1].c, f2=TIN[state.f2].c;
+    var s='<defs><clipPath id="sh"><path d="'+p+'"/></clipPath></defs>';
+    s+='<g clip-path="url(#sh)">';
+    if(d==='plain'){
+      s+='<rect x="0" y="0" width="300" height="380" fill="'+f1+'"/>';
+    }else if(d==='pale'){
+      s+='<rect x="0" y="0" width="150" height="380" fill="'+f1+'"/><rect x="150" y="0" width="150" height="380" fill="'+f2+'"/>';
+    }else if(d==='fess'){
+      s+='<rect x="0" y="0" width="300" height="190" fill="'+f1+'"/><rect x="0" y="190" width="300" height="190" fill="'+f2+'"/>';
+    }else if(d==='bend'){
+      s+='<rect x="0" y="0" width="300" height="380" fill="'+f1+'"/>';
+      s+='<path d="M0,380 L300,0 L300,120 L0,380 Z" fill="'+f2+'"/>';
+    }else if(d==='chevron'){
+      s+='<rect x="0" y="0" width="300" height="380" fill="'+f1+'"/>';
+      s+='<path d="M0,300 L150,150 L300,300 L300,380 L150,230 L0,380 Z" fill="'+f2+'"/>';
+    }else if(d==='quarter'){
+      s+='<rect x="0" y="0" width="150" height="190" fill="'+f1+'"/><rect x="150" y="0" width="150" height="190" fill="'+f2+'"/>';
+      s+='<rect x="0" y="190" width="150" height="190" fill="'+f2+'"/><rect x="150" y="190" width="150" height="190" fill="'+f1+'"/>';
+    }else if(d==='saltire'){
+      s+='<rect x="0" y="0" width="300" height="380" fill="'+f1+'"/>';
+      s+='<path d="M0,0 L90,0 L300,300 L300,380 L240,380 L0,140 Z" fill="'+f2+'"/>';
+      s+='<path d="M300,0 L300,60 L90,380 L0,380 L0,300 L240,0 Z" fill="'+f2+'"/>';
+    }else{
+      s+='<rect x="0" y="0" width="300" height="380" fill="'+f1+'"/>';
+      for(var i=0;i<8;i++){
+        var a=i*Math.PI/4;
+        s+='<path d="M150,190 L'+(150+Math.cos(a)*300)+','+(190+Math.sin(a)*380)+' L'+
+           (150+Math.cos(a+0.78)*300)+','+(190+Math.sin(a+0.78)*380)+' Z" fill="'+f2+'"/>';
+      }
+    }
+    // ordinary
+    var oc=TIN[state.ordC].c;
+    var o=state.ord;
+    if(o==='chief') s+='<rect x="0" y="0" width="300" height="96" fill="'+oc+'"/>';
+    else if(o==='fess') s+='<rect x="0" y="150" width="300" height="80" fill="'+oc+'"/>';
+    else if(o==='pale') s+='<rect x="110" y="0" width="80" height="380" fill="'+oc+'"/>';
+    else if(o==='bend') s+='<path d="M0,340 L300,40 L300,120 L0,380 Z" fill="'+oc+'"/>';
+    else if(o==='bendlet') s+='<path d="M0,330 L300,30 L300,60 L0,360 Z" fill="'+oc+'"/>';
+    else if(o==='cross'){
+      s+='<rect x="110" y="0" width="80" height="380" fill="'+oc+'"/><rect x="0" y="150" width="300" height="80" fill="'+oc+'"/>';
+    }else if(o==='saltire'){
+      s+='<path d="M0,0 L100,0 L300,270 L300,380 L230,380 L0,100 Z" fill="'+oc+'"/>';
+      s+='<path d="M300,0 L300,110 L70,380 L0,380 L0,300 L230,0 Z" fill="'+oc+'"/>';
+    }else if(o==='chevron'){
+      s+='<path d="M0,290 L150,140 L300,290 L300,360 L150,210 L0,360 Z" fill="'+oc+'"/>';
+    }else if(o==='bordure'){
+      s+='<path d="'+p+'" fill="none" stroke="'+oc+'" stroke-width="26"/>';
+    }
+    // charge
+    var cc=TIN[state.chgC].c;
+    s+=charge(state.chg,cc);
+    s+='</g>';
+    s+='<path d="'+p+'" fill="none" stroke="#1c1a16" stroke-width="5"/>';
+    return s;
+  }
+  function charge(id,c){
+    if(id==='none') return '';
+    var x=150,y=190;
+    if(id==='star') return '<path transform="translate('+x+','+y+')" fill="'+c+'" d="M0,-58 L13,-18 L55,-18 L21,8 L34,50 L0,25 L-34,50 L-21,8 L-55,-18 L-13,-18 Z"/>';
+    if(id==='crescent') return '<path transform="translate('+x+','+y+')" fill="'+c+'" d="M0,-52 A52,52 0 1 0 0,52 A40,40 0 1 1 0,-52 Z"/>';
+    if(id==='cross') return '<path transform="translate('+x+','+y+')" fill="'+c+'" d="M-14,-58 L14,-58 L14,-14 L58,-14 L58,14 L14,14 L14,58 L-14,58 L-14,14 L-58,14 L-58,-14 L-14,-14 Z"/>';
+    if(id==='roundel') return '<circle cx="'+x+'" cy="'+y+'" r="46" fill="'+c+'"/>';
+    if(id==='lozenge') return '<path transform="translate('+x+','+y+')" fill="'+c+'" d="M0,-58 L44,0 L0,58 L-44,0 Z"/>';
+    if(id==='escallop') return '<path transform="translate('+x+','+y+')" fill="'+c+'" d="M0,-52 A52,52 0 0 0 0,52 A34,34 0 0 1 0,-52 Z"/>';
+    if(id==='fleur') return '<g transform="translate('+x+','+y+') scale(1.5)" fill="'+c+'"><path d="M0,-60 C18,-34 14,-8 0,6 C-14,-8 -18,-34 0,-60 Z"/><path d="M-8,2 C-40,-4 -56,-24 -54,-44 C-34,-34 -14,-20 -8,2 Z"/><path d="M8,2 C40,-4 56,-24 54,-44 C34,-34 14,-20 8,2 Z"/><path d="M-30,14 C-46,30 -40,50 -16,56 C-20,36 -18,20 -30,14 Z"/><path d="M30,14 C46,30 40,50 16,56 C20,36 18,20 30,14 Z"/><rect x="-7" y="0" width="14" height="46"/><rect x="-26" y="6" width="52" height="12"/></g>';
+    if(id==='tower') return '<g fill="'+c+'"><rect x="112" y="140" width="76" height="96"/><rect x="106" y="116" width="88" height="28"/><path d="M106,116 L120,88 L134,116 Z M134,116 L150,86 L166,116 Z M164,116 L180,88 L194,116 Z"/><path d="M130,236 L150,200 L170,236 Z" fill="#000" opacity=".25"/></g>';
+    if(id==='lion') return '<g transform="translate('+x+','+y+')" fill="'+c+'"><circle cx="0" cy="-34" r="26"/><path d="M-20,-16 C-52,-30 -60,6 -40,20 C-30,10 -30,-4 -18,-8 Z"/><path d="M20,-16 C52,-30 60,6 40,20 C30,10 30,-4 18,-8 Z"/><path d="M-22,-4 C-46,10 -44,48 -16,60 C-20,40 -14,20 -10,8 Z"/><path d="M22,-4 C46,10 44,48 16,60 C20,40 14,20 10,8 Z"/><path d="M-34,52 C-46,66 -40,80 -24,80 L-16,54 Z"/><path d="M34,52 C46,66 40,80 24,80 L16,54 Z"/></g>';
+    if(id==='eagle') return '<g transform="translate('+x+','+y+')" fill="'+c+'"><circle cx="0" cy="-30" r="18"/><path d="M-14,-18 C-46,-34 -78,-16 -86,10 C-62,2 -40,6 -18,20 Z"/><path d="M14,-18 C46,-34 78,-16 86,10 C62,2 40,6 18,20 Z"/><path d="M-18,20 C-30,44 -20,72 0,84 C20,72 30,44 18,20 Z"/><path d="M-8,-48 L0,-72 L8,-48 Z"/></g>';
+    if(id==='chevron') return '<path fill="'+c+'" d="M110,240 L150,196 L190,240 L190,262 L150,218 L110,262 Z"/>';
+    return '';
+  }
+
+  function blazon(){
+    var parts=[];
+    var d=DIVS.filter(function(x){return x.id===state.div;})[0];
+    if(state.div==='plain') parts.push(TIN[state.f1].n);
+    else if(state.div==='quarter') parts.push('Quarterly '+TIN[state.f1].n+' and '+TIN[state.f2].n);
+    else parts.push(d.n+' '+TIN[state.f1].n+' and '+TIN[state.f2].n);
+    var o=ORDS.filter(function(x){return x.id===state.ord;})[0];
+    if(state.ord!=='none') parts.push('a '+TIN[state.ordC].n.toLowerCase()+' '+o.n.toLowerCase());
+    var c=CHGS.filter(function(x){return x.id===state.chg;})[0];
+    if(state.chg!=='none') parts.push('a '+TIN[state.chgC].n.toLowerCase()+' '+c.n.toLowerCase());
+    return parts.join(', ');
+  }
+  function notes(){
+    var f1=TIN[state.f1], f2=TIN[state.f2], oc=TIN[state.ordC], cc=TIN[state.chgC];
+    var issues=[];
+    if(state.ord!=='none' && oc.m===f1.m && state.div==='plain') issues.push('metal on metal — a tincture is at risk');
+    if(state.chg!=='none' && cc.m===oc.m && state.ord!=='none') issues.push('metal on metal on the ordinary');
+    if(!issues.length) issues.push('no tincture conflict');
+    return 'FIELD '+f1.n+' ('+(f1.m?'metal':'colour')+')  |  '+
+      (state.div==='plain'?'':'SECOND '+f2.n+' ('+(f2.m?'metal':'colour')+')  |  ')+
+      (state.ord==='none'?'':'ORDINARY '+oc.n+'  |  ')+
+      (state.chg==='none'?'':'CHARGE '+cc.n)+'  |  '+issues.join('; ');
+  }
+  function render(){
+    document.getElementById('shield').innerHTML=escutcheon();
+    document.getElementById('blazon').textContent=blazon()+'.';
+    document.getElementById('notes').textContent=notes();
+  }
+
+  function buildOpts(el,list,key,cast){
+    var c=document.getElementById(el);
+    list.forEach(function(o){
+      var b=document.createElement('button');
+      b.className='opt'; b.textContent=o.n;
+      b.setAttribute('data-id',o.id);
+      b.addEventListener('click',function(){
+        state[key]=o.id;
+        Array.prototype.forEach.call(c.children,function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        render();
+      });
+      c.appendChild(b);
+    });
+  }
+  buildOpts('divs',DIVS,'div');
+  buildOpts('ords',ORDS,'ord');
+  buildOpts('chgs',CHGS,'chg');
+  // tinctures
+  var tsel=['f1','f2','ordC','chgC'];
+  var tn=document.getElementById('tincs');
+  Object.keys(TIN).forEach(function(k){
+    var i=document.createElement('i');
+    i.className='tinct'; i.style.background=TIN[k].c; i.title=TIN[k].n;
+    i.setAttribute('data-t',k);
+    i.addEventListener('click',function(){
+      var t=tsel.shift(); tsel.push(t);
+      state[t]=k;
+      markTinct();
+      render();
+    });
+    tn.appendChild(i);
+  });
+  function markTinct(){
+    var keys=tsel.slice();
+    Array.prototype.forEach.call(tn.children,function(el,i){
+      var idx=keys.indexOf(el.getAttribute('data-t'));
+      el.classList.toggle('on', idx>=0);
+    });
+  }
+  // set initial selection marks
+  function markOpts(){
+    markGroup('divs',state.div); markGroup('ords',state.ord); markGroup('chgs',state.chg);
+  }
+  function markGroup(id,val){
+    var c=document.getElementById(id);
+    Array.prototype.forEach.call(c.children,function(x){
+      x.classList.toggle('on',x.getAttribute('data-id')===val);
+    });
+  }
+  markTinct();
+
+  document.getElementById('rand').addEventListener('click',function(){
+    function pick(a){return a[Math.floor(Math.random()*a.length)];}
+    var keys=Object.keys(TIN);
+    state.div=pick(DIVS).id;
+    state.ord=pick(ORDS).id;
+    state.chg=pick(CHGS).id;
+    state.f1=pick(keys); state.f2=pick(keys);
+    state.ordC=pick(keys); state.chgC=pick(keys);
+    markOpts(); markTinct(); render();
+  });
+  document.getElementById('plain').addEventListener('click',function(){
+    state.div='plain'; state.ord='none'; state.chg='none';
+    markOpts(); render();
+  });
+  markOpts();
+  render();
+})();
+</script>
+</body>
+</html>

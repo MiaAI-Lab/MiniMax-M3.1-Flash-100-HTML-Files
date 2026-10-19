@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENIGMA — a rotor machine</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#11100e;--case:#2a2724;--case2:#3a3530;--ink:#efe9dd;--dim:#8e8578;--line:rgba(239,233,221,.14);
+    --lamp:#ffb64a;--brass:#c9a227;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,162,39,.06),transparent 60%);}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border:2px solid var(--brass);border-radius:50%;display:block;position:relative;}
+  .brand i:after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--brass);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--brass);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .machine{margin-top:5vh;border:1px solid var(--line);padding:clamp(18px,3vw,34px);
+    background:linear-gradient(160deg,var(--case2),var(--case));border-radius:14px;
+    box-shadow:0 40px 70px -40px #000, inset 0 1px 0 rgba(255,255,255,.07);}
+  .deck{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,44px);}
+  .lampboard{background:#1c1a17;border:6px solid #4a443c;border-radius:8px;padding:18px;
+    box-shadow:inset 0 6px 20px rgba(0,0,0,.8);}
+  .lampgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+  .lamp{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:400 12px/1 "Courier New",monospace;
+    color:#6d6558;background:radial-gradient(circle at 36% 30%,#3b372f,#201e1a);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.8);transition:background .12s,color .12s,box-shadow .12s;}
+  .lamp.on{background:radial-gradient(circle at 36% 30%,#ffe0a8,var(--lamp) 55%,#c97d1c);
+    color:#2b1b06;box-shadow:0 0 22px rgba(255,182,74,.65),inset 0 1px 2px rgba(255,255,255,.5);}
+  .keybd{display:grid;grid-template-columns:repeat(10,1fr);gap:7px;}
+  .key{aspect-ratio:1;border-radius:50%;border:1px solid #4a443c;font:400 11px/1 "Courier New",monospace;
+    color:#b7ad9c;background:radial-gradient(circle at 36% 28%,#4b453c,#26231f);cursor:pointer;
+    display:grid;place-items:center;transition:.12s;}
+  .key:hover{color:var(--brass);border-color:var(--brass);}
+  .key:active,.key.down{background:radial-gradient(circle at 36% 28%,#c9a227,#6a5417);color:#1a1508;}
+  .panel{background:#211f1c;border:1px solid #4a443c;border-radius:8px;padding:16px;margin-top:16px;}
+  .rowl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;
+    font:400 11.5px/1.4 "Courier New",monospace;color:var(--dim);border-bottom:1px solid rgba(239,233,221,.07);}
+  .rowl:last-child{border-bottom:none;}
+  .rowl b{color:var(--ink);font-weight:400;}
+  .rowl b.lamp{color:var(--lamp);}
+  .rotors{display:flex;gap:12px;margin-top:14px;}
+  .rot{flex:1;background:#151412;border:1px solid #4a443c;border-radius:6px;padding:10px;text-align:center;}
+  .rot .rname{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;color:var(--dim);}
+  .rot .rwin{font:400 2rem/1.1 Georgia,serif;color:var(--brass);margin:8px 0 6px;}
+  .rot .rnotch{font:400 9.5px/1 "Courier New",monospace;color:var(--dim);}
+  .rot .rnotch b{color:var(--lamp);font-weight:400;}
+
+  .io{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .iobox{border:1px solid var(--line);padding:18px;}
+  .iobox h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  textarea{width:100%;height:86px;background:#0e0d0c;border:1px solid var(--line);color:var(--ink);
+    font:400 13px/1.7 "Courier New",monospace;padding:12px;resize:vertical;letter-spacing:.08em;}
+  textarea:focus{outline:none;border-color:var(--brass);}
+  .btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--brass);color:var(--brass);background:rgba(201,162,39,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.deck{grid-template-columns:1fr;}.io{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+  @media(max-width:460px){.lampgrid{grid-template-columns:repeat(4,1fr);}.keybd{grid-template-columns:repeat(6,1fr);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Enigma</div>
+    <div class="meta">Wehrmacht Enigma I · 3 rotors · plugboard off</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Cryptography</div>
+    <h1>A machine that<br><b>forgets</b> nothing<br>except what it<br>just did</h1>
+    <p>An Enigma is a set of wired wheels. Press a key and the current runs through the plugboard, then the right rotor, the middle, the left, bounces off the reflector, and runs back through all three — and one wheel steps, so the next letter takes a completely different path.</p>
+  </section>
+
+  <section class="machine">
+    <div class="deck">
+      <div>
+        <div class="lampboard"><div class="lampgrid" id="lamps"></div></div>
+        <div class="panel">
+          <div class="rowl"><span>Plaintext</span><b id="pt">—</b></div>
+          <div class="rowl"><span>Ciphertext</span><b class="lamp" id="ct">—</b></div>
+          <div class="rowl"><span>Keypresses</span><b id="kc">0</b></div>
+          <div class="rowl"><span>Cipher number</span><b id="cn">0</b></div>
+        </div>
+      </div>
+      <div>
+        <div class="keybd" id="keys"></div>
+        <div class="panel">
+          <div class="rowl"><span>Right rotor</span><b id="r1">I</b></div>
+          <div class="rowl"><span>Middle rotor</span><b id="r2">II</b></div>
+          <div class="rowl"><span>Left rotor</span><b id="r3">III</b></div>
+          <div class="rowl"><span>Ring settings</span><b>AAA</b></div>
+          <div class="rowl"><span>Reflector</span><b>B (UKW-B)</b></div>
+          <div class="rotors">
+            <div class="rot"><div class="rname">LEFT</div><div class="rwin" id="w3">A</div><div class="rnotch">notch <b id="n3">V</b></div></div>
+            <div class="rot"><div class="rname">MIDDLE</div><div class="rwin" id="w2">A</div><div class="rnotch">notch <b id="n2">E</b></div></div>
+            <div class="rot"><div class="rname">RIGHT</div><div class="rwin" id="w1">A</div><div class="rnotch">notch <b id="n1">Q</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="io">
+    <div class="iobox">
+      <h2>Plaintext</h2>
+      <textarea id="in" spellcheck="false">ATTACK AT DAWN</textarea>
+      <div class="btns">
+        <button class="btn" id="enc">Encrypt</button>
+        <button class="btn" id="dec">Decrypt</button>
+        <button class="btn" id="reset">Reset rotors</button>
+      </div>
+    </div>
+    <div class="iobox">
+      <h2>Ciphertext</h2>
+      <textarea id="out" spellcheck="false" readonly></textarea>
+      <div class="btns">
+        <button class="btn" id="copy">Copy</button>
+        <button class="btn" id="clear">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>rotors step</h2>
+      <p>The right-hand rotor advances one position with every keypress, so it is sending the signal through a different piece of wire each time. When it reaches its notch it drags the middle rotor round by one; when the middle reaches its notch it drags the left. That gives <b>26 × 26 × 26</b> positions, and the machine's cipher is only different from the last one because of where the wheels happen to be sitting.</p>
+      <p>The stepping is the vulnerability. Before the war, the operators wrote the wheel positions on the message sheet and then destroyed it. Every day they rewrote the settings from a codebook, and every day the book was thrown away. A hundred days of that gives the Allies a hundred short cribs — and one crib, if the weather is right and the guess is good, is enough to rebuild the wheel positions and read everything that follows.</p>
+    </div>
+    <div>
+      <h2>The machine</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">This is a working simulation with the historical wirings of rotors I, II and III and the UKW-B reflector, plus the standard double-stepping. Type on the physical keyboard or click the machine's keys, and the lampboard lights with the letter the signal produced.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Set the machine running, then read the rotor windows as they turn: that is the whole secret, and it is why the Germans were forbidden to use Enigma for anything they needed to keep for more than a few hours.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Enigma — a rotor machine</span>
+    <span>Historical wirings · simulated stepping</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var ROTORS={
+    I:{w:'EKMFLGDQVZNTOWYHXUSPAIBRCJ',n:'Q'},
+    II:{w:'AJDKSIRUXBLHWTMCQGZNPYFVOE',n:'E'},
+    III:{w:'BDFHJLCPRTXVZNYEIWGAKMUSQO',n:'V'},
+    IV:{w:'ESOVPZJAYQUIRHXLNFTGKDCMWB',n:'J'},
+    V:{w:'VZBRGITYUPSDNHLXAWMJQOFECK',n:'Z'}
+  };
+  var REFL={B:'ENKQAUYWJICOPBLMDXZVFTHRGS',
+            C:'RDOBJNTKVEHMLFCWZAXGYIPSUQ',
+            A:'JWULCRNUMZAYABEHDKVOGIXQFT'};
+  var refl='B';
+  var order=['III','II','I'];   // left, middle, right
+  var pos=[0,0,0];              // left, middle, right window positions
+  var keys=0;
+
+  function idx(ch){ return A.indexOf(ch); }
+  function passRotor(rot, c, dir, offset){
+    var w=ROTORS[rot].w;
+    var x=idx(c);
+    if(dir>0) x=(x+offset)%26; else x=((x-offset)%26+26)%26;
+    var y=A.indexOf(w[x]);
+    if(dir>0) y=(y-offset+26)%26; else y=(y+offset)%26;
+    return A[y];
+  }
+  function notchAt(rot, p){ return ROTORS[rot].n===A[p]; }
+
+  function step(){
+    var rightNotch = notchAt(order[2], pos[2]);
+    var midNotch = notchAt(order[1], pos[1]);
+    if(midNotch){ pos[0]=(pos[0]+1)%26; }
+    if(rightNotch){ pos[1]=(pos[1]+1)%26; }
+    pos[2]=(pos[2]+1)%26;
+  }
+  function encryptChar(ch){
+    if(ch<'A'||ch>'Z') return ch;
+    var c=idx(ch);
+    // right to left through rotors
+    c=idx(passRotor(order[2],A[c],1,pos[2]));
+    c=idx(passRotor(order[1],A[c],1,pos[1]));
+    c=idx(passRotor(order[0],A[c],1,pos[0]));
+    // reflector
+    c=idx(REFL[refl][c]);
+    // back left to right
+    c=idx(passRotor(order[0],A[c],-1,pos[0]));
+    c=idx(passRotor(order[1],A[c],-1,pos[1]));
+    c=idx(passRotor(order[2],A[c],-1,pos[2]));
+    return A[c];
+  }
+  function press(ch){
+    ch=ch.toUpperCase();
+    if(ch<'A'||ch>'Z') return null;
+    var out=encryptChar(ch);
+    step();
+    keys++;
+    return out;
+  }
+  function reset(){
+    pos=[0,0,0]; keys=0;
+    updateWindows();
+  }
+  function updateWindows(){
+    document.getElementById('w1').textContent=A[pos[2]];
+    document.getElementById('w2').textContent=A[pos[1]];
+    document.getElementById('w3').textContent=A[pos[0]];
+    document.getElementById('n1').textContent=ROTORS[order[2]].n;
+    document.getElementById('n2').textContent=ROTORS[order[1]].n;
+    document.getElementById('n3').textContent=ROTORS[order[0]].n;
+    document.getElementById('kc').textContent=keys;
+  }
+
+  // lampboard
+  var lampEls={};
+  var lampWrap=document.getElementById('lamps');
+  A.split('').forEach(function(ch){
+    var d=document.createElement('div');
+    d.className='lamp'; d.textContent=ch;
+    lampWrap.appendChild(d); lampEls[ch]=d;
+  });
+  function light(ch){
+    Object.keys(lampEls).forEach(function(k){lampEls[k].classList.remove('on');});
+    if(ch && lampEls[ch]) lampEls[ch].classList.add('on');
+  }
+  // keyboard
+  var keyWrap=document.getElementById('keys');
+  A.split('').forEach(function(ch){
+    var d=document.createElement('div');
+    d.className='key'; d.textContent=ch;
+    d.addEventListener('click',function(){ doPress(ch,d); });
+    keyWrap.appendChild(d);
+  });
+  function doPress(ch,el){
+    var out=press(ch);
+    light(out);
+    if(el){ el.classList.add('down'); setTimeout(function(){el.classList.remove('down');},110); }
+    document.getElementById('pt').textContent=ch;
+    document.getElementById('ct').textContent=out;
+    updateWindows();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return;
+    var ch=e.key.toUpperCase();
+    if(ch<'A'||ch>'Z') return;
+    doPress(ch);
+  });
+
+  // text panels
+  // Enigma is reciprocal: the same operation encrypts and decrypts.
+  function runText(txt){
+    reset();
+    var out='';
+    for(var i=0;i<txt.length;i++){
+      var ch=txt[i];
+      if(ch<'A'||ch>'Z'){ out+=ch; continue; }
+      out+=press(ch);
+    }
+    return out;
+  }
+  document.getElementById('enc').addEventListener('click',function(){
+    var t=document.getElementById('in').value.toUpperCase();
+    var c=runText(t);
+    document.getElementById('out').value=c;
+    document.getElementById('cn').textContent=keys;
+  });
+  document.getElementById('dec').addEventListener('click',function(){
+    var t=document.getElementById('out').value.toUpperCase();
+    var p=runText(t);
+    document.getElementById('in').value=p;
+    document.getElementById('cn').textContent=keys;
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    reset(); document.getElementById('out').value='';
+    document.getElementById('pt').textContent='—';
+    document.getElementById('ct').textContent='—';
+    document.getElementById('cn').textContent='0';
+    light(null);
+  });
+  document.getElementById('clear').addEventListener('click',function(){
+    document.getElementById('out').value=''; document.getElementById('in').value='';
+  });
+  document.getElementById('copy').addEventListener('click',function(){
+    var o=document.getElementById('out');
+    o.select();
+    try{ document.execCommand('copy'); this.textContent='Copied'; }catch(e){ this.textContent='Select + copy'; }
+    var b=this; setTimeout(function(){ b.textContent='Copy'; },1400);
+  });
+  updateWindows();
+})();
+</script>
+</body>
+</html>

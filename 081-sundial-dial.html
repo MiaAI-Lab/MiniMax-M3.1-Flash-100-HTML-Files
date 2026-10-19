@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIAL — the sundial that knows</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#f3efe4;--stone:#e3dccb;--ink:#22201a;--dim:#7c7463;--line:rgba(34,32,26,.24);--bronze:#9a6b2f;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:2px solid var(--ink);}
+  .brand{font-size:13px;letter-spacing:.42em;text-transform:uppercase;font-weight:700;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--bronze);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 260px;gap:26px;align-items:start;
+    border:1px solid var(--ink);padding:24px;background:var(--stone);}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--ink);font-weight:400;}
+  .row b.br{color:var(--bronze);font-weight:400;}
+
+  .ctrl{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--bronze);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--bronze);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--bronze);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--bronze);color:var(--bronze);background:rgba(154,107,47,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Dial</div>
+    <div class="meta">Horizontal dial · gnomon parallel to the polar axis</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Horology</div>
+    <h1>The sun is the<br>only clock that<br>was <b>never</b> wound</h1>
+    <p>A sundial is a piece of geometry. The gnomon is a rod parallel to the Earth's axis, and the shadow it casts falls along a line whose angle is the hour angle. Set the hour lines once, for your latitude and your season, and the shadow reads the hour for ever — as long as somebody remembers to wind the clock that the shadow points to.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="820" height="620"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Sun</h2>
+        <div class="row"><span>Declination</span><b class="br" id="s1">—</b></div>
+        <div class="row"><span>Hour angle</span><b id="s2">—</b></div>
+        <div class="row"><span>Altitude</span><b id="s3">—</b></div>
+        <div class="row"><span>Azimuth</span><b id="s4">—</b></div>
+        <div class="row"><span>Shadow length</span><b id="s5">—</b></div>
+        <div class="row"><span>Shadow reads</span><b class="br" id="s6">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Place</h2>
+        <div class="row"><span>Latitude</span><b id="s7">—</b></div>
+        <div class="row"><span>Day</span><b id="s8">—</b></div>
+        <div class="row"><span>Equation of time</span><b id="s9">—</b></div>
+        <div class="row"><span>Sunrise</span><b id="s10">—</b></div>
+        <div class="row"><span>Sunset</span><b id="s11">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Latitude <output id="oa">51.5° N</output></label>
+      <input type="range" id="lat" min="-60" max="70" value="51">
+    </div>
+    <div class="fld">
+      <label>Day of year <output id="ob">21 June</output></label>
+      <input type="range" id="day" min="1" max="365" value="172">
+    </div>
+    <div class="fld">
+      <label>Solar time <output id="oc">12:00</output></label>
+      <input type="range" id="hr" min="0" max="1439" value="720">
+    </div>
+    <div class="btns">
+      <button class="btn" id="an">Show the analemma</button>
+      <button class="btn" id="lines">Hour lines</button>
+      <button class="btn" id="now">Now</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>lines are<br>not<br>even</h2>
+      <p>It is tempting to divide the dial into twelve equal sectors of thirty degrees. That is wrong, and it is wrong in a way that shows up twice a year. The sun crosses the meridian at the same rate every day — fifteen degrees an hour — but the <b>azimuth</b> of the sun does not move at a constant rate, and near sunrise and sunset it moves faster than in the middle of the day.</p>
+      <p>So the hour lines bunch towards the noon line and spread towards the horizon. It is the same reason that the sun rises at a different quarter on different sides of the year, and the reason an analemma — the figure-of-eight traced by the shadow of a fixed-time mark over a year — is lopsided rather than symmetrical.</p>
+    </div>
+    <div>
+      <h2>The analemma</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">If you fix a time of day — say nine in the morning — and mark the tip of the shadow every day for a year, the marks do not trace a circle. They trace a figure of eight, and the loop is the equation of time: the difference between the sundial and the clock, which is nearly a quarter of an hour at the extremes and vanishes four times a year.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">The figure is drawn here from the same equations as the shadow, at a fixed nine o'clock, so the tilt of the loop is a direct consequence of the obliquity of the ecliptic and the eccentricity of the Earth's orbit.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Dial — the sundial that knows</span>
+    <span>Shadow computed from spherical astronomy</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var cx=W/2, cy=H*0.60, R=Math.min(W,H)*0.40;
+  var lat=51.5, day=172, minutes=720;
+  var showAnalemma=true, showLines=true;
+
+  var MONTH=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MDAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+  function dateOf(n){
+    var d=n, m=0;
+    while(d>MDAYS[m]){ d-=MDAYS[m]; m++; }
+    return {d:d,m:m};
+  }
+  function decl(n){
+    // declination from day of year, two-term approximation
+    var g=2*Math.PI/365*(n-1+(0.5-0.5)); // mean anomaly approximation
+    var L=280.460+0.9856474*(n-1);
+    var g2=357.528+0.9856003*(n-1);
+    var lam=(L+1.915*Math.sin(g2*Math.PI/180)+0.020*Math.sin(2*g2*Math.PI/180))*Math.PI/180;
+    return Math.asin(Math.sin(23.4393*Math.PI/180)*Math.sin(lam));
+  }
+  function eqTime(n){
+    var g=2*Math.PI/365*(n-1);
+    return 229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)
+      -0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  }
+  function sunPos(latR,dec,H){
+    var sinAlt=Math.sin(latR)*Math.sin(dec)+Math.cos(latR)*Math.cos(dec)*Math.cos(H);
+    var alt=Math.asin(sinAlt);
+    var cosAz=(Math.sin(dec)-Math.sin(latR)*sinAlt)/(Math.cos(latR)*Math.cos(alt));
+    var az=Math.acos(Math.max(-1,Math.min(1,cosAz)));
+    if(Math.sin(H)>0) az=2*Math.PI-az;
+    return {alt:alt,az:az};
+  }
+  function hourAngleAz(latR,dec,hour){
+    var H=(hour-12)*Math.PI/12;
+    return sunPos(latR,dec,H);
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#e3dccb'; ctx.fillRect(0,0,W,H);
+    var latR=lat*Math.PI/180;
+    var dec=decl(day);
+    // dial plate
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283);
+    ctx.fillStyle='#efe9d9'; ctx.fill();
+    ctx.strokeStyle='#22201a'; ctx.lineWidth=2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.72,0,6.283);
+    ctx.strokeStyle='rgba(34,32,26,.18)'; ctx.lineWidth=1; ctx.stroke();
+    // compass points
+    var dirs=['N','E','S','W'];
+    for(var d=0;d<4;d++){
+      var a=d*Math.PI/2-Math.PI/2;
+      var x=cx+Math.cos(a)*R*0.9, y=cy+Math.sin(a)*R*0.9;
+      ctx.fillStyle='#22201a'; ctx.font='600 13px "Helvetica Neue",sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(dirs[d],x,y);
+    }
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    // hour lines
+    if(showLines){
+      for(var h=4;h<=20;h++){
+        var p=hourAngleAz(latR,dec,h);
+        if(p.alt<0) continue;
+        // shadow azimuth is opposite the sun
+        var sa=p.az+Math.PI;
+        var x1=cx+Math.cos(sa)*R*0.12, y1=cy+Math.sin(sa)*R*0.12;
+        var x2=cx+Math.cos(sa)*R*0.95, y2=cy+Math.sin(sa)*R*0.95;
+        ctx.strokeStyle='rgba(34,32,26,.35)'; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        var hl=String(h%24);
+        ctx.fillStyle='rgba(34,32,26,.6)'; ctx.font='10px "Courier New",monospace';
+        ctx.fillText(hl+'h', x2-Math.cos(sa)*14-4, y2-Math.sin(sa)*14+4);
+      }
+    }
+    // analemma at 9:00
+    if(showAnalemma){
+      ctx.strokeStyle='rgba(154,107,47,.85)'; ctx.lineWidth=1.6;
+      ctx.beginPath();
+      var started=false;
+      for(var n=1;n<=365;n++){
+        var dd=decl(n);
+        var pp=hourAngleAz(latR,dd,9);
+        if(pp.alt<=0.02){ started=false; continue; }
+        var L=R*0.42/Math.tan(pp.alt);
+        if(L>R*1.25){ started=false; continue; }
+        var sa2=pp.az+Math.PI;
+        var px=cx+Math.cos(sa2)*L, py=cy+Math.sin(sa2)*L;
+        if(!started){ ctx.moveTo(px,py); started=true; } else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+    }
+    // gnomon foot at the centre
+    // current shadow
+    var hour=minutes/60;
+    var p2=sunPos(latR,dec,(hour-12)*Math.PI/12);
+    var shadowAz=p2.az+Math.PI;
+    var L2=R*0.42/Math.tan(Math.max(0.02,p2.alt));
+    var sx=cx+Math.cos(shadowAz)*L2, sy=cy+Math.sin(shadowAz)*L2;
+    // gnomon: a rod pointing at the pole
+    var gnLen=R*0.42;
+    var gx=cx+Math.sin(latR)*0-Math.sin(latR)*0, gy=0;
+    // draw gnomon as a line in plan (foreshortened) plus a circle foot
+    ctx.strokeStyle='#9a6b2f'; ctx.lineWidth=4; ctx.lineCap='round';
+    var gdx=Math.cos(shadowAz)*Math.cos(latR)*gnLen*0.5;
+    var gdy=Math.sin(shadowAz)*Math.cos(latR)*gnLen*0.5;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+gdx,cy+gdy); ctx.stroke();
+    // shadow
+    if(p2.alt>0){
+      var g=ctx.createLinearGradient(cx,cy,sx,sy);
+      g.addColorStop(0,'rgba(34,32,26,.75)'); g.addColorStop(1,'rgba(34,32,26,.15)');
+      ctx.strokeStyle=g; ctx.lineWidth=10; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(sx,sy); ctx.stroke();
+      ctx.fillStyle='#22201a';
+      ctx.beginPath(); ctx.arc(sx,sy,5,0,6.283); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(cx,cy,7,0,6.283); ctx.fillStyle='#9a6b2f'; ctx.fill();
+    // the sun
+    var sunR=24, sunX=cx+Math.cos(p2.az)*R*0.82, sunY=cy+Math.sin(p2.az)*R*0.82;
+    if(p2.alt>0){
+      var sg=ctx.createRadialGradient(sunX,sunY,2,sunX,sunY,sunR*2);
+      sg.addColorStop(0,'rgba(255,214,120,.95)'); sg.addColorStop(.4,'rgba(255,190,80,.5)');
+      sg.addColorStop(1,'rgba(255,190,80,0)');
+      ctx.fillStyle=sg; ctx.beginPath(); ctx.arc(sunX,sunY,sunR*2,0,6.283); ctx.fill();
+      ctx.fillStyle='#f2c25a'; ctx.beginPath(); ctx.arc(sunX,sunY,sunR*0.45,0,6.283); ctx.fill();
+    }
+    // labels
+    ctx.fillStyle='rgba(34,32,26,.55)'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('ANALEMMA  09:00', 18, 24);
+    ctx.fillText('DIAL PLATE · HORIZONTAL', 18, 40);
+    // readouts
+    var dd=dateOf(day);
+    document.getElementById('s1').textContent=(dec*180/Math.PI).toFixed(2)+'°';
+    document.getElementById('s2').textContent=((hour-12)*15).toFixed(1)+'°';
+    document.getElementById('s3').textContent=(p2.alt*180/Math.PI).toFixed(1)+'°';
+    document.getElementById('s4').textContent=((p2.az*180/Math.PI+360)%360).toFixed(1)+'°';
+    document.getElementById('s5').textContent=(p2.alt>0?L2.toFixed(1):'—');
+    // read the time off the shadow: find hour whose azimuth is closest
+    var best=0,bd=99;
+    for(var hh=0;hh<24;hh++){
+      var pp=hourAngleAz(latR,dec,hh);
+      if(pp.alt<=0) continue;
+      var sa3=pp.az+Math.PI;
+      var dAz=Math.abs(((sa3-shadowAz+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI);
+      if(dAz<bd){bd=dAz;best=hh;}
+    }
+    document.getElementById('s6').textContent=p2.alt>0?(String(best).padStart(2,'0')+':00'):'below horizon';
+    document.getElementById('s7').textContent=Math.abs(lat).toFixed(1)+'° '+(lat>=0?'N':'S');
+    document.getElementById('s8').textContent=dd.d+' '+MONTH[dd.m];
+    var e=eqTime(day);
+    document.getElementById('s9').textContent=(e>=0?'+':'')+e.toFixed(1)+' min';
+    // sunrise/sunset from hour angle
+    var cosH0=-Math.tan(latR)*Math.tan(dec);
+    if(cosH0>=-1 && cosH0<=1){
+      var H0=Math.acos(cosH0)*12/Math.PI;
+      document.getElementById('s10').textContent=(12-H0).toFixed(2)+' h';
+      document.getElementById('s11').textContent=(12+H0).toFixed(2)+' h';
+    }else{
+      document.getElementById('s10').textContent='—';
+      document.getElementById('s11').textContent='—';
+    }
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  var latEl=document.getElementById('lat'), dayEl=document.getElementById('day'), hrEl=document.getElementById('hr');
+  latEl.addEventListener('input',function(){
+    lat=parseInt(this.value,10);
+    document.getElementById('oa').textContent=Math.abs(lat).toFixed(1)+'° '+(lat>=0?'N':'S');
+  });
+  dayEl.addEventListener('input',function(){
+    day=parseInt(this.value,10);
+    var dd=dateOf(day);
+    document.getElementById('ob').textContent=dd.d+' '+MONTH[dd.m];
+  });
+  hrEl.addEventListener('input',function(){
+    minutes=parseInt(this.value,10);
+    var h=Math.floor(minutes/60), m=minutes%60;
+    document.getElementById('oc').textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  });
+  document.getElementById('an').addEventListener('click',function(){
+    showAnalemma=!showAnalemma; this.classList.toggle('on',showAnalemma);
+  });
+  document.getElementById('lines').addEventListener('click',function(){
+    showLines=!showLines; this.classList.toggle('on',showLines);
+  });
+  document.getElementById('now').addEventListener('click',function(){
+    var now=new Date();
+    var start=Date.UTC(now.getUTCFullYear(),0,1);
+    day=Math.floor((Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())-start)/86400000)+1;
+    minutes=now.getUTCHours()*60+now.getUTCMinutes();
+    dayEl.value=day; hrEl.value=minutes;
+    var dd=dateOf(day);
+    document.getElementById('ob').textContent=dd.d+' '+MONTH[dd.m];
+    var h=Math.floor(minutes/60), m=minutes%60;
+    document.getElementById('oc').textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  });
+})();
+</script>
+</body>
+</html>

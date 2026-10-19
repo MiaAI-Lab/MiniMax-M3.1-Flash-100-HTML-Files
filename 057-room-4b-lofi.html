@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROOM 4B — 02:40</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--wall:#1a1f2b;--floor:#2a2118;--warm:#f5b96a;--cool:#6f8fd0;--ink:#e8e2d6;--dim:#8a8474;}
+  body{background:var(--wall);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .scene{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;
+    justify-content:flex-end;padding:0 0 0;}
+  .room{position:absolute;inset:0;background:
+    linear-gradient(180deg,#131824 0%,#1a1f2b 46%,#241f28 100%);}
+  .floorbg{position:absolute;left:0;right:0;bottom:0;height:34%;
+    background:linear-gradient(180deg,#3a2c1e,#241a12);
+    box-shadow:inset 0 14px 30px rgba(0,0,0,.5);}
+  .floorbg::after{content:"";position:absolute;inset:0;opacity:.16;
+    background:repeating-linear-gradient(90deg,rgba(0,0,0,.7) 0 2px,transparent 2px 46px);}
+  .window{position:absolute;left:8%;top:12%;width:36%;height:48%;border:10px solid #0e1219;border-radius:6px;
+    background:linear-gradient(180deg,#16203a,#1d2a46 60%,#243452);
+    box-shadow:0 20px 50px -20px #000, inset 0 0 40px rgba(0,0,0,.6);overflow:hidden;}
+  .window .moon{position:absolute;right:16%;top:14%;width:38px;height:38px;border-radius:50%;
+    background:#e8eef8;box-shadow:0 0 40px 8px rgba(200,220,255,.4);}
+  .window .city{position:absolute;left:0;right:0;bottom:0;height:42%;
+    background:linear-gradient(180deg,#0b0f18,#141a28);}
+  .window .city i{position:absolute;bottom:0;background:#0a0d14;border-top:1px solid rgba(255,220,160,.22);}
+  .window .city i::after{content:"";position:absolute;inset:4px 3px auto 3px;height:40%;
+    background:repeating-linear-gradient(180deg,rgba(255,205,130,.55) 0 3px,transparent 3px 9px);}
+  .raindrop{position:absolute;width:2px;height:10px;border-radius:2px;background:rgba(190,215,255,.5);
+    animation:drop linear infinite;}
+  @keyframes drop{0%{transform:translateY(-20px);opacity:0;}10%{opacity:.7;}100%{transform:translateY(300px);opacity:0;}}
+
+  .desk{position:absolute;right:6%;bottom:14%;width:48%;height:26%;background:linear-gradient(180deg,#4a3626,#2e2117);
+    border-radius:6px 6px 3px 3px;box-shadow:0 30px 50px -20px rgba(0,0,0,.8);}
+  .lamp{position:absolute;right:12%;bottom:40%;width:0;height:0;}
+  .lamp .arm{position:absolute;right:0;bottom:0;width:5px;height:120px;background:#3a3a42;transform-origin:bottom right;
+    transform:rotate(14deg);}
+  .lamp .head{position:absolute;right:-26px;bottom:112px;width:58px;height:34px;border-radius:40px 40px 8px 8px;
+    background:#4a4a54;transform:rotate(-16deg);}
+  .lamp .glow{position:absolute;right:-40px;bottom:-120px;width:180px;height:250px;
+    background:linear-gradient(180deg,rgba(245,185,106,.42),rgba(245,185,106,0));
+    filter:blur(14px);pointer-events:none;}
+  .lamp .pool{position:absolute;right:-10px;bottom:-6px;width:150px;height:44px;border-radius:50%;
+    background:radial-gradient(ellipse,rgba(245,185,106,.34),transparent 70%);filter:blur(6px);}
+  .cup{position:absolute;right:22%;bottom:30%;width:34px;height:40px;border-radius:4px 4px 12px 12px;
+    background:linear-gradient(180deg,#e8e2d4,#b8b0a0);box-shadow:0 8px 16px -6px #000;}
+  .cup::after{content:"";position:absolute;left:50%;top:-16px;width:2px;height:16px;background:rgba(255,255,255,.35);
+    transform:translateX(-50%) rotate(8deg);}
+  .books{position:absolute;right:42%;bottom:30%;width:110px;height:14px;background:#8a4a3a;box-shadow:0 4px 10px -4px #000;}
+  .books::after{content:"";position:absolute;left:8px;top:-9px;width:100px;height:9px;background:#3f6a7a;}
+  .plant{position:absolute;left:12%;bottom:30%;width:70px;height:90px;}
+  .plant .pot{position:absolute;bottom:0;left:12px;width:46px;height:44px;background:linear-gradient(160deg,#a8643f,#7a4426);
+    clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);}
+  .plant .leaf{position:absolute;bottom:34px;left:30px;width:14px;height:64px;border-radius:50% 50% 40% 40%;
+    background:linear-gradient(180deg,#3f7a52,#24503a);transform-origin:50% 100%;}
+  .plant .leaf:nth-child(2){transform:rotate(-32deg);}
+  .plant .leaf:nth-child(3){transform:rotate(-8deg);height:76px;}
+  .plant .leaf:nth-child(4){transform:rotate(24deg);}
+  .plant .leaf:nth-child(5){transform:rotate(44deg);height:52px;}
+
+  .hud{position:absolute;left:4vw;top:6vh;z-index:6;}
+  .hud .t{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);}
+  .hud .time{font-size:clamp(2.4rem,6vw,4rem);font-weight:200;letter-spacing:-.02em;margin-top:8px;color:var(--warm);}
+  .hud .sub{font-size:12px;color:var(--dim);letter-spacing:.06em;margin-top:4px;}
+
+  .player{position:relative;z-index:8;margin:0 4vw 6vh;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    background:rgba(12,14,20,.5);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 20px;
+    backdrop-filter:blur(14px);max-width:720px;}
+  .btnp{width:46px;height:46px;border-radius:50%;background:var(--warm);border:none;cursor:pointer;display:grid;
+    place-items:center;transition:.25s;}
+  .btnp:hover{transform:scale(1.07);}
+  .btnp::after{content:"";width:0;height:0;border-left:13px solid #2a2118;border-top:8px solid transparent;
+    border-bottom:8px solid transparent;margin-left:3px;}
+  .btnp.on::after{width:12px;height:14px;border:none;background:#2a2118;margin:0;
+    clip-path:polygon(0 0,34% 0,34% 100%,0 100%,0 0,66% 0,100% 0,100% 100%,66% 100%);}
+  .track{flex:1;min-width:180px;}
+  .track .nm{font-size:.95rem;margin-bottom:8px;}
+  .track .nm span{color:var(--dim);}
+  .bar{height:4px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;cursor:pointer;}
+  .bar i{display:block;height:100%;width:32%;background:linear-gradient(90deg,var(--warm),var(--cool));}
+  .eq{display:flex;gap:3px;align-items:flex-end;height:30px;}
+  .eq i{width:3px;background:linear-gradient(180deg,var(--cool),var(--warm));border-radius:2px;height:25%;
+    animation:eq 1.1s ease-in-out infinite;}
+  @keyframes eq{0%,100%{height:16%;}50%{height:100%;}}
+  .eq i:nth-child(2){animation-delay:.1s}.eq i:nth-child(3){animation-delay:.2s}
+  .eq i:nth-child(4){animation-delay:.3s}.eq i:nth-child(5){animation-delay:.4s}
+  .eq i:nth-child(6){animation-delay:.5s}.eq i:nth-child(7){animation-delay:.6s}
+  .eq i:nth-child(8){animation-delay:.7s}.eq i:nth-child(9){animation-delay:.8s}
+  .eq i:nth-child(10){animation-delay:.9s}.eq i:nth-child(11){animation-delay:1s}
+  .eq i:nth-child(12){animation-delay:1.1s}
+  .foot{padding:0 4vw 5vh;position:relative;z-index:8;color:#6d6858;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;}
+  @media(max-width:760px){.window{width:60%;height:32%;left:5%;top:8%;}.desk{width:70%;right:5%;bottom:20%;}
+    .hud .time{font-size:2.4rem;}}
+</style>
+</head>
+<body>
+<section class="scene">
+  <div class="room"></div>
+  <div class="floorbg"></div>
+
+  <div class="window" id="window">
+    <div class="moon"></div>
+    <div class="city" id="city"></div>
+  </div>
+
+  <div class="lamp">
+    <div class="arm"></div><div class="head"></div>
+    <div class="glow"></div><div class="pool"></div>
+  </div>
+  <div class="cup"></div>
+  <div class="books"></div>
+  <div class="plant">
+    <div class="pot"></div>
+    <div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div>
+  </div>
+
+  <div class="hud">
+    <div class="t">Room 4B · 02:40</div>
+    <div class="time" id="time">02:40</div>
+    <div class="sub">One chapter left. The window is cold.</div>
+  </div>
+</section>
+
+<div class="player">
+  <button class="btnp" id="play" aria-label="play"></button>
+  <div class="eq" id="eq"></div>
+  <div class="track">
+    <div class="nm">Midnight Ferry — <span>Hanne Vinter</span></div>
+    <div class="bar"><i id="fill"></i></div>
+  </div>
+</div>
+<div class="foot">Canvas rain · CSS room · no audio</div>
+
+<script>
+(function(){
+  // city skyline in the window
+  var city=document.getElementById('city');
+  for(var i=0;i<22;i++){
+    var b=document.createElement('i');
+    var w=8+Math.random()*26, h=20+Math.random()*70;
+    b.style.left=(i*5+Math.random()*3)+'%';
+    b.style.width=w+'px'; b.style.height=h+'px';
+    city.appendChild(b);
+  }
+  // rain on the window
+  var win=document.getElementById('window');
+  for(var r=0;r<40;r++){
+    var d=document.createElement('div');
+    d.className='raindrop';
+    d.style.left=(Math.random()*100)+'%';
+    d.style.top=(Math.random()*90)+'%';
+    d.style.animationDuration=(1.2+Math.random()*1.8)+'s';
+    d.style.animationDelay=(Math.random()*2)+'s';
+    win.appendChild(d);
+  }
+  // clock
+  function tick(){
+    var d=new Date();
+    document.getElementById('time').textContent=
+      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick,10000);
+  // equaliser
+  var eq=document.getElementById('eq');
+  for(var e=0;e<12;e++) eq.appendChild(document.createElement('i'));
+  var play=document.getElementById('play'), on=false, fill=document.getElementById('fill');
+  play.addEventListener('click',function(){
+    on=!on; this.classList.toggle('on',on);
+    eq.querySelectorAll('i').forEach(function(b){ b.style.animationPlayState=on?'running':'paused'; });
+  });
+  setInterval(function(){
+    if(!on) return;
+    fill.style.width=(parseFloat(fill.style.width||32)+0.2).toFixed(1)+'%';
+  },1000);
+})();
+</script>
+</body>
+</html>

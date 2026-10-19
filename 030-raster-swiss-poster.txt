@@ -1,0 +1,20 @@
+TITLE: RASTER — International Typographic Style
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "RASTER — International Typographic Style", a poster generator in the Swiss tradition. Art direction: absolute objectivity. Palette: paper #f4f3ef, ink #111111, signal red #e2231a, mid grey #9a9a94, hairline rgba(17,17,17,.16). Typography: Helvetica Neue / Arial only, uppercase, tight negative tracking on display sizes, wide positive tracking on labels. Layout: an 8px black rule at the top and around the stage; a header with a tracked wordmark and a grid specification; a two-column stage — on the left a 3:4 poster canvas (max-height 88vh) that carries an optional visible 12-column × 10-row grid, and on the right a 300px control panel separated by a 2px black rule, holding a headline selector slider (six real Swiss-style posters: Musica, Graphik, Luzern, Ordo, Bauhaus, Helvetica), a headline size slider, a disc-diameter slider, four accent colour swatches, a grid-visibility toggle and a "New composition" button. The poster is composed in JavaScript from absolutely positioned elements: a huge headline, a subtitle, one large accent disc, a black square, an accent triangle, a hairline rule and a right-aligned date/venue block, all placed on the grid. Below the stage: a four-column numbered explainer band (Grid / Sans / Accent / Asymmetry), then a two-column essay on the International Style, then a footer. Interaction: every control rebuilds the poster immediately; the grid can be shown or hidden; the new-composition button advances to the next title. Responsive: the stage stacks under 940px with the panel below, the explainer band becomes 3 then 1 column.
+
+DESCRIPTION:
+A machine for making posters that look as though they came out of Zurich in 1957. Everything is a rectangle or a circle, the type is one grotesque at two sizes, and there is exactly one colour besides black and white. The grid can be left visible so you can watch the discipline at work — and the sliders show how a single disc and a single headline can fill a page without decoration.
+
+MAJOR VISUAL TECHNIQUES:
+- Strict 12-column × 10-row visible grid with hairline rules
+- Single grotesque, two display sizes, uppercase with tight negative tracking
+- One accent colour used on the largest shape only
+- Absolutely positioned composition rebuilt in JavaScript from a title list
+- Clip-path triangle and hard-edged square as the only other forms
+- Right-aligned date/venue block balancing the flush-left headline
+- 8px black rules framing the stage, and a 2px rule dividing the control panel
+- Numbered explainer band with a single red numeral
+
+INTENDED INTERACTION MODEL:
+A generator with real constraints. Move the sliders and the poster redraws; change the accent and only that one shape changes colour; toggle the grid to see the structure; press New composition to move to the next title. There is nothing else to press, which is rather the point.

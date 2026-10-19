@@ -1,0 +1,18 @@
+TITLE: PRISM — the colour inside white
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PRISM — the colour inside white". Art direction: optics bench, near-black void, one beam of white light and the spectrum it becomes. Palette: ground #08090f, ink #eef0f6, dim #7e8393, hairline rgba(238,240,246,.14), beam #fff8ee, spectrum accent #9ad9ff. Layout: a header with a triangular logo mark and a monospaced formula line; then a hero with a pale-blue kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered bench panel holding a 1200×560 canvas and a legend strip in the bottom left; then a control band of two sliders (Incidence angle, Wavelength) and five buttons (Water / Crown glass / Flint glass / Diamond / Laser line); then a two-column section pairing an essay on refraction and Newton's prism with a medium table giving the Cauchy constants, the spread at the screen, the deviation and the refractive index at 589 nm; and a footer. Every ray is traced for real: the incident ray is intersected with the first face of a triangular prism, refracted with the vector form of Snell's law, intersected with the second face, refracted out and run to a screen, with a fallback path through the base if the ray leaves that way. The index for each wavelength comes from Cauchy's formula n = A + B/λ² with historical A and B values for water, crown glass, flint glass and diamond, and each ray is coloured by an approximation of the monochromatic sRGB value of its wavelength. Interaction: the incidence angle rotates the incoming beam; the four medium buttons swap the constants and change the spread and the deviation readouts; the wavelength slider selects a single laser line when moved off the ends; Laser line toggles between a full spectrum and one wavelength. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A prism that is actually traced. For each of eighty-one wavelengths the ray is intersected with the prism's first face, refracted through it with the vector form of Snell's law, refracted out of the second face and run to a screen — and because the index comes from Cauchy's formula, the spread of the band on the screen changes with the medium in the way it should. Switch from crown glass to flint and the fan opens; switch to diamond and it almost closes again.
+
+MAJOR VISUAL TECHNIQUES:
+- Vector-form Snell refraction with per-wavelength refractive index
+- Cauchy's dispersion formula n = A + B/λ² with historical constants
+- Segment–ray intersection for the prism faces
+- Monochromatic wavelength to sRGB approximation for ray colour
+- Translucent gradient prism body with a bright edge
+- Live spread, deviation and index readouts
+
+INTENDED INTERACTION MODEL:
+Split the light. Rotate the beam, swap the medium, and choose a single wavelength. Everything else on the page follows from the physics.

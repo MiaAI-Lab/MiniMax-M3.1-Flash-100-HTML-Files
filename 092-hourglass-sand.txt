@@ -1,0 +1,17 @@
+TITLE: HOURGLASS — sand, and the patience to watch it
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "HOURGLASS — sand, and the patience to watch it". Art direction: dark room, warm sand, cold glass, turned wood frame. Palette: ground #171310, ink #f0e7d8, dim #8d7f6e, hairline rgba(240,231,216,.14), sand #e2b866, glass #cfe3ea. Layout: a header with a two-bulb logo mark and a monospaced specification line; then a hero with a sand kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a bordered box split into a 700×700 canvas on the left and a 250px column of two instrument boxes on the right (Upper bulb: sand remaining, level, flow rate, neck width and grain size; Lower bulb: sand arrived, pile height, angle of repose, time elapsed and estimated time remaining); then a control band of two sliders (Neck width, Grain size) and three buttons (Turn over / Refill / Pour slowly); then a two-column section pairing an essay on what the sand is actually doing with a note on the measurement; and a footer. The hourglass is drawn as two glass bulbs made from quadratic curves meeting at the neck, with a wooden frame, and the sand is simulated rather than animated: the pile in the lower bulb is a height field of sixty-four columns, a grain landing adds to its column and then the whole row relaxes — any neighbouring pair that differs by more than the angle of repose of thirty-four degrees passes sand downhill until it does not — so the heap is a cone with a flat top that grows by eating its own sides. The stream through the neck is drawn between the bulbs, and individual falling grains are scattered down it. Interaction: the Neck width slider changes the flow rate, which is proportional to the square of the aperture; the Grain size slider changes how much each grain carries; Turn over mirrors the heap into the upper bulb and clears the floor; Refill resets both; Pour slowly halves the flow. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+An hourglass, with the heap simulated properly. The sand in the lower bulb is a height field of sixty-four columns that relaxes after every grain according to the angle of repose, so the pile is a cone with a flat top rather than a bump, and it grows by eating its own sides. The flow rate is proportional to the square of the neck width, so a wider neck really does empty faster, and turning the glass over mirrors the heap into the top — which is a lovely little inaccuracy every hourglass has always had.
+MAJOR VISUAL TECHNIQUES:
+- Height field of sixty-four columns for the heap in the lower bulb
+- Angle-of-repose relaxation passing sand downhill between neighbouring columns
+- Rake-style displacement that lowers a line and pushes sand out to the sides
+- Two glass bulbs built from quadratic curves meeting at the neck
+- Stream of falling grains drawn between the bulbs
+- Flow rate proportional to the square of the neck width
+
+INTENDED INTERACTION MODEL:
+Turn it over. Watch the heap grow, change the neck width and the grain size, slow the pour, and turn the glass over to start the sand again.

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURING — a machine on a tape</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#101318;--ink:#e8ecef;--dim:#7b838c;--line:rgba(232,236,239,.14);--paper:#e7e2d4;--accent:#ffb454;--ok:#7ee081;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1150px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;border:1px solid var(--accent);}
+  .brand i:after{content:"";position:absolute;left:4px;top:9px;width:14px;height:3px;background:var(--accent);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--accent);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--ok);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .bench{margin-top:5vh;border:1px solid var(--line);background:#0b0e13;}
+  .bench canvas{width:100%;height:auto;display:block;}
+  .states{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  table{border-collapse:collapse;width:100%;font:400 12px/1.4 "Courier New",monospace;}
+  th{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);
+    text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-weight:400;}
+  td{padding:3px 5px;border-bottom:1px solid rgba(232,236,239,.06);}
+  td.act{background:#f3f0e6;color:#16181c;}
+  td.cur{background:var(--accent);color:#16181c;}
+  .tbtn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:4px 7px;cursor:pointer;
+    font:400 11px/1 "Courier New",monospace;min-width:38px;}
+  .tbtn:hover{border-color:var(--accent);color:var(--accent);}
+  select{background:#0b0e13;border:1px solid var(--line);color:var(--ink);font:400 11px/1 "Courier New",monospace;
+    padding:4px;}
+  .readout div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);border-bottom:1px solid rgba(232,236,239,.07);}
+  .readout div:last-child{border-bottom:none;}
+  .readout b{color:var(--accent);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--accent);color:var(--accent);background:rgba(255,180,84,.1);}
+  .sep{width:1px;height:26px;background:var(--line);margin:0 6px;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:880px){.states{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Turing</div>
+    <div class="meta">Turing machine · 1 tape · unbounded right</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Computation</div>
+    <h1>Everything that<br>can be <b>computed</b><br>is a machine<br>that writes notes</h1>
+    <p>A Turing machine has a tape, a head that can move left or right, a finite set of states, and a rule for each pair of state and symbol. That is all. No memory beyond the tape, no arithmetic, no jumps. And in 1936 Alan Turing showed that anything a person can compute, this thing can compute — which is the reason the machine is a machine and not a metaphor.</p>
+  </section>
+
+  <section class="bench">
+    <canvas id="cv" width="1200" height="240"></canvas>
+  </section>
+
+  <section class="states">
+    <div class="box">
+      <h2>Transition table</h2>
+      <table id="tbl"></table>
+    </div>
+    <div class="box">
+      <h2>Machine</h2>
+      <div class="readout">
+        <div>State <b id="r1">A</b></div>
+        <div>Symbol under head <b id="r2">0</b></div>
+        <div>Head position <b id="r3">0</b></div>
+        <div>Steps taken <b id="r4">0</b></div>
+        <div>Ones on tape <b id="r5">0</b></div>
+        <div>Tape extent <b id="r6">0</b></div>
+        <div>Status <b id="r7">running</b></div>
+      </div>
+      <p style="font-size:.86rem;line-height:1.8;color:var(--dim);margin-top:14px">Click a table cell to cycle its write symbol and direction. Use the dropdown to set the next state.</p>
+    </div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" id="step">Step</button>
+    <button class="btn" id="run">Run</button>
+    <button class="btn" id="reset">Reset</button>
+    <span class="sep"></span>
+    <button class="btn" data-m="stripes">Stripes</button>
+    <button class="btn" data-m="counter">Counter</button>
+    <button class="btn" data-m="halts">Halts</button>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>paper<br>tape</h2>
+      <p>The image is doing more work than it looks. A Turing machine's tape is <b>unbounded</b> — it extends forever to the right, which is the whole point, because that is where the machine writes its output and keeps its working memory. The tape is blank except where the head has been, and blank is a symbol like any other.</p>
+      <p>Choosing that picture was not a metaphor but a claim. Turing argued that a person calculating is doing exactly this: reading a symbol, deciding what to write next, and moving one place along. Everything else — the paper, the pencil, the desk — is scaffolding for a process that is already purely symbolic.</p>
+    </div>
+    <div>
+      <h2>The<br>argument</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The proof has two halves. First, that a machine like this can be built out of switches and wires — that it is not a magical object. Second, and much harder, that any procedure a person could carry out could be written down as a set of rules of this kind, so that a machine following the rules would do the same thing.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">It is a mechanical argument, made without reference to consciousness, and it is the reason a modern computer is called a stored-program machine: the program is written on the same tape the machine works on.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Turing — a machine on a tape</span>
+    <span>Table editable · tape unbounded</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var tape={}, head=0, state='A', steps=0, halted=false, running=false, timer=null;
+  var states=['A','B','C'];
+  var rule={};   // rule[state+symbol] = {write, dir, next}
+
+  var MACHINES={
+    stripes:{states:['A','B'],
+      r:{'A0':{w:1,d:1,n:'B'},'A1':{w:1,d:1,n:'A'},'B0':{w:0,d:1,n:'A'},'B1':{w:0,d:1,n:'B'}}},
+    counter:{states:['A','B','C'],
+      r:{'A0':{w:1,d:1,n:'B'},'A1':{w:1,d:1,n:'A'},'B0':{w:1,d:1,n:'C'},'B1':{w:1,d:1,n:'B'},
+         'C0':{w:0,d:-1,n:'A'},'C1':{w:1,d:-1,n:'C'}}},
+    halts:{states:['A','B','H'],
+      r:{'A0':{w:1,d:1,n:'B'},'A1':{w:1,d:1,n:'A'},'B0':{w:1,d:1,n:'H'},'B1':{w:1,d:1,n:'A'}}}
+  };
+  var machine='stripes';
+  function loadMachine(name){
+    machine=name;
+    states=MACHINES[name].states.slice();
+    rule={};
+    for(var k in MACHINES[name].r) rule[k]=MACHINES[name].r[k];
+    reset();
+  }
+  function reset(){
+    tape={}; head=0; state=states[0]; steps=0; halted=false;
+    running=false; clearInterval(timer);
+    document.getElementById('run').classList.remove('on');
+    document.getElementById('run').textContent='Run';
+    buildTable();
+    draw();
+    update();
+  }
+  function stepOnce(){
+    if(halted) return;
+    var sym=tape[head]?1:0;
+    var r=rule[state+sym];
+    if(!r){ halted=true; return; }
+    if(r.n==='H'){ halted=true; return; }
+    tape[head]=r.w;
+    head+=r.d;
+    state=r.n;
+    steps++;
+  }
+  function buildTable(){
+    var t=document.getElementById('tbl');
+    t.innerHTML='';
+    var tr=document.createElement('tr');
+    tr.innerHTML='<th>State</th><th>On 0</th><th>On 1</th>';
+    t.appendChild(tr);
+    states.forEach(function(s){
+      var row=document.createElement('tr');
+      var th=document.createElement('th'); th.textContent=s; row.appendChild(th);
+      ['0','1'].forEach(function(sym){
+        var td=document.createElement('td');
+        var r=rule[s+sym]||{w:0,d:1,n:s};
+        var b=document.createElement('button');
+        b.className='tbtn';
+        b.textContent=r.w+' '+(r.d>0?'R':'L');
+        b.addEventListener('click',function(){
+          // cycle write symbol then direction
+          var rr=rule[s+sym];
+          if(rr.w===0){ rr.w=1; }
+          else if(rr.d>0){ rr.w=0; rr.d=-1; }
+          else { rr.d=1; }
+          b.textContent=rr.w+' '+(rr.d>0?'R':'L');
+          draw(); update();
+        });
+        var sel=document.createElement('select');
+        states.forEach(function(ns){
+          var o=document.createElement('option'); o.value=ns; o.textContent=ns;
+          if(ns===r.n) o.selected=true;
+          sel.appendChild(o);
+        });
+        sel.addEventListener('change',function(){ rule[s+sym].n=sel.value; update(); });
+        td.appendChild(b); td.appendChild(sel);
+        if(s===state && sym==='0') td.className='cur';
+        row.appendChild(td);
+      });
+      t.appendChild(row);
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0b0e13'; ctx.fillRect(0,0,W,H);
+    var cw=26, n=Math.floor(W/cw);
+    var start=head-Math.floor(n/2);
+    // tape body
+    ctx.fillStyle='#e7e2d4';
+    ctx.fillRect(0, 62, W, 116);
+    ctx.strokeStyle='rgba(22,24,28,.18)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var i=0;i<=n;i++){ ctx.moveTo(i*cw+.5,62); ctx.lineTo(i*cw+.5,178); }
+    ctx.stroke();
+    for(var j=0;j<4;j++){ ctx.moveTo(0,62+j*29+.5); ctx.lineTo(W,62+j*29+.5); }
+    ctx.stroke();
+    for(var k=0;k<n;k++){
+      var pos=start+k;
+      var v=tape[pos]?1:0;
+      var x=k*cw;
+      ctx.fillStyle=v?'#16181c':'#e7e2d4';
+      ctx.fillRect(x+2,64,cw-4,28);
+      if(v){
+        ctx.fillStyle='#e7e2d4';
+        ctx.font='600 15px "Courier New",monospace';
+        ctx.textAlign='center';
+        ctx.fillText('1', x+cw/2, 84);
+        ctx.textAlign='left';
+      }
+    }
+    // head
+    var hx=(head-start)*cw;
+    ctx.fillStyle='#ffb454';
+    ctx.beginPath();
+    ctx.moveTo(hx,58); ctx.lineTo(hx-11,42); ctx.lineTo(hx+11,42); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#ffb454'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(hx,58); ctx.lineTo(hx,178); ctx.stroke();
+    // state label
+    ctx.fillStyle='#ffb454';
+    ctx.font='600 14px "Courier New",monospace';
+    ctx.fillText('STATE '+state, 14, 30);
+    ctx.fillStyle='rgba(232,236,239,.5)';
+    ctx.font='11px "Courier New",monospace';
+    ctx.fillText('tape cell '+head+'   symbol '+(tape[head]?1:0), W-230, 30);
+    if(halted){
+      ctx.fillStyle='#7ee081';
+      ctx.font='600 14px "Courier New",monospace';
+      ctx.fillText('HALTED', W-90, 30);
+    }
+    ctx.strokeStyle='rgba(232,236,239,.12)'; ctx.lineWidth=1;
+    ctx.strokeRect(.5,.5,W-1,H-1);
+  }
+  function update(){
+    var ones=0, lo=0, hi=0, any=false;
+    for(var k in tape){
+      if(tape[k]) ones++;
+      var p=parseInt(k,10);
+      if(!any){lo=p;hi=p;any=true;}
+      else { if(p<lo)lo=p; if(p>hi)hi=p; }
+    }
+    document.getElementById('r1').textContent=state;
+    document.getElementById('r2').textContent=tape[head]?1:0;
+    document.getElementById('r3').textContent=head;
+    document.getElementById('r4').textContent=steps;
+    document.getElementById('r5').textContent=ones;
+    document.getElementById('r6').textContent=any?(lo+'…'+hi):'empty';
+    document.getElementById('r7').textContent=halted?'halted':'running';
+  }
+  function loop(){ draw(); update(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  document.getElementById('step').addEventListener('click',function(){
+    stepOnce(); buildTable(); draw(); update();
+  });
+  document.getElementById('run').addEventListener('click',function(){
+    running=!running;
+    this.classList.toggle('on',running);
+    this.textContent=running?'Pause':'Run';
+    clearInterval(timer);
+    if(running) timer=setInterval(function(){ stepOnce(); buildTable(); }, 90);
+  });
+  document.getElementById('reset').addEventListener('click',reset);
+  var mbtns=document.querySelectorAll('[data-m]');
+  Array.prototype.forEach.call(mbtns,function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(mbtns,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      loadMachine(b.getAttribute('data-m'));
+    });
+  });
+  loadMachine('stripes');
+  document.querySelector('[data-m="stripes"]').classList.add('on');
+})();
+</script>
+</body>
+</html>

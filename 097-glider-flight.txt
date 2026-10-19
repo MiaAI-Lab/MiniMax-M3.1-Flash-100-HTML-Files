@@ -1,0 +1,17 @@
+TITLE: GLIDER — the arithmetic of staying up
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "GLIDER — the arithmetic of staying up". Art direction: open sky, cool blue, a teal lift vector and a warm drag vector. Palette: ground #0d1418, ink #e6eef0, dim #75868c, hairline rgba(230,238,240,.14), lift #6fe0c8, drag #ff9a6b. Layout: a header with a two-stroke wing logo and a monospaced specification line; then a hero with a teal kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding a 1200×560 canvas that draws a sky gradient, the ground, the dashed glide path, a NACA 2412 airfoil section generated from the thickness distribution, the velocity vector, and the lift vector perpendicular to it and the drag vector opposite it, plus an absolutely positioned monospace HUD; then a control band of four sliders (Angle of attack, Wing area, Aspect ratio, Mass) and three buttons (Best glide, Stall, Dive); then a six-item readout strip giving the lift coefficient, the drag coefficient, the glide ratio, the sink rate, the speed and the range from a hundred metres; then a two-column section pairing an essay on the whole argument with a note on stalling; and a footer. The aerodynamics is real: the lift coefficient comes from thin-airfoil theory as two pi times the sine of the angle of attack until the sixteen-degree stall, after which the lift is modelled as collapsing, and the drag is the sum of a parasite term and the induced drag, which goes as the square of the lift divided by the aspect ratio times the span efficiency — so a high aspect ratio flies far on less drag. The speed follows from the force balance, and the sink rate and the range from the glide ratio. Interaction: the four sliders change the aircraft and every number moves with it; the three buttons trim the glider for best glide, push it into the stall and put it into a dive. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A glider, with the arithmetic done properly: thin-airfoil lift, parasite plus induced drag, and the speed that follows from the force balance. Sweep the angle of attack past sixteen degrees and the lift collapses while the drag climbs, the glide ratio falls apart, and the sink rate goes through the roof — which is what a stall is.
+MAJOR VISUAL TECHNIQUES:
+- NACA 2412 thickness distribution generating the section outline
+- Thin-airfoil lift coefficient with a modelled stall break
+- Parasite plus induced drag with a span efficiency factor
+- Speed from the force balance and the sink rate from the glide ratio
+- Lift drawn perpendicular to the velocity and drag drawn along it
+- Dashed glide path across the sky and ground
+
+INTENDED INTERACTION MODEL:
+Fly it. Move the angle of attack, the wing area, the aspect ratio and the mass, then trim for best glide, stall it deliberately, or put it into a dive.

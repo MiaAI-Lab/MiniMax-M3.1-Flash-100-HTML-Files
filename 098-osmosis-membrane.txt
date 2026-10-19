@@ -1,0 +1,17 @@
+TITLE: OSMOSIS — a membrane and its argument
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "OSMOSIS — a membrane and its argument". Art direction: dark laboratory, teal water and gold solute, a pale membrane. Palette: ground #08100f, ink #e4efec, dim #748b88, hairline rgba(228,239,236,.13), solute #f0c05a, water #4fb8c8. Layout: a header with a two-colour logo mark and a monospaced specification line; then a hero with a gold kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a bordered box split into an 800×620 canvas on the left and a 250px column of two instrument boxes on the right (Left side: the number of solute particles, the concentration and the number of water molecules; Right side: the same three plus the osmotic pressure difference and whether equilibrium has been reached); then a control band of three sliders (Solute size, Pore size, Initial difference) and two buttons (Reset, Add a pump); then a two-column section pairing an essay on the two different rules with a note on the numbers; and a footer. The two species are simulated separately: the solute is a set of large discs that bounce off the walls and are stopped dead by the membrane if they are too big for its pores, while the water is a set of small dots that pass through freely and are given a bias towards whichever compartment holds the more solute, which is osmosis. The pore holes are only drawn when the pore size is at least the solute size, and the osmotic pressure difference is reported from the real relation pi = RT times the concentration difference at 310 kelvin. Interaction: the Solute size slider makes the solute larger than the pores so it can no longer cross; the Pore size slider opens the pores and lets it through; the Initial difference slider reseeds the two compartments; Add a pump moves solute back against the gradient. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+Two compartments, one membrane, and the two rules that govern them. The solute is stopped dead if it is too big for the pores and the water is not, so the water keeps moving towards the concentrated side and the osmotic pressure builds until it balances. Open the pores up and the whole argument collapses into ordinary diffusion.
+MAJOR VISUAL TECHNIQUES:
+- Separate solute and water populations with different collision rules
+- Membrane drawn with pores only when the pores are open to the solute
+- Water biased towards the compartment with the greater solute concentration
+- Osmotic pressure reported from the relation pi = RT times the concentration difference
+- A pump that moves solute against the gradient
+- Live concentration and equilibrium readouts for both compartments
+
+INTENDED INTERACTION MODEL:
+Set it up. Change the solute and pore sizes to make the membrane selective or not, reseed the concentration difference, and switch the pump on to work against the gradient.

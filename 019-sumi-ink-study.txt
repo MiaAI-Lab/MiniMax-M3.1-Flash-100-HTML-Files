@@ -1,0 +1,19 @@
+TITLE: 墨 — SUMI, a study of one brush
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that is a Japanese ink-calligraphy study page titled "墨 — SUMI, a study of one brush". Art direction: sumi-e ink on kōzo paper. Palette: paper #f4f0e6, ink #16130f, warm grey #8b8478, seal red #b03a2e; a fixed fibre-texture layer of inline SVG feTurbulence in multiply blend over the whole page. Type: a mincho/serif stack with a 2.1 line-height and generous margins. Layout: a header with the character 墨, a subtitle and three tools (Draw / Wet ink / Clear); a two-column hero — on the left a kicker, a large headline, two paragraphs of explanation naming the five movements of a brush (着筆, 行筆, 頓挫, 収筆, 留白) and a 2×2 meta table listing brush, ink, paper and humidity; on the right a bordered "plate" containing a large inline SVG with four brush strokes of differing widths (one of them vermilion) and two SVG filters: a "bleed" filter (feTurbulence + feDisplacementMap, scale 3.2) that roughens the ink edge, and a "rough" filter (scale 6) for wet ink, plus a caption row. Below, three study cards (横 the horizontal, 縦 the vertical, 点 the dot), each with its own small inline SVG of strokes and a short paragraph; then a section pairing a heading with a numbered five-step list explaining a single stroke; then a footer. Interaction: on load the four strokes draw themselves in via stroke-dashoffset animation measured with getTotalLength(); the Draw button replays that animation; Wet ink toggles a rougher displacement filter and scatters randomly placed ink drips across the plate; Clear retracts the strokes; and moving the pointer across the plate leaves a soft grey wash circle that follows the cursor, positioned by converting client coordinates into viewBox coordinates.
+
+DESCRIPTION:
+A study of one brush, rendered with real SVG filters rather than brush images. The strokes are drawn on load with a dash-offset animation so they appear to be made in a single movement, and the ink edge is genuinely roughened by a turbulence displacement filter — the same filter that makes a wetter, heavier mark when you press Wet ink. The cursor leaves a faint wash on the paper as it travels, which is exactly what a loaded brush would do.
+
+MAJOR VISUAL TECHNIQUES:
+- SVG feTurbulence + feDisplacementMap ink-bleed filter on every stroke
+- A second, coarser displacement filter for the wet-ink state
+- getTotalLength() + stroke-dasharray/stroke-dashoffset to animate a stroke being drawn
+- Randomly generated ink drip circles injected into the SVG on demand
+- Pointer wash circle positioned by mapping client coordinates through the viewBox
+- Fixed feTurbulence paper-fibre overlay in multiply blend
+- Mincho serif typography with Japanese terms set alongside English glosses
+
+INTENDED INTERACTION MODEL:
+Tools and touch. Draw replays the brush animation, Wet ink roughens the strokes and scatters drips, Clear retracts the ink. The pointer paints a soft wash across the plate as it moves. The three study cards and the five-step list are read, not operated.

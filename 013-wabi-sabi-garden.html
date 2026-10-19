@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>侘 — 寂の庭 / A garden of imperfection</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--washi:#efe9dd;--sumi:#1c1a17;--faded:#8c8478;--seal:#a4392c;--moss:#6d7a55;}
+  body{background:var(--washi);color:var(--sumi);font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",
+    "Songti SC",Georgia,serif;overflow-x:hidden;}
+  .paper{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='5'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23f)' opacity='.5'/></svg>");
+    mix-blend-mode:multiply;opacity:.30;}
+  .fibers{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='g'><feTurbulence type='turbulence' baseFrequency='0.9 0.02' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='420' height='420' filter='url(%23g)' opacity='.28'/></svg>");}
+
+  .page{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:8vh 5vw 12vh;
+    display:grid;grid-template-columns:auto 1fr;gap:5vw;}
+
+  .side{position:sticky;top:8vh;align-self:start;display:flex;flex-direction:column;align-items:center;gap:26px;}
+  .vert{writing-mode:vertical-rl;text-orientation:upright;font-size:clamp(1.5rem,3.2vw,2.4rem);letter-spacing:.4em;
+    line-height:1.6;}
+  .vert small{display:block;font-size:11px;letter-spacing:.5em;color:var(--faded);margin-top:20px;}
+  .seal{width:64px;height:64px;background:var(--seal);color:var(--washi);display:grid;place-items:center;
+    font-size:1.2rem;border-radius:3px;box-shadow:0 4px 14px rgba(80,30,20,.35);transform:rotate(-3deg);
+    writing-mode:vertical-rl;letter-spacing:.1em;padding:6px;}
+
+  .content{max-width:620px;}
+  .lead{font-size:1.16rem;line-height:2.4;margin-bottom:6vh;}
+  .lead em{font-style:normal;background:linear-gradient(180deg,transparent 58%,rgba(164,57,44,.16) 58%);}
+  h2{font-size:1.5rem;letter-spacing:.2em;margin:7vh 0 22px;font-weight:400;}
+  h2::before{content:"—";color:var(--faded);margin-right:14px;}
+  p{font-size:1.02rem;line-height:2.2;color:#3a352e;margin-bottom:1.5em;}
+  .enso{width:min(78%,300px);aspect-ratio:1;margin:5vh auto 4vh;display:block;}
+  .ensocap{text-align:center;font-size:11px;letter-spacing:.4em;color:var(--faded);text-transform:uppercase;}
+
+  .stones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:4vh 0 6vh;}
+  .stone{border:1px solid rgba(28,26,23,.16);padding:20px 16px;background:rgba(255,255,255,.25);
+    transition:.5s;cursor:pointer;}
+  .stone:hover{background:rgba(255,255,255,.55);transform:translateY(-4px);}
+  .stone .dot{width:34px;height:34px;margin-bottom:14px;}
+  .stone h4{font-size:1.05rem;margin-bottom:8px;font-weight:400;letter-spacing:.1em;}
+  .stone p{font-size:.86rem;line-height:1.9;color:#544e44;margin:0;}
+
+  .raked{position:relative;height:190px;margin:5vh 0 6vh;overflow:hidden;
+    background:repeating-linear-gradient(180deg,#e6dfd0 0 5px,#ded6c5 5px 6px);}
+  .raked .stone{position:absolute;background:#7d7466;border-radius:48% 52% 46% 54%/52% 46% 54% 48%;
+    box-shadow:2px 6px 12px rgba(60,50,40,.28);}
+
+  .quote{font-size:1.5rem;line-height:2.1;font-style:italic;color:#2c2822;padding-left:1.4em;
+    border-left:2px solid var(--seal);margin:5vh 0;}
+  .attrib{font-size:11px;letter-spacing:.3em;color:var(--faded);margin-top:14px;font-style:normal;}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:4vh;}
+  .col h3{font-size:1.15rem;letter-spacing:.16em;margin-bottom:14px;font-weight:400;}
+  .col p{font-size:.94rem;line-height:2.1;}
+  .rule{height:1px;background:rgba(28,26,23,.18);margin:6vh 0;}
+
+  footer{padding:5vh 5vw;border-top:1px solid rgba(28,26,23,.16);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:11px;letter-spacing:.24em;color:var(--faded);}
+  .kanji{position:fixed;right:-1vw;bottom:-4vh;font-size:38vh;line-height:1;color:rgba(28,26,23,.045);
+    font-weight:700;pointer-events:none;z-index:1;user-select:none;}
+
+  @media(max-width:860px){.page{grid-template-columns:1fr;gap:4vh;}.side{flex-direction:row;position:static;
+    justify-content:flex-start;align-items:center;gap:20px;}.vert{writing-mode:horizontal-tb;text-orientation:mixed;}
+    .vert small{margin-top:6px;}.stones{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="paper"></div><div class="fibers"></div>
+<div class="kanji" aria-hidden="true">寂</div>
+
+<div class="page">
+  <aside class="side">
+    <div class="vert">侘び<small>WABI · SABI</small></div>
+    <div class="seal">寂</div>
+  </aside>
+
+  <main class="content">
+    <p class="lead">There is a word in Japanese for the way an object, once repaired, becomes more beautiful than it was new. The repair is not hidden. The crack is <em>gold</em>.</p>
+
+    <svg class="enso" viewBox="0 0 200 200" aria-label="Enso circle">
+      <path d="M156 60 A72 72 0 1 0 168 122" fill="none" stroke="#1c1a17" stroke-width="9"
+        stroke-linecap="round" opacity=".88"/>
+      <path d="M156 60 A72 72 0 1 0 168 122" fill="none" stroke="#1c1a17" stroke-width="3"
+        stroke-linecap="round" opacity=".35" transform="rotate(6 100 100)"/>
+    </svg>
+    <div class="ensocap">円相 — the ensō, drawn in one breath</div>
+
+    <h2>三つの石</h2>
+    <p>A zen garden is not a picture of nature. It is an argument about attention: gravel raked into water, three stones placed by hand, and the whole arrangement disturbed by a single visitor's footstep — which is the point.</p>
+
+    <div class="stones">
+      <div class="stone">
+        <div class="dot" style="background:radial-gradient(circle at 34% 30%,#9c9184,#6a6155)"></div>
+        <h4>常有</h4><p>The ordinary. Nothing here is remarkable, and that is why it is restful.</p>
+      </div>
+      <div class="stone">
+        <div class="dot" style="background:radial-gradient(circle at 34% 30%,#b9ac97,#8a7f6c)"></div>
+        <h4>不完</h4><p>Imperfection. The chipped edge, the unfinished corner, the thing that is nearly right.</p>
+      </div>
+      <div class="stone">
+        <div class="dot" style="background:radial-gradient(circle at 34% 30%,#8a9480,#5d6656)"></div>
+        <h4>間</h4><p>Emptiness. The space that the objects do not fill is part of the composition.</p>
+      </div>
+    </div>
+
+    <div class="raked" id="raked">
+      <div class="stone" style="width:62px;height:46px;left:14%;top:36%"></div>
+      <div class="stone" style="width:40px;height:52px;left:44%;top:22%;border-radius:52% 48% 44% 56%/44% 52% 48% 56%"></div>
+      <div class="stone" style="width:30px;height:26px;left:70%;top:58%"></div>
+    </div>
+
+    <h2>朴</h2>
+    <p>Simplicity is not the absence of detail. It is detail with nothing to prove. A bowl of rice, a stone, a line of ink that dries where it wants to.</p>
+
+    <blockquote class="quote">
+      "The pine wants to be a pine. The crane wants to be a crane. The mountain wants to be a mountain."
+      <div class="attrib">— a ninth-century proverb, roughly</div>
+    </blockquote>
+
+    <div class="cols">
+      <div class="col">
+        <h3>侘び — wabi</h3>
+        <p>Beauty that is lonely, weathered, and short. A single flower in an empty vase. The pleasure lies in knowing it will be gone in three days, and in choosing it anyway.</p>
+      </div>
+      <div class="col">
+        <h3>寂び — sabi</h3>
+        <p>Beauty in the process of decay. Patina, moss, the softening of a sharp edge. Not repair, exactly, but the slow work of time understood as a collaborator rather than an enemy.</p>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <p>Nothing on this page is new. The paper is a photograph of fibre, the circle was drawn by hand in a single movement, and the stones have been in the same garden since 1974. What is new is the arrangement — and even that, only slightly.</p>
+  </main>
+</div>
+
+<footer>
+  <span>寂の庭 — A garden of imperfection</span>
+  <span>Washi, ink, three stones</span>
+</footer>
+
+<script>
+(function(){
+  // the ensō is "drawn" once, on load
+  var path=document.querySelector('.enso path');
+  var len=path.getTotalLength();
+  path.style.strokeDasharray=len;
+  path.style.strokeDashoffset=len;
+  path.style.transition='stroke-dashoffset 2.4s cubic-bezier(.4,.1,.2,1)';
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ path.style.strokeDashoffset=0; }); });
+
+  // rake the gravel around the stones
+  var raked=document.getElementById('raked');
+  var stones=raked.querySelectorAll('.stone');
+  function rake(){
+    stones.forEach(function(s){
+      var r=raked.getBoundingClientRect(), b=s.getBoundingClientRect();
+      var cx=b.left-r.left+b.width/2, cy=b.top-r.top+b.height/2;
+      s.style.boxShadow='2px 6px 12px rgba(60,50,40,.28), 0 0 0 '+(9+Math.random()*7)+'px rgba(230,223,208,.95)';
+    });
+  }
+  rake();
+  setInterval(rake,2400);
+
+  // stones lift slightly on hover
+  stones.forEach(function(s){
+    s.style.transition='transform .4s cubic-bezier(.2,.8,.2,1)';
+    s.addEventListener('pointerenter',function(){ s.style.transform='translateY(-3px) scale(1.03)'; });
+    s.addEventListener('pointerleave',function(){ s.style.transform='none'; });
+  });
+})();
+</script>
+</body>
+</html>

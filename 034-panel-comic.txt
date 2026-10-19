@@ -1,0 +1,20 @@
+TITLE: PANEL — issue no. 4
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that is a comic book called "PANEL — issue no. 4", a two-page story called "The Halcyon Line". Art direction: European album comic, limited palette, heavy ink. Palette: paper #f4efe2, ink #15120c, red #d6342a, blue #2a5db0, yellow #f2c53d, desk grey #2c2a26. Layout: a dark "desk" background with a slightly rotated paper sheet (a −0.25° transform with a deep drop shadow) holding a 12-column × auto-row CSS grid of nine bordered panels; a top bar carries the title and issue number, and clicking it turns the page. Each panel is built from inline SVG drawn in JavaScript: a sky gradient with layered hill silhouettes, a stylised figure assembled from ellipses, paths and rounded rectangles, a train with windows and wheels, a station clock, a tunnel lamp — all in the limited palette. Over the SVG sit absolutely positioned speech bubbles (white ovals with a heavy ink border and a rotated square tail), onomatopoeia in heavy yellow type with an ink stroke, and yellow caption boxes pinned to the bottom of a panel. Interaction: clicking the top bar or pressing the right arrow / space turns to the next page; the left arrow turns back; the turn is animated as a rotateY flip on the sheet. Two complete pages of nine panels each are provided, telling a story about a train that leaves at midnight and a ticket paid for in cash. Responsive: under 760px the 12-column grid becomes 6 columns, the large panel spans the full width, the pairs stack, and the bottom row becomes three half-width panels.
+
+DESCRIPTION:
+A comic that exists entirely in code. Every panel is an inline SVG assembled from a handful of shapes — a gradient sky, two hill silhouettes, a figure made of an ellipse, a path and two rectangles, a train with three windows — and every panel is bordered in heavy ink, the way a comic page is. The halftone is literal: a repeating radial-gradient of dots, which is exactly what a printing plate does. The story is a mystery about the 00:12 and it takes two pages and two turns of the sheet.
+
+MAJOR VISUAL TECHNIQUES:
+- Nine-panel page on a 12-column CSS grid with heavy ink borders
+- Every illustration authored as inline SVG (sky gradients, hill paths, figures, train, lamps)
+- Halftone dots built from a repeating radial-gradient at a 6px pitch
+- Speech bubbles with heavy borders and rotated-square tails
+- Onomatopoeia in heavy yellow type with a text-stroke outline
+- Yellow caption boxes pinned to the bottom edge of a panel
+- rotateY page-turn animation on the paper sheet
+- Limited four-colour palette with flat fills and no gradients except skies
+
+INTENDED INTERACTION MODEL:
+Turn the page. Click the header, press space, or use the arrow keys. Two pages of nine panels each; the sheet flips in 3D. Nothing else is interactive — it is a comic, and reading it is the whole interaction.

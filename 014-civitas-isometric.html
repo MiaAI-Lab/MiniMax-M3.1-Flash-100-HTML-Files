@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIVITAS — An isometric city that lives</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --sky1:#1a2a5e;--sky2:#e8663c;--sky3:#ffc46b;
+    --ink:#10131f;--glass:#9fd8e8;
+  }
+  body{background:#0a0d18;color:#eef2ff;font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
+    overflow-x:hidden;min-height:100vh;}
+  .sky{position:fixed;inset:0;z-index:0;transition:background 1.4s ease;
+    background:linear-gradient(180deg,var(--sky1) 0%,#5b3a76 34%,var(--sky2) 62%,var(--sky3) 88%);}
+  body.night .sky{background:linear-gradient(180deg,#04060f 0%,#0a1030 45%,#182a4d 78%,#2b4a70 100%);}
+  .sun{position:fixed;left:50%;top:22%;width:min(34vw,380px);aspect-ratio:1;transform:translateX(-50%);
+    border-radius:50%;z-index:1;transition:opacity 1.4s;
+    background:linear-gradient(180deg,#fff2b0,#ffb64d 48%,#ff6a3d 78%);
+    box-shadow:0 0 120px 30px rgba(255,150,80,.35);}
+  .sun::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:linear-gradient(180deg,transparent 52%,var(--sky1) 52%,var(--sky1) 56%,transparent 56%,
+      transparent 62%,var(--sky1) 62%,var(--sky1) 65%,transparent 65%,transparent 70%,var(--sky1) 70%,var(--sky1) 74%,transparent 74%);}
+  body.night .sun{opacity:0;}
+  .haze{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(130% 80% at 50% 100%,rgba(10,13,24,.92),transparent 62%);}
+
+  header{position:relative;z-index:6;display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding:24px 4vw;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:12px;font-size:13px;letter-spacing:.42em;text-transform:uppercase;}
+  .brand i{width:12px;height:12px;background:#ffb64d;transform:rotate(45deg);display:block;box-shadow:0 0 18px #ffb64d;}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;}
+  .tools button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#eef2ff;
+    padding:9px 18px;border-radius:999px;font-family:inherit;font-weight:400;font-size:10.5px;line-height:1;letter-spacing:.24em;text-transform:uppercase;
+    cursor:pointer;transition:.3s;}
+  .tools button:hover,.tools button.on{background:#ffb64d;border-color:#ffb64d;color:#1a1004;font-weight:600;}
+
+  .stage{position:relative;z-index:5;height:64vh;min-height:430px;overflow:hidden;display:grid;place-items:center;}
+  .city{position:relative;width:min(1180px,140vw);aspect-ratio:16/9;}
+  .city svg{position:absolute;inset:0;width:100%;height:100%;}
+  .bld{position:absolute;inset:0;pointer-events:none;}
+  .face{position:absolute;inset:0;transition:filter .35s,transform .35s;}
+  .face:hover{filter:brightness(1.18) saturate(1.1);}
+  .bld.sel .face{filter:brightness(1.3) saturate(1.2) drop-shadow(0 0 14px rgba(255,214,120,.8));}
+  .winlayer{position:absolute;inset:0;opacity:.20;transition:opacity .6s;pointer-events:none;}
+  body.night .winlayer{opacity:.95;}
+
+  .dock{position:relative;z-index:6;padding:0 4vw 8vh;}
+  .info{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;max-width:1100px;margin:0 auto;
+    background:rgba(10,13,24,.58);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);
+    border-radius:20px;padding:28px 30px;}
+  .info h2{font-size:1.15rem;margin-bottom:12px;font-weight:500;}
+  .info p{color:#a8b0cc;font-size:.92rem;line-height:1.85;}
+  .selbox{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px 20px;margin-top:18px;
+    background:rgba(255,255,255,.04);}
+  .selbox .nm{font-size:1.25rem;margin-bottom:6px;}
+  .selbox .meta{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8b93b5;}
+  .selbox p{margin-top:10px;font-size:.88rem;}
+  .districts{display:grid;gap:12px;}
+  .drow{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding-bottom:11px;
+    border-bottom:1px solid rgba(255,255,255,.1);font-size:.88rem;}
+  .drow:last-child{border-bottom:none;}
+  .drow b{font-weight:500;}
+  .drow span{color:#8b93b5;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;}
+  .dbar{grid-column:1/-1;height:4px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;}
+  .dbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ffb64d,#ff6a3d);
+    width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:#8b93b5;}
+  .legend span{display:flex;align-items:center;gap:8px;}
+  .legend i{width:10px;height:10px;display:block;}
+
+  footer{padding:20px 4vw;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10.5px;
+    letter-spacing:.24em;text-transform:uppercase;color:#6a7292;border-top:1px solid rgba(255,255,255,.1);}
+
+  @media(max-width:860px){.info{grid-template-columns:1fr;}.stage{height:52vh;min-height:340px;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="sky"></div><div class="sun"></div><div class="haze"></div>
+
+<header>
+  <div class="brand"><i></i>Civitas</div>
+  <div class="tools">
+    <button id="day" class="on">Day</button>
+    <button id="night">Night</button>
+    <button id="regen">Rebuild</button>
+  </div>
+</header>
+
+<div class="stage"><div class="city" id="city"></div></div>
+
+<section class="dock">
+  <div class="info">
+    <div>
+      <h2>A city of forty-one blocks</h2>
+      <p>Every building is three polygons — a roof and two walls — projected by hand into a 2:1 isometric grid. No 3D transforms, no images, no sprite sheets. Click a block to inspect it; press Night and the windows come on.</p>
+      <div class="selbox" id="selbox">
+        <div class="nm" id="selName">No block selected</div>
+        <div class="meta" id="selMeta">Tap a building in the city</div>
+        <p id="selText">The city is generated fresh each time you press Rebuild, with heights, districts and colours drawn from the same rules the architect used.</p>
+      </div>
+      <div class="legend">
+        <span><i style="background:#ffb64d"></i>Residential</span>
+        <span><i style="background:#7ea6ff"></i>Commercial</span>
+        <span><i style="background:#9be3c4"></i>Civic</span>
+      </div>
+    </div>
+    <div class="districts">
+      <div class="drow"><b>Old Quarter</b><span>412 residents</span><div class="dbar"><i data-w="86"></i></div></div>
+      <div class="drow"><b>Harbour Line</b><span>1,038 residents</span><div class="dbar"><i data-w="54"></i></div></div>
+      <div class="drow"><b>The Terraces</b><span>276 residents</span><div class="dbar"><i data-w="72"></i></div></div>
+      <div class="drow"><b>Glass Quarter</b><span>1,904 residents</span><div class="dbar"><i data-w="38"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Civitas — a city of three polygons</span>
+  <span>2:1 isometric projection, hand computed</span>
+</footer>
+
+<script>
+(function(){
+  var city=document.getElementById('city');
+  var U=34, V=17;   // half tile width, quarter tile height (2:1 iso)
+  var GRID=9;       // 9x9 lots
+  var districts=[
+    {name:'Old Quarter',   col:'#c9a27a', l:'#7d5f45', r:'#5f4734'},
+    {name:'Harbour Line',  col:'#8fb0e8', l:'#4a6799', r:'#354d78'},
+    {name:'The Terraces',  col:'#a8ddc2', l:'#5a9179', r:'#436e5c'},
+    {name:'Glass Quarter', col:'#f0c9d8', l:'#9c5f77', r:'#78465a'}
+  ];
+  var NAMES=['Atelier','Foundry','Arcade','Bastion','Lamp Works','Pumphouse','Signal','Ropewalk','Kiln',
+             'Granary','Lookout','Salt Store','Printers','Almshouse','Tannery','Orchard House','Telegraph',
+             'Bell Tower','Cooperage','Cistern','Rope Loft','Nursery','Glasshouse','Chandlery','Dye Works'];
+  var DESC=['A workshop with the shutters open all day.',
+            'Half the roof is a chimney, and it is always warm.',
+            'Twelve arches, all of them different.',
+            'Built after the flood of 1871 and never flooded since.',
+            'The lamp is lit at dusk by a man who has never been late.',
+            'Water rises forty feet and falls again by morning.',
+            'A semaphore that can be read from the far headland.'];
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+  function proj(gx,gy,h){
+    return { x:(gx-gy)*U, y:(gx+gy)*V - h };
+  }
+
+  function build(){
+    city.innerHTML='';
+    // ground grid as inline SVG
+    var svgNS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 1200 700');
+    svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+    var ox=600, oy=150;
+    var g=document.createElementNS(svgNS,'g');
+    g.setAttribute('stroke','rgba(255,255,255,.16)');
+    g.setAttribute('stroke-width','1');
+    for(var i=0;i<=GRID*2;i++){
+      var a=document.createElementNS(svgNS,'line');
+      var p1=proj(i-GRID,-GRID,0), p2=proj(i-GRID,GRID,0);
+      a.setAttribute('x1',ox+p1.x); a.setAttribute('y1',oy+p1.y);
+      a.setAttribute('x2',ox+p2.x); a.setAttribute('y2',oy+p2.y);
+      g.appendChild(a);
+      var b=document.createElementNS(svgNS,'line');
+      var q1=proj(-GRID,i-GRID,0), q2=proj(GRID,i-GRID,0);
+      b.setAttribute('x1',ox+q1.x); b.setAttribute('y1',oy+q1.y);
+      b.setAttribute('x2',ox+q2.x); b.setAttribute('y2',oy+q2.y);
+      g.appendChild(b);
+    }
+    svg.appendChild(g);
+    city.appendChild(svg);
+
+    // buildings, painted back to front
+    var cells=[];
+    for(var gx=0;gx<GRID;gx++)for(var gy=0;gy<GRID;gy++){
+      if(Math.random()<0.16) continue;
+      cells.push({gx:gx,gy:gy});
+    }
+    cells.sort(function(a,b){ return (a.gx+a.gy)-(b.gx+b.gy); });
+
+    cells.forEach(function(c){
+      var h=Math.round(rnd(24,132));
+      var d=pick(districts);
+      var A=proj(c.gx,c.gy,h), B=proj(c.gx+1,c.gy,h), C=proj(c.gx+1,c.gy+1,h), D=proj(c.gx,c.gy+1,h);
+      var C0=proj(c.gx+1,c.gy+1,0), D0=proj(c.gx,c.gy+1,0), B0=proj(c.gx+1,c.gy,0);
+
+      var el=document.createElement('div');
+      el.className='bld';
+      el.style.left='calc(50% - 600px)'; el.style.top='calc(50% - 350px)';
+      el.style.width='1200px'; el.style.height='700px';
+
+      function poly(pts){
+        return 'polygon('+pts.map(function(p){return p.x+'px '+p.y+'px';}).join(',')+')';
+      }
+      // right wall (faces +x)
+      var right=document.createElement('div');
+      right.className='face';
+      right.style.background=d.r;
+      right.style.clipPath=poly([B,C,C0,B0]);
+      // left wall (faces +y)
+      var left=document.createElement('div');
+      left.className='face';
+      left.style.background=d.l;
+      left.style.clipPath=poly([D,C,C0,D0]);
+      // roof
+      var roof=document.createElement('div');
+      roof.className='face';
+      roof.style.background=d.col;
+      roof.style.clipPath=poly([A,B,C,D]);
+      // windows on the right wall
+      var win=document.createElement('div');
+      win.className='winlayer';
+      win.style.clipPath=poly([B,C,C0,B0]);
+      win.style.background='repeating-linear-gradient(90deg,rgba(255,224,150,.95) 0 4px,transparent 4px 16px),'+
+        'repeating-linear-gradient(0deg,rgba(255,224,150,.95) 0 4px,transparent 4px 15px)';
+      win.style.backgroundSize='100% 100%';
+      win.style.backgroundBlendMode='overlay';
+
+      el.appendChild(right); el.appendChild(left); el.appendChild(roof); el.appendChild(win);
+      el.style.cursor='pointer';
+      el.addEventListener('click',function(){
+        document.querySelectorAll('.bld').forEach(function(x){x.classList.remove('sel');});
+        el.classList.add('sel');
+        var nm=pick(NAMES);
+        document.getElementById('selName').textContent=nm;
+        document.getElementById('selMeta').textContent=d.name+' · '+h+' m · block '+c.gx+'-'+c.gy;
+        document.getElementById('selText').textContent=pick(DESC);
+      });
+      city.appendChild(el);
+    });
+  }
+  build();
+
+  document.getElementById('regen').addEventListener('click',build);
+  var day=document.getElementById('day'), night=document.getElementById('night');
+  function setNight(on){
+    document.body.classList.toggle('night',on);
+    day.classList.toggle('on',!on); night.classList.toggle('on',on);
+  }
+  day.addEventListener('click',function(){setNight(false);});
+  night.addEventListener('click',function(){setNight(true);});
+
+  setTimeout(function(){
+    document.querySelectorAll('.dbar i').forEach(function(b){ b.style.width=b.dataset.w+'%'; });
+  },400);
+})();
+</script>
+</body>
+</html>

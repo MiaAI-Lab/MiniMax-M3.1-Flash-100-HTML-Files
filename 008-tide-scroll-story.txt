@@ -1,0 +1,20 @@
+TITLE: TIDE — A scroll through the sound of the sea
+
+PROMPT:
+Build a self-contained HTML page (inline CSS and JS only, no external fonts, images, CDNs, libraries or SVG files) that is a scroll-driven narrative about the sea called "TIDE". Art direction: deep underwater editorial — near-black teal ground #04141c, layers of teal #0a2a36 / #0f4a58, foam white #cfeef2, a single coral accent #ff7a59 for chapter numbers, and generous light-weight sans type. A fixed full-viewport canvas draws the sea: a vertical background gradient that darkens as you scroll, a soft light shaft from above the surface, five stacked wave layers built from summed sine harmonics (each with its own frequency, amplitude, phase, drift speed and colour) whose baseline lifts as scroll progress increases, a foam crest stroke on each layer, and drifting suspended particles. A fixed 2px gradient progress bar tracks scroll; a fixed header with mix-blend-mode: difference shows the wordmark and a live chapter index. Content is four full-height chapters alternating left and right, each with a coral numbered rule, a large headline with one foam-coloured word, and a paragraph; IntersectionObserver reveals each chapter (opacity + translateY) and updates the header index. After the chapters, a "dive" section with a sonar instrument: three expanding pulse rings, a rotating conic-gradient sweep, a coral core, and five randomly placed blip dots with staggered animation delays. Finish with a footer and a fading scroll cue. Responsive: right-aligned chapters re-align left under 820px and the depth-gauge decoration is hidden.
+
+DESCRIPTION:
+A long-form, scroll-told essay about what the ocean sounds like, staged like a descent. The canvas is the set — layered wave silhouettes that rise and deepen as the reader scrolls, lit from an off-screen surface. Chapters alternate sides so the eye zig-zags down the column, and the final sonar instrument turns the abstract into an instrument panel with contacts blinking at irregular intervals.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas wave layers from summed sine harmonics with per-layer drift, phase and colour, scrolling-coupled baseline lift
+- Fixed light-shaft radial gradient over the water column
+- IntersectionObserver-driven chapter reveal and live chapter index in a difference-blend header
+- 2px gradient scroll-progress bar with glow
+- Sonar instrument: conic-gradient sweep, expanding pulse rings, staggered blip dots
+- Suspended-particle field with sinusoidal alpha
+- SVG-turbulence grain overlay at low opacity in overlay blend
+- Alternating left/right editorial chapters that re-align on small screens
+
+INTENDED INTERACTION MODEL:
+Scroll-driven: the reader's scroll position changes both the canvas (wave baseline, gradient depth) and the page (progress bar, chapter reveals, chapter index). The sonar animates autonomously. The scroll cue fades out as soon as the reader moves. No forms, no audio, no external calls.

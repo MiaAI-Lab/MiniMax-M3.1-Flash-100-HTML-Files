@@ -1,0 +1,19 @@
+TITLE: MÉTROLINE — a neon transit map
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MÉTROLINE — a neon transit map". Art direction: a Beck-style transit diagram rendered as neon on dark, with a daylight paper mode. Palette: night ground #07080e, ink #e9ecf5, dim #7d8398, hairline rgba(233,236,245,.14), and six line colours: pink #ff3b6b, blue #3bb1ff, yellow #ffd23f, green #4fe08a, violet #c46bff, orange #ff8a3d. Layout: a header with a ring-and-dot logo and three pill controls (Night / Day / Labels); a bordered stage holding a 1200×640 inline SVG transit diagram with a faint 40px background grid, six polyline routes drawn with round caps and joins, and a ringed station circle at every stop; a glass info card floating in the top-right of the stage (which becomes static below 900px) reporting the line, the station and a computed journey time; then a three-column legend of the six lines; then a two-column essay on Harry Beck's 1931 insight that a geographically accurate map is an unusable map; and a footer. Interaction: hovering or clicking any station writes the line name, the station name, the minutes from that line's terminus and the number of interchanges into the info card; hovering a legend row jumps the card to that line's first station; the Night/Day control swaps the whole page between a glowing neon look (lines get a coloured drop-shadow) and a flat printed look (pale ground, light station rings, dark station fills); the Labels toggle shows or hides every station name and rebuilds the diagram. Responsive: the legend becomes two then one column and the info card leaves the stage.
+
+DESCRIPTION:
+A transit diagram that lies about geography on purpose, and glows while it does it. Six routes are laid out on a strict 40px grid with 45-degree angles and constant spacing, exactly as Beck's original insisted, and every stop is a ringed circle you can hover to ask how long the journey is. Switching to Day removes the neon and leaves a flat printed diagram, which is the version most of us have actually seen on a wall.
+
+MAJOR VISUAL TECHNIQUES:
+- SVG polyline routes on a strict grid with round caps and joins
+- Neon glow via drop-shadow filtered on the stroke's own colour
+- Ringed station circles with a contrasting fill and a hover growth
+- Body-class day/night theme swapping ground, station fill and label colour
+- Floating glass info card with backdrop blur
+- Grid background of hairline SVG lines at 40px pitch
+- Legend rows that drive the same info state as the map
+
+INTENDED INTERACTION MODEL:
+Ask about a journey. Hover or click stations for a time and an interchange count; hover a legend row to jump to a line; toggle Day to flatten the neon; toggle Labels to strip the names and see the pure diagram.

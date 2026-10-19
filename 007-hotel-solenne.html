@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HÔTEL SOLENNE — A quiet house on the coast</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --ivory:#f3efe6;--paper:#e9e2d4;--ink:#191713;--soft:#5d574c;
+    --brass:#a3803f;--line:rgba(25,23,19,.18);
+    --serif:"Didot","Bodoni MT","Playfair Display","Hoefler Text",Georgia,"Times New Roman",serif;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  html{scroll-behavior:smooth;}
+  body{background:var(--ivory);color:var(--ink);font-family:var(--sans);overflow-x:hidden;}
+
+  /* ---------- hero: a terrace at dusk, painted in CSS ---------- */
+  .hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+    justify-content:space-between;overflow:hidden;}
+  .scene{position:absolute;inset:0;z-index:0;}
+  .scene .sky{position:absolute;inset:0;background:
+     linear-gradient(180deg,#d9c3a5 0%,#c9a98a 26%,#a8846c 48%,#6d5a55 68%,#33302f 100%);}
+  .scene .sun{position:absolute;left:50%;top:46%;width:min(30vw,300px);aspect-ratio:1;transform:translate(-50%,-50%);
+    border-radius:50%;background:radial-gradient(circle,#fbe6c0 0%,#e9c184 42%,rgba(233,193,132,0) 70%);
+    filter:blur(2px);animation:breathe 12s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{opacity:.85;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}}
+  .scene .sea{position:absolute;left:0;right:0;bottom:0;height:44%;
+    background:linear-gradient(180deg,#4a4a4e 0%,#2b2c31 40%,#1a1b1f 100%);}
+  .scene .ridge{position:absolute;left:-5%;right:-5%;bottom:36%;height:22%;
+    background:#3b3639;clip-path:polygon(0 62%,12% 44%,24% 55%,38% 30%,52% 48%,66% 26%,80% 47%,92% 33%,100% 44%,100% 100%,0 100%);
+    opacity:.92;}
+  .scene .haze{position:absolute;inset:0;background:linear-gradient(180deg,rgba(243,239,230,.34) 0%,transparent 38%,rgba(10,9,8,.42) 100%);}
+  .scene .vig{position:absolute;inset:0;box-shadow:inset 0 0 240px rgba(20,16,12,.55);}
+
+  .rail{position:absolute;left:0;top:0;bottom:0;width:56px;z-index:4;display:flex;align-items:center;justify-content:center;
+    border-right:1px solid rgba(255,255,255,.16);}
+  .rail span{writing-mode:vertical-rl;transform:rotate(180deg);color:rgba(255,255,255,.7);
+    font-size:10px;letter-spacing:.42em;text-transform:uppercase;}
+
+  .top{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:20px;
+    padding:26px 34px 0 86px;flex-wrap:wrap;color:#fff;}
+  .top .wordmark{font-family:var(--serif);font-size:clamp(1.2rem,2.4vw,1.7rem);letter-spacing:.34em;text-transform:uppercase;}
+  .top nav{display:flex;gap:26px;flex-wrap:wrap;}
+  .top nav a{color:rgba(255,255,255,.85);text-decoration:none;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+    padding-bottom:4px;border-bottom:1px solid transparent;transition:.4s;}
+  .top nav a:hover{border-color:#fff;color:#fff;}
+
+  .center{position:relative;z-index:3;text-align:center;color:#fff;padding:0 24px 10vh;}
+  .center .kicker{font-size:10.5px;letter-spacing:.5em;text-transform:uppercase;opacity:.85;margin-bottom:26px;}
+  .center h1{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,10vw,8rem);line-height:.95;letter-spacing:.04em;}
+  .center h1 .w{display:inline-block;opacity:0;transform:translateY(28px);animation:rise 1.1s cubic-bezier(.2,.8,.2,1) forwards;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .center .sub{margin-top:26px;font-size:11px;letter-spacing:.36em;text-transform:uppercase;opacity:.8;}
+  .center .line{width:70px;height:1px;background:rgba(255,255,255,.6);margin:30px auto 0;}
+
+  .bottom{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;
+    padding:0 34px 26px 86px;color:rgba(255,255,255,.8);flex-wrap:wrap;}
+  .bottom .addr{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;line-height:2;}
+  .scroll{display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;}
+  .scroll i{width:1px;height:46px;background:rgba(255,255,255,.4);position:relative;overflow:hidden;display:block;}
+  .scroll i::after{content:"";position:absolute;top:-46px;left:0;width:1px;height:46px;background:#fff;animation:drop 2.4s ease-in-out infinite;}
+  @keyframes drop{0%{top:-46px;}60%,100%{top:46px;}}
+
+  /* ---------- body ---------- */
+  .intro{display:grid;grid-template-columns:.9fr 1.1fr;gap:6vw;padding:14vh 6vw;align-items:start;}
+  .intro .label{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--brass);}
+  .intro h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,4.4vw,3.4rem);line-height:1.14;letter-spacing:.005em;}
+  .intro h2 em{font-style:italic;color:var(--brass);}
+  .intro p{font-size:1.02rem;line-height:2;color:var(--soft);max-width:46ch;}
+  .intro p+p{margin-top:1.4em;}
+  .sign{margin-top:40px;font-family:var(--serif);font-style:italic;font-size:1.2rem;color:var(--ink);}
+
+  .hr{height:1px;background:var(--line);margin:0 6vw;}
+
+  .rooms{padding:11vh 6vw 12vh;}
+  .rooms-h{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:44px;}
+  .rooms-h h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3.4vw,2.6rem);}
+  .rooms-h span{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft);}
+  .room{display:grid;grid-template-columns:120px 1fr auto;gap:28px;align-items:center;padding:26px 0;
+    border-top:1px solid var(--line);transition:.5s;cursor:pointer;position:relative;}
+  .room:last-child{border-bottom:1px solid var(--line);}
+  .room .no{font-family:var(--serif);font-size:1.1rem;color:var(--brass);}
+  .room .nm{font-family:var(--serif);font-size:clamp(1.3rem,2.6vw,2rem);}
+  .room .ds{font-size:.9rem;color:var(--soft);margin-top:6px;line-height:1.7;max-width:52ch;}
+  .room .pr{text-align:right;}
+  .room .pr b{font-family:var(--serif);font-size:1.3rem;font-weight:400;display:block;}
+  .room .pr span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--soft);}
+  .room .thumb{position:absolute;right:14%;top:50%;width:190px;height:120px;border-radius:2px;opacity:0;pointer-events:none;
+    transform:translate(0,-50%) scale(.92);transition:.5s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 30px 60px -24px rgba(25,23,19,.6);}
+  .room:hover .thumb{opacity:1;transform:translate(0,-50%) scale(1);}
+  .room:hover .nm{color:var(--brass);}
+
+  .reserve{background:var(--ink);color:var(--ivory);padding:12vh 6vw;}
+  .reserve-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:6vw;align-items:center;}
+  .reserve h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.1;}
+  .reserve p{color:rgba(243,239,230,.62);line-height:1.9;font-size:.98rem;margin-top:18px;max-width:40ch;}
+  .form{display:grid;gap:26px;}
+  .field{position:relative;}
+  .field label{position:absolute;top:-16px;left:0;font-size:9.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass);}
+  .field input,.field select{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(243,239,230,.28);
+    color:var(--ivory);font:400 1rem/2.4 var(--serif);letter-spacing:.03em;outline:none;transition:.4s;
+    border-radius:0;-webkit-appearance:none;appearance:none;}
+  .field select option{color:#191713;}
+  .field input:focus,.field select:focus{border-bottom-color:var(--brass);}
+  .field::after{content:"▾";position:absolute;right:2px;bottom:8px;color:var(--brass);pointer-events:none;font-size:.8rem;}
+  .field.noarrow::after{content:"";}
+  .submit{margin-top:14px;display:inline-flex;align-items:center;gap:16px;background:none;border:1px solid var(--brass);
+    color:var(--brass);padding:16px 30px;font:400 10.5px/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;
+    cursor:pointer;transition:.45s;justify-self:start;}
+  .submit:hover{background:var(--brass);color:var(--ink);letter-spacing:.42em;}
+
+  .seasons{overflow:hidden;border-bottom:1px solid var(--line);padding:44px 0;}
+  .seasons ul{display:flex;gap:60px;list-style:none;width:max-content;animation:scrollx 40s linear infinite;}
+  .seasons li{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2.2rem);color:var(--soft);display:flex;align-items:center;gap:60px;}
+  .seasons li b{font-style:normal;color:var(--brass);font-size:.8rem;letter-spacing:.2em;}
+  @keyframes scrollx{to{transform:translateX(-50%);}}
+
+  .foot{padding:8vh 6vw 6vh;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:5vw;}
+  .foot h4{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass);margin-bottom:18px;}
+  .foot p,.foot a{font-size:.92rem;color:var(--soft);line-height:2.2;display:block;text-decoration:none;}
+  .foot a:hover{color:var(--ink);}
+  .foot .brand{font-family:var(--serif);font-size:1.4rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:16px;}
+  .foot .note{font-size:.85rem;color:var(--soft);line-height:1.9;max-width:34ch;margin-top:18px;}
+  .legal{margin-top:6vh;padding:20px 6vw;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:10px;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#8d8577;}
+
+  @media(max-width:900px){.intro{grid-template-columns:1fr;gap:34px;}.reserve-grid{grid-template-columns:1fr;gap:44px;}
+    .foot{grid-template-columns:1fr 1fr;}.rail{display:none;}.top{padding-left:34px;}.bottom{padding-left:34px;}}
+  @media(max-width:600px){.room{grid-template-columns:52px 1fr;}.room .pr{grid-column:2;text-align:left;}
+    .room .thumb{display:none;}.foot{grid-template-columns:1fr;}.top nav{gap:16px;}.center h1{letter-spacing:.02em;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="scene" aria-hidden="true">
+    <div class="sky"></div><div class="sun"></div><div class="ridge"></div><div class="sea"></div>
+    <div class="haze"></div><div class="vig"></div>
+  </div>
+  <div class="rail"><span>Est. 1927 — Cap Ferret</span></div>
+
+  <div class="top">
+    <div class="wordmark">Solenne</div>
+    <nav>
+      <a href="#house">The house</a><a href="#rooms">Rooms</a><a href="#reserve">Reserve</a>
+    </nav>
+  </div>
+
+  <div class="center">
+    <div class="kicker">A quiet house on the Atlantic edge</div>
+    <h1 id="wordmark"></h1>
+    <div class="sub">Twenty-one rooms · One long table · No music after ten</div>
+    <div class="line"></div>
+  </div>
+
+  <div class="bottom">
+    <div class="addr">1 Rue des Pins · 33500 Hourtin<br>France</div>
+    <div class="scroll"><i></i>Scroll</div>
+  </div>
+</section>
+
+<section class="intro" id="house">
+  <div>
+    <div class="label">The house</div>
+    <h2>A hotel that behaves like a <em>private</em> residence.</h2>
+  </div>
+  <div>
+    <p>Solenne began as a fisherman's lodge with eleven rooms and a kitchen that never closed. It still works that way: there is one chef, one long table, and a housekeeper who has been here for thirty years.</p>
+    <p>We take forty guests at a time, never more. Breakfast is at half past eight, dinner at eight, and after that the shutters close over the terrace and the sea does the rest.</p>
+    <div class="sign">— Amélie Sartre, proprietor</div>
+  </div>
+</section>
+
+<div class="hr"></div>
+
+<section class="rooms" id="rooms">
+  <div class="rooms-h">
+    <h3>The rooms</h3>
+    <span>All face the water · Breakfast included</span>
+  </div>
+  <div class="room" style="--g:linear-gradient(135deg,#c8b79a,#8e7c63)">
+    <div class="no">I</div>
+    <div><div class="nm">Chambre Dune</div><div class="ds">Low ceiling, wide windows, a bed facing east so the first thing you see is the light on the water.</div></div>
+    <div class="pr"><b>€240</b><span>per night</span></div>
+    <div class="thumb" style="background:linear-gradient(135deg,#d9c8a8,#8d7b62)"></div>
+  </div>
+  <div class="room" style="--g:linear-gradient(135deg,#9fb0ae,#5d6f6d)">
+    <div class="no">II</div>
+    <div><div class="nm">Chambre Pin</div><div class="ds">Corner room with two doors onto the terrace, a deep bath, and the pines leaning over the wall.</div></div>
+    <div class="pr"><b>€310</b><span>per night</span></div>
+    <div class="thumb" style="background:linear-gradient(135deg,#a9bcba,#59696a)"></div>
+  </div>
+  <div class="room" style="--g:linear-gradient(135deg,#b7a08c,#7a6252)">
+    <div class="no">III</div>
+    <div><div class="nm">Suite Terrasse</div><div class="ds">The only room with a working fireplace. Breakfast is brought up on a tray, and nobody knocks.</div></div>
+    <div class="pr"><b>€480</b><span>per night</span></div>
+    <div class="thumb" style="background:linear-gradient(135deg,#c3ab95,#7b6353)"></div>
+  </div>
+  <div class="room" style="--g:linear-gradient(135deg,#8b93a8,#4a5065)">
+    <div class="no">IV</div>
+    <div><div class="nm">Chambre d'Hiver</div><div class="ds">At the far end of the corridor, furthest from the road. Cold in January, worth it in February.</div></div>
+    <div class="pr"><b>€270</b><span>per night</span></div>
+    <div class="thumb" style="background:linear-gradient(135deg,#99a1b6,#464c60)"></div>
+  </div>
+</section>
+
+<section class="reserve" id="reserve">
+  <div class="reserve-grid">
+    <div>
+      <h3>Reserve a room<br>for the season.</h3>
+      <p>We answer every request by hand, usually within a day. Cancellation is free up to seven days before arrival.</p>
+    </div>
+    <form class="form" id="resform" onsubmit="return false;">
+      <div class="field noarrow"><label for="ar">Arrival</label><input id="ar" type="text" placeholder="14 October"></div>
+      <div class="field noarrow"><label for="dep">Departure</label><input id="dep" type="text" placeholder="18 October"></div>
+      <div class="field"><label for="rm">Room</label>
+        <select id="rm"><option>Chambre Dune — €240</option><option>Chambre Pin — €310</option><option>Suite Terrasse — €480</option><option>Chambre d'Hiver — €270</option></select>
+      </div>
+      <div class="field noarrow"><label for="nm">Name</label><input id="nm" type="text" placeholder="Your name"></div>
+      <button class="submit" type="submit" id="submit">Send the request</button>
+    </form>
+  </div>
+</section>
+
+<div class="seasons" aria-hidden="true">
+  <ul>
+    <li>Printemps <b>·</b></li><li>Été <b>·</b></li><li>Automne <b>·</b></li><li>Hiver <b>·</b></li>
+    <li>Printemps <b>·</b></li><li>Été <b>·</b></li><li>Automne <b>·</b></li><li>Hiver <b>·</b></li>
+  </ul>
+</div>
+
+<footer class="foot">
+  <div>
+    <div class="brand">Solenne</div>
+    <p class="note">Hôtel de FAMILY ownership since 1927. No conference rooms, no spa, no wifi password taped to the wall — ask at the desk.</p>
+  </div>
+  <div>
+    <h4>Find us</h4>
+    <p>1 Rue des Pins<br>33500 Hourtin, France</p>
+    <p>+33 5 56 00 19 27</p>
+  </div>
+  <div>
+    <h4>Write</h4>
+    <a href="#">bonjour@solenne.fr</a>
+    <a href="#">Press &amp; partnerships</a>
+    <a href="#">Gift cards</a>
+  </div>
+</footer>
+<div class="legal">
+  <span>© 2026 Hôtel Solenne</span>
+  <span>Design &amp; craft — Studio Hourtin</span>
+</div>
+
+<script>
+(function(){
+  // letter-by-letter reveal of the wordmark
+  var wm=document.getElementById('wordmark');
+  var text='SOLENNE', out='';
+  for(var i=0;i<text.length;i++){
+    out+='<span class="w" style="animation-delay:'+(0.12*i+0.25).toFixed(2)+'s">'+text[i]+'</span>';
+  }
+  wm.innerHTML=out;
+
+  // reservation form
+  var form=document.getElementById('resform'), btn=document.getElementById('submit');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var nm=document.getElementById('nm').value.trim()||'Guest';
+    btn.textContent='Request sent — we will write to '+nm;
+    btn.style.background='var(--brass)'; btn.style.color='var(--ink)';
+  });
+
+  // room hover thumbnails follow the cursor vertically
+  document.querySelectorAll('.room').forEach(function(r){
+    r.addEventListener('pointermove',function(e){
+      var t=r.querySelector('.thumb'), b=r.getBoundingClientRect();
+      t.style.top=((e.clientY-b.top))+'px';
+      t.style.left=Math.min(b.width-210, e.clientX-b.left+18)+'px';
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHYLLOTAXIS — one angle, two hundred and thirty-three</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0c100b;--ink:#e9eee2;--dim:#7d8a74;--line:rgba(233,238,226,.13);--seed:#e8c25a;--leaf:#7fae4e;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before,.brand i:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;}
+  .brand i:before{left:2px;top:2px;background:var(--seed);}
+  .brand i:after{right:2px;bottom:2px;background:var(--leaf);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--seed);}
+  h1{font-size:clamp(2.2rem,5.6vw,4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--seed);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#0a0d09;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--seed);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--seed);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--seed);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--seed);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--seed);color:var(--seed);background:rgba(232,194,90,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.2rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--seed);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Phyllotaxis</div>
+    <div class="meta">r = c√n · θ = n × 137.507°</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Botany</div>
+    <h1>Every seed head<br>is the same<br><b>one number</b></h1>
+    <p>Turn a sunflower one way and you count thirty-four spirals in one direction and fifty-five in the other, and the two numbers are consecutive Fibonacci numbers — which is why the count is always the same. The reason is a single angle: 137.5 degrees. It is the only angle at which a plant can lay out its seeds so that no two of them ever line up radially.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1000" height="1000"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Divergence angle <output id="oa">137.507°</output></label>
+      <input type="range" id="ang" min="100" max="180" value="1375">
+    </div>
+    <div class="fld">
+      <label>Seeds <output id="ob">1 200</output></label>
+      <input type="range" id="cnt" min="50" max="4000" value="1200">
+    </div>
+    <div class="btns">
+      <button class="btn" id="gold">Golden angle</button>
+      <button class="btn" id="ratio">90° (square grid)</button>
+      <button class="btn" id="fib">Fibonacci overlay</button>
+      <button class="btn" id="grow">Grow</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Angle</u><s id="s1">—</s></div>
+    <div><u>Angle fraction</u><s id="s2">—</s></div>
+    <div><u>Nearest Fibonacci</u><s id="s3">—</s></div>
+    <div><u>Spokes</u><s id="s4">—</s></div>
+    <div><u>Visible seeds</u><s id="s5">—</s></div>
+    <div><u>Density at rim</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why 137.5<br>degrees</h2>
+      <p>The golden angle is 360 times the reciprocal of the golden ratio, and it comes out at 137.507764 degrees. It is the <b>only</b> angle that makes the spiral close on itself without ever repeating a position, and the only angle at which consecutive seeds never line up in a straight line back to the centre.</p>
+      <p>Set the angle to anything else and the same failure appears: at 120 degrees the seeds form three rigid spokes, at 90 degrees they form a square grid, at 180 degrees they form a straight line. Drag the slider away from the golden angle and the head develops scars, exactly as a real one does.</p>
+    </div>
+    <div>
+      <h2>The<br>counting</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The number of spirals in each direction is the number of seeds in a row of the spiral lattice, and for the golden angle those are consecutive Fibonacci numbers: 21 and 34, 34 and 55, 55 and 89. The pairs are not random; they are the ones that keep the gap between neighbouring seeds even.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">The overlap is the point. Each floret is pressed against the ones around it, and the packing that results is the densest arrangement of equal circles known — and it is the same packing that shows up in the seed head of a daisy, the arrangement of scales on a pinecone, and the packing of seeds in a pomegranate.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Phyllotaxis — one angle, two hundred and thirty-three</span>
+    <span>Seeds placed by the divergence angle</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  var angle=137.507, count=1200, showFib=false, growing=false, grown=0;
+
+  function fibSpokes(){
+    // find consecutive fibonacci pair nearest to the count
+    var a=1,b=1;
+    while(b<count) { var t=a+b; a=b; b=t; }
+    return [a,b];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(cx,cy,10,cx,cy,W*0.5);
+    g.addColorStop(0,'#141a10'); g.addColorStop(1,'#080b07');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    var R=Math.min(W,H)*0.46;
+    var n = growing? Math.floor(grown) : count;
+    var c=R/Math.sqrt(count);
+    for(var i=0;i<n;i++){
+      var r=c*Math.sqrt(i);
+      var a=i*angle*Math.PI/180;
+      var x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+      var t=i/count;
+      var size=Math.max(1.2, (3.4+6.2*t));
+      ctx.beginPath(); ctx.arc(x,y,size,0,6.283);
+      var hue=45+ (1-t)*25;
+      var light=32+t*26;
+      ctx.fillStyle='hsl('+hue.toFixed(0)+','+(58-t*22).toFixed(0)+'%,'+light.toFixed(0)+'%)';
+      ctx.fill();
+    }
+    // fibonacci overlay
+    if(showFib){
+      var pair=fibSpokes();
+      ctx.strokeStyle='rgba(127,174,78,.55)'; ctx.lineWidth=1.2;
+      for(var d=0;d<2;d++){
+        var spokes=pair[d];
+        for(var s=0;s<spokes;s++){
+          ctx.beginPath();
+          for(var k=0;k<600;k++){
+            var idx=k*spokes;
+            if(idx>count) break;
+            var rr=c*Math.sqrt(idx);
+            var aa=idx*angle*Math.PI/180;
+            var px=cx+Math.cos(aa)*rr, py=cy+Math.sin(aa)*rr;
+            if(k===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+          }
+          ctx.stroke();
+        }
+      }
+    }
+    // readouts
+    var frac=angle/360;
+    document.getElementById('s1').textContent=angle.toFixed(3)+'°';
+    document.getElementById('s2').textContent=frac.toFixed(5);
+    var pair2=fibSpokes();
+    document.getElementById('s3').textContent=pair2[0]+' & '+pair2[1];
+    document.getElementById('s4').textContent=pair2[0]+' / '+pair2[1];
+    document.getElementById('s5').textContent=n;
+    document.getElementById('s6').textContent=(1/(2*Math.PI*Math.pow(count,0.5)*c)*100).toFixed(2)+' %';
+    document.getElementById('hud').innerHTML='ANGLE <b>'+angle.toFixed(2)+'°</b><br>'+
+      'SEEDS <b>'+n+'</b><br>'+(growing?'GROWING':'STATIC');
+  }
+  function loop(){
+    if(growing){
+      grown+=6;
+      if(grown>count){ grown=count; growing=false;
+        document.getElementById('grow').classList.remove('on');
+        document.getElementById('grow').textContent='Grow';
+      }
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('ang').addEventListener('input',function(){
+    angle=parseInt(this.value,10)/10;
+    document.getElementById('oa').textContent=angle.toFixed(3)+'°';
+  });
+  document.getElementById('cnt').addEventListener('input',function(){
+    count=parseInt(this.value,10);
+    document.getElementById('ob').textContent=count.toLocaleString();
+  });
+  document.getElementById('gold').addEventListener('click',function(){
+    angle=137.507764; document.getElementById('ang').value=1375;
+    document.getElementById('oa').textContent=angle.toFixed(3)+'°';
+  });
+  document.getElementById('ratio').addEventListener('click',function(){
+    angle=90; document.getElementById('ang').value=900;
+    document.getElementById('oa').textContent='90.000°';
+  });
+  document.getElementById('fib').addEventListener('click',function(){
+    showFib=!showFib; this.classList.toggle('on',showFib);
+  });
+  document.getElementById('grow').addEventListener('click',function(){
+    growing=!growing; this.classList.toggle('on',growing);
+    this.textContent=growing?'Stop':'Grow';
+    if(growing) grown=0;
+  });
+})();
+</script>
+</body>
+</html>

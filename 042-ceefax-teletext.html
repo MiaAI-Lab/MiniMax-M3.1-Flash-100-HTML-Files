@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEEFAX — page 231</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#05060a;--blue:#0011aa;--cyan:#00ffff;--yellow:#ffff00;--magenta:#ff00ff;--red:#ff5555;--green:#00ff00;--white:#ffffff;}
+  body{background:var(--bg);color:var(--white);font-family:"Courier New",Courier,ui-monospace,monospace;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:22px 12px 50px;}
+  .set{width:100%;max-width:840px;background:#0b0d12;padding:14px;border-radius:14px;
+    box-shadow:0 0 0 3px #1b1f27, 0 40px 80px -40px #000;}
+  .set .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid #1b1f27;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:#5a6274;}
+  .set .bar b{color:var(--cyan);}
+  .tune{display:flex;gap:6px;flex-wrap:wrap;}
+  .tune button{background:#12151c;border:1px solid #232833;color:#8b94a8;padding:5px 10px;cursor:pointer;
+    font:400 10.5px/1 inherit;letter-spacing:.1em;transition:.2s;}
+  .tune button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .tune button.on{background:var(--blue);border-color:var(--cyan);color:var(--white);}
+
+  .screen{position:relative;background:var(--blue);border:2px solid #1b1f27;overflow:hidden;padding:14px 16px;
+    font-size:15px;line-height:1.28;min-height:520px;}
+  .screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.35) 2px 4px);}
+  .row{display:flex;gap:0;white-space:pre;}
+  .c{width:1ch;flex:none;text-align:center;}
+  .inv{color:var(--blue);background:var(--white);}
+  .cy{color:var(--yellow);} .cm{color:var(--magenta);} .cg{color:var(--green);}
+  .cr{color:var(--red);} .cw{color:var(--white);} .cc{color:var(--cyan);}
+  .blink{animation:bl 1s steps(1) infinite;}
+  @keyframes bl{50%{opacity:0;}}
+  .hr{height:1px;background:var(--white);margin:6px 0;}
+  .headline{font-size:2em;font-weight:bold;color:var(--yellow);letter-spacing:.04em;}
+  .box{border:2px solid var(--white);display:inline-block;padding:4px 8px;color:var(--white);}
+  .pad{height:8px;}
+
+  .remote{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;max-width:840px;width:100%;}
+  .rkey{background:#12151c;border:1px solid #232833;color:#8b94a8;padding:14px 8px;text-align:center;cursor:pointer;
+    font:400 10.5px/1 inherit;letter-spacing:.18em;text-transform:uppercase;transition:.2s;border-radius:6px;}
+  .rkey:hover{border-color:var(--cyan);color:var(--cyan);background:#171b23;}
+  .rkey.wide{grid-column:span 2;}
+  footer{margin-top:18px;max-width:840px;width:100%;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#454c5c;}
+  @media(max-width:600px){.screen{font-size:12px;min-height:420px;}.remote{grid-template-columns:repeat(2,1fr);}
+    .headline{font-size:1.5em;}}
+</style>
+</head>
+<body>
+<div class="set">
+  <div class="bar">
+    <div>Ceefax <b id="chn">231</b> · 06:14:22</div>
+    <div class="tune" id="tune">
+      <button class="on" data-c="231">231</button><button data-c="100">100</button>
+      <button data-c="196">196</button><button data-c="888">888</button>
+    </div>
+  </div>
+  <div class="screen" id="screen"></div>
+</div>
+
+<div class="remote" id="remote">
+  <div class="rkey" data-k="up">▲ Up</div>
+  <div class="rkey" data-k="down">▼ Down</div>
+  <div class="rkey" data-k="red">Red</div>
+  <div class="rkey" data-k="green">Green</div>
+  <div class="rkey" data-k="cyan">Cyan</div>
+  <div class="rkey" data-k="yellow">Yellow</div>
+  <div class="rkey wide" data-k="index">Index</div>
+  <div class="rkey wide" data-k="random">Random page</div>
+</div>
+
+<footer>
+  <span>Ceefax · 40 × 24 character pages</span>
+  <span>Rendered as HTML, not a teletext decoder</span>
+</footer>
+
+<script>
+(function(){
+  var screen=document.getElementById('screen');
+  var chnEl=document.getElementById('chn');
+  var PAGES={};
+
+  function mk(rows){ return rows; }
+
+  PAGES['231']=[
+    ['w','CEEFAX  231        NEWS & INFORMATION        06:14'],
+    ['r',''],
+    ['y','H','c','e','a','d','l','i','n','e','s'],
+    ['w',''],
+    ['c','*',' ','H','a','r','b','o','u','r',' ','t','r','a','i','n',' ','s','t','a','l','l','s',' ','t','h','e',' ','e','s','c','a','p','e'],
+    ['w',''],
+    ['w','   The 04:12 service was held outside Hourtin for'],
+    ['w','   forty minutes after a points failure at the branch'],
+    ['w','   loop. Engineers have isolated the fault to a single'],
+    ['w','   relay and expect the line to reopen by noon.'],
+    ['w',''],
+    ['y','   WEATHER'],
+    ['w','   Coastal fog until 09:00, clearing inland by midday.'],
+    ['w','   Wind south-west four, occasionally six later.'],
+    ['w',''],
+    ['y','   FERRY'],
+    ['w','   The 07:40 crossing is expected to run to schedule.'],
+    ['w',''],
+    ['m','   Fares  ·  1-4  4.20  5-9  7.80  10+  9.40'],
+    ['w',''],
+    ['w','   [ Press INDEX for the contents page ]'],
+    ['c',' ']
+  ];
+  PAGES['100']=[
+    ['w','CEEFAX  100        CONTENTS / INDEX              06:14'],
+    ['r',''],
+    ['y','   NEWS'],
+    ['c','   230  Weather for the coastal strip'],
+    ['c','   231  Harbour and the branch line'],
+    ['c','   232  Council notices'],
+    ['c',''],
+    ['y','   TRANSPORT'],
+    ['c','   400  Rail departures'],
+    ['c','   401  Bus and coach'],
+    ['c','   410  Harbour crossing times'],
+    ['c',''],
+    ['y','   MARKET'],
+    ['c','   700  Fish and auctions'],
+    ['c','   710  Wool and grain'],
+    ['c',''],
+    ['y','   MISCELLANEOUS'],
+    ['c','   900  Weather warnings'],
+    ['c','   920  Public notices'],
+    ['c','   999  Time signal'],
+    ['w',''],
+    ['c',' ']
+  ];
+  PAGES['196']=[
+    ['w','CEEFAX  196        COUNCIL NOTICES              06:14'],
+    ['r',''],
+    ['y','   PUBLIC NOTICE'],
+    ['w',''],
+    ['w','   Notice is hereby given that the following'],
+    ['w','   temporary traffic regulation will apply:'],
+    ['w',''],
+    ['y','   1.  Quai de la Tournelle'],
+    ['w','      From 22 June for eleven weeks, between'],
+    ['w','      07:00 and 19:00, no vehicle over 7.5m'],
+    ['w','      shall use the eastern lane except for the'],
+    ['w','      servicing of premises numbers 1 to 14.'],
+    ['w',''],
+    ['y','   2.  Rue des Pins'],
+    ['w','      Parking suspended on the north side on'],
+    ['w','      Tuesdays for market. Suspension begins'],
+    ['w','      05:00 and ends 16:00.'],
+    ['w',''],
+    ['c','   Further particulars:  920  Public notices'],
+    ['c',' ']
+  ];
+  PAGES['888']=[
+    ['w','CEEFAX  888        TIME SIGNAL & TEST          06:14'],
+    ['r',''],
+    ['c',''],
+    ['y','           T E S T   P A G E'],
+    ['c',''],
+    ['w','   This page is used for testing. All colours'],
+    ['w','   available on this service are shown below.'],
+    ['c',''],
+    ['w','   White on blue ....  normal'],
+    ['y','   Yellow ...........  headlines'],
+    ['m','   Magenta ..........  results'],
+    ['g','   Green ............  in progress'],
+    ['c','   Cyan .............  links'],
+    ['r','   Red ..............  warnings'],
+    ['c',''],
+    ['w','   The time signal is transmitted at 06:00,'],
+    ['w','   12:00, 18:00 and 22:00 precisely.'],
+    ['c',''],
+    ['c',' ']
+  ];
+
+  var cur='231', color=null;
+  function render(){
+    var rows=PAGES[cur];
+    var html='';
+    rows.forEach(function(r){
+      var cls=r[0];
+      if(cls==='r'){ html+='<div class="row"><span class="c hr" style="width:100%"></span></div>'; return; }
+      var text=r.slice(1).join('');
+      var body='';
+      for(var i=0;i<text.length;i++){
+        var c=cls;
+        if(color && 'ygmcr'.indexOf(cls)>=0) c=color;
+        body+='<span class="c '+c+'">'+text[i]+'</span>';
+      }
+      html+='<div class="row">'+body+'</div>';
+    });
+    if(!rows[rows.length-1][0].includes(' ')) {}
+    html+='<div class="row"><span class="c cy blink">▓</span></div>';
+    screen.innerHTML=html;
+    chnEl.textContent=cur;
+  }
+  document.getElementById('tune').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    cur=b.dataset.c; color=null; render();
+  });
+  document.getElementById('remote').addEventListener('click',function(e){
+    var k=e.target.closest('.rkey'); if(!k) return;
+    var a=k.dataset.k;
+    if(a==='index'){ cur='100'; color=null; }
+    else if(a==='random'){ var ks=Object.keys(PAGES); cur=ks[Math.floor(Math.random()*ks.length)]; color=null; }
+    else if(a==='up'){ cur='100'; }
+    else if(a==='down'){ cur='231'; }
+    else { color=a; }
+    document.querySelectorAll('.tune button').forEach(function(x){ x.classList.toggle('on', x.dataset.c===cur); });
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOX 14 — a scrapbook of small summers</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--kraft:#c9b391;--paper:#f3ece0;--ink:#2e2a24;--red:#c0452f;--blue:#3f6fa8;--dim:#8a7d68;}
+  html{overflow-x:hidden;}
+  body{background:var(--kraft);color:var(--ink);font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+    overflow-x:hidden;min-height:100vh;padding:0 0 80px;}
+  .fibre{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.05' numOctaves='5'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='.55'/></svg>");}
+  .wrap{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:0 4vw;}
+  header{padding:44px 0 26px;text-align:center;border-bottom:2px dashed rgba(46,42,36,.35);}
+  .brand{font-size:2.6rem;letter-spacing:.04em;transform:rotate(-2deg);display:inline-block;}
+  .brand small{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;letter-spacing:.4em;
+    text-transform:uppercase;color:var(--ink);opacity:.6;margin-top:10px;transform:rotate(1.5deg);}
+  .scrap{margin-top:40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:34px;}
+  .polar{background:var(--paper);padding:12px 12px 44px;position:relative;
+    box-shadow:0 16px 30px -14px rgba(46,42,36,.65);transition:transform .4s cubic-bezier(.2,.8,.2,1);}
+  .polar:nth-child(3n+1){transform:rotate(-2.2deg);}
+  .polar:nth-child(3n+2){transform:rotate(1.4deg);}
+  .polar:nth-child(3n){transform:rotate(-.8deg);}
+  .polar:hover{transform:rotate(0) translateY(-8px) scale(1.03);z-index:5;}
+  .ph{position:relative;aspect-ratio:1;overflow:hidden;background:#e3dacb;}
+  .ph canvas{width:100%;height:100%;display:block;image-rendering:pixelated;}
+  .ph .scramble{position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.9) 0 2px,rgba(0,0,0,.85) 2px 4px);
+    mix-blend-mode:overlay;}
+  .cap{position:absolute;left:14px;right:14px;bottom:12px;font-size:1.05rem;line-height:1.35;transform:rotate(-.6deg);}
+  .date{position:absolute;right:14px;top:-14px;background:var(--red);color:#fff;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:10px;letter-spacing:.14em;padding:6px 10px;transform:rotate(3deg);box-shadow:0 4px 10px -4px rgba(0,0,0,.5);}
+  .tape{position:absolute;width:92px;height:26px;background:rgba(232,214,166,.78);
+    box-shadow:0 2px 6px rgba(0,0,0,.18);z-index:6;}
+  .tape.l{left:-14px;top:-12px;transform:rotate(-28deg);}
+  .tape.r{right:-14px;top:-12px;transform:rotate(24deg);}
+  .note{margin-top:70px;background:var(--paper);padding:34px 32px;transform:rotate(-.6deg);
+    box-shadow:0 22px 40px -26px rgba(46,42,36,.6);max-width:760px;margin-left:auto;margin-right:auto;}
+  .note h2{font-size:1.6rem;margin-bottom:14px;}
+  .note p{font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.9;color:#4a443a;}
+  .note p+p{margin-top:1em;}
+  .note .sign{text-align:right;font-size:1.15rem;margin-top:18px;}
+  footer{margin-top:50px;text-align:center;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;
+    letter-spacing:.24em;text-transform:uppercase;color:rgba(46,42,36,.6);}
+  @media(max-width:600px){.scrap{grid-template-columns:1fr 1fr;gap:20px;}.brand{font-size:2rem;}}
+  @media(max-width:420px){.scrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="fibre"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">Box 14<small>Small summers, 1998 — 2004</small></div>
+  </header>
+
+  <section class="scrap" id="scrap"></section>
+
+  <section class="note">
+    <h2>Things I would not throw out</h2>
+    <p>There is a box in the cupboard with the tide charts from four summers, a ferry ticket with the corner torn, a pressed samphire, and nine photographs of a harbour that no longer looks like that. I am keeping all of it, which my mother says is a hobby.</p>
+    <p>She is right. But the photographs are developing, slowly, in the way they do now, and each one is a day I have to sit with for a while before I can look at it properly.</p>
+    <div class="sign">— J., Box 14</div>
+  </section>
+
+  <footer>Box 14 · developed in the browser · no photographs were harmed</footer>
+</div>
+
+<script>
+(function(){
+  var MEM=[
+    {cap:'the harbour at 6am, before anyone',d:'JUL 1998',seed:3,pal:['#2c4a63','#7ba2b8','#e8d9b8','#b8763f']},
+    {cap:'Mum, the good summer',d:'AUG 1999',seed:11,pal:['#c98f4e','#f0cf8e','#8fae5e','#3f5f3a']},
+    {cap:'the boat we were not allowed on',d:'JUL 2000',seed:23,pal:['#3a5f7a','#9ec4d0','#efe6d2','#c25b3a']},
+    {cap:'proof we did go on it',d:'JUL 2000',seed:29,pal:['#7a4a3a','#d98f5a','#f2e3c4','#4a6b7a']},
+    {cap:'the tent, minus the pole',d:'AUG 2001',seed:41,pal:['#4f6b3f','#a8b96a','#e8d9a8','#6b4a2f']},
+    {cap:'granite, and nothing else',d:'SEP 2001',seed:53,pal:['#6b6b68','#a8a49c','#d8d4cc','#40403c']},
+    {cap:'the day it rained on the day',d:'AUG 2002',seed:67,pal:['#4a5a6b','#8fa2b4','#c8d0d8','#2f3a45']},
+    {cap:'everyone, all nine of us',d:'AUG 2003',seed:79,pal:['#b8834a','#e8c08a','#7a9a5e','#4a3f33']},
+    {cap:'the last one, printed wrong',d:'SEP 2004',seed:97,pal:['#8a4a5e','#d88a9e','#f0dcd0','#3a2f38']}
+  ];
+  var scrap=document.getElementById('scrap');
+  MEM.forEach(function(m,i){
+    var d=document.createElement('article');
+    d.className='polar';
+    d.innerHTML='<div class="date">'+m.d+'</div>'+
+      '<div class="tape l"></div><div class="tape r"></div>'+
+      '<div class="ph"><canvas width="360" height="360"></canvas><div class="scramble"></div></div>'+
+      '<div class="cap">'+m.cap+'</div>';
+    scrap.appendChild(d);
+    var cv=d.querySelector('canvas'), ctx=cv.getContext('2d');
+    var scr=d.querySelector('.scramble');
+
+    // build a "photograph" from the palette: a simple landscape of bands and blocks
+    function paint(){
+      var W=360,H=360, c=m.pal;
+      ctx.fillStyle=c[0]; ctx.fillRect(0,0,W,H);
+      // sky gradient
+      var g=ctx.createLinearGradient(0,0,0,H*0.6);
+      g.addColorStop(0,c[1]); g.addColorStop(1,c[2]);
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H*0.6);
+      // sun / subject
+      ctx.fillStyle=c[3];
+      ctx.beginPath(); ctx.arc(W*0.62,H*0.36,26,0,6.283); ctx.fill();
+      // horizon bands
+      for(var b=0;b<7;b++){
+        ctx.fillStyle=b%2? c[0]:c[3];
+        ctx.globalAlpha=0.18+b*0.03;
+        ctx.fillRect(0,H*0.58+b*16,W,10);
+      }
+      ctx.globalAlpha=1;
+      // figures
+      ctx.fillStyle=c[3];
+      for(var f=0;f<4;f++){
+        var x=W*0.18+f*W*0.14, y=H*0.78;
+        ctx.fillRect(x,y-18,9,18);
+        ctx.beginPath(); ctx.arc(x+4.5,y-22,4.4,0,6.283); ctx.fill();
+      }
+      // grain
+      for(var i2=0;i2<900;i2++){
+        ctx.fillStyle=Math.random()<.5?'rgba(255,255,255,.10)':'rgba(0,0,0,.10)';
+        ctx.fillRect(Math.random()*W,Math.random()*H,2,2);
+      }
+      // vignette
+      var v=ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.75);
+      v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.42)');
+      ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+    }
+    paint();
+    // "developing" effect: the scramble overlay wipes away on hover
+    scr.style.transition='opacity .9s ease';
+    d.addEventListener('pointerenter',function(){ scr.style.opacity='0'; });
+    d.addEventListener('pointerleave',function(){ scr.style.opacity='1'; });
+    d.addEventListener('click',function(){ paint(); scr.style.opacity='0'; });
+  });
+})();
+</script>
+</body>
+</html>

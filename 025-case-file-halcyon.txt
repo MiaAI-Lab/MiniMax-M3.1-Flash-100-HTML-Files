@@ -1,0 +1,20 @@
+TITLE: CASE 1147 — The Halcyon Dossier
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that is a neon-noir police dossier for "CASE 1147 — The Halcyon Dossier". Art direction: a cold-case file rendered as a physical document on a dark desk. Palette: ground #0c0d10, paper #d9d4c8, ink #15161a, neon pink #ff2e63, cyan #38e0ff, amber #ffc14d, dim #6f7178. Type: Courier New for the chrome and the document, Helvetica Neue for headings inside the paper. Effects: a fixed SVG turbulence rain texture at low opacity, a 2px neon line that sweeps down the viewport every six seconds, and a paper texture multiply layer on the document sheet itself. Layout: a header with a cold-case stamp and three status readouts; a title block with the hotel, date and room and a two-sentence premise; a two-column dossier — on the left a slightly rotated "photograph" built purely from layered radial and linear gradients with a scanline overlay and a moving cyan scan band, a caption, and three tab buttons (Dossier / Witnesses / Evidence ledger); on the right a paper-coloured file sheet with a dotted-rule metadata table, two narrative paragraphs, and a five-point vertical timeline built from dots and a connecting hairline. The three tabs swap the sheet's entire contents from a JavaScript data object, each with its own redactions. Below: three evidence cards, then a typewriter box that types a detective's memo character by character with a blinking cyan cursor, then a footer. Interaction: every black redaction bar in the document is clickable and reveals the hidden text with a light wash and a marker glyph; the tab buttons replace the sheet content and re-bind the redactions; the memo types itself on load at a randomised rate.
+
+DESCRIPTION:
+A missing-person dossier that is also a piece of interactive fiction. The black bars are the interface: clicking one declassifies a fragment, and each of the three tabs carries different redactions, so reading the file three times reveals three different stories. The document is deliberately rendered as paper on a dark desk — dotted rules, a warm paper tint, a texture multiply layer — with the neon chrome around it doing the noir work.
+
+MAJOR VISUAL TECHNIQUES:
+- Paper-on-desk material contrast: warm document sheet against a cold dark page
+- Inline SVG turbulence texture in multiply blend on both the page and the sheet
+- CSS-only "photograph" from stacked radial and linear gradients with a moving scan band
+- Dotted-rule metadata table and a dot-and-hairline vertical timeline
+- Clickable redaction bars that reveal hidden text
+- Tab-driven content swapping with re-bound interaction handlers
+- Character-by-character typewriter memo with a blinking block cursor
+- Sweeping neon scan line across the viewport
+
+INTENDED INTERACTION MODEL:
+Read, then un-redact. The tabs swap the file's contents; clicking any black bar reveals the text underneath and marks it as declassified. The memo types itself on load. The scan line and the photographic scan band run on their own. Nothing else moves and nothing is submitted.

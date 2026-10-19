@@ -1,0 +1,20 @@
+TITLE: MERIDIAN — Calibre 9
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that is a dark-luxury watch landing page for a fictional Geneva maison called "MERIDIAN", presenting the "Calibre 9". Art direction: restrained black and gold. Palette: ground #08090b, ink #f0ece4, dim #8a8579, gold #c9a227, pale gold #f0d47a, hairline rgba(240,236,228,.14). A fixed radial gold glow and a faint SVG turbulence grain in overlay blend sit behind the content. Type: Didot/Bodoni/Georgia serif for display and headings, Helvetica Neue for the small letterspaced uppercase labels. Layout: a header with a wide-tracked wordmark and three anchor links; a two-column hero — on the left a kicker, a large serif headline with an italic gold phrase, a paragraph and two buttons (a solid gold one and an outline one whose gold fill wipes in via a scaleX transform on a pseudo-element); on the right the watch itself, drawn entirely in CSS: a conic-gradient steel case, an inset bezel with a gold hairline, a radial dial, sixty markers generated in JavaScript (hour markers longer and brighter than minute markers, each rotated about the dial centre with a 428% transform-origin), four Didone numerals at 12/3/6/9, a printed brand block, and three hands (hour, minute, gold seconds) with a gold centre pip. A ridged gold crown sits at the 3 o'clock edge. Below: a four-column specification strip (case, movement, frequency, deviation) with hairline dividers, then a two-column essay section on the calibre with a three-card row describing black polish, gold wheels and 21 rubies, then a strap section with three CSS gradient swatches, then a footer. Interaction: the hands show the real current time and update every second; dragging the crown vertically winds the watch and rotates the crown; double-clicking the crown rewinds it. Responsive: the hero stacks under 940px, the spec strip becomes 2×2 then one column, the essay and the three-card row stack, and the strap swatches stack under 560px.
+
+DESCRIPTION:
+A watch page with the confidence to use a lot of black and almost nothing else. The watch is not a photograph — it is a conic-gradient case, a radial dial, sixty generated markers and three hands driven by the actual system clock, so the time on the page is the time on your machine. The only playful element is the crown, which can be dragged upwards to wind the movement; the copy never mentions it, which is the joke.
+
+MAJOR VISUAL TECHNIQUES:
+- Conic-gradient brushed-steel case with a radial bezel and inset shadow
+- Sixty procedurally generated dial markers with per-index length, opacity and rotation origin
+- Didone numerals positioned at the cardinal points with per-position offsets
+- Real-time clock driving three hands with smooth sub-second interpolation on the seconds hand
+- Gold fill-wipe button using a scaleX pseudo-element with a layered span for the label
+- Gold crown rendered as a repeating-linear-gradient knurl, draggable to wind
+- Hairline-ruled specification strip and essay grid
+- Fixed radial gold glow plus SVG noise grain
+
+INTENDED INTERACTION MODEL:
+Watch, and wind. The hands move in real time. Dragging the crown upwards winds the movement and rotates the crown accordingly; double-clicking it rewinds to zero. The rest of the page is editorial and static. Nothing scrolls away from the reader and there is no form.

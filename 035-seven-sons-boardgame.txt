@@ -1,0 +1,19 @@
+TITLE: SEVEN SONS — a territory game
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "SEVEN SONS — a territory game", a playable small board game. Art direction: dark green baize and old board-game print. Palette: ground #0f1410, panel #161d17, ink #e8f0e4, dim #84917f, hairline rgba(232,240,228,.12), gold #e2b45c, house colours blue #5a8fc0, red #c8503c, green #6fae6a, violet #9a74c0, ochre #e2b45c. Layout: a header with a gold disc bearing the numeral 7, the wordmark, and a live resource bar (gold, grain, wood, turn); a two-column main region — on the left a bordered board panel with a faint 44px grid pattern containing 63 tiles arranged in a 9-column grid, each tile a 40×44 clip-path hexagon (pointy top) with a house glyph on the five house tiles; on the right three cards: "Roll" with a cream die (which tumbles with a keyframe) and a gold "Roll the bones" button; "Chronicle" with a monospaced, colour-coded running log; and "Houses" listing the five houses with their colours and current holdings. Below, three numbered rule cards and a footer. Interaction: rolling animates the die, moves a marker to the new tile (highlighted in gold), and resolves the tile — a house tile costs 6 gold to take (the tile turns blue and the house count rises) while an empty field yields 1–3 grain; the turn counter advances and after six turns a round ends; after three rounds the game declares the winner (the house with the most holdings) and the button becomes "Play again", which resets the board, resources and log. Clicking the highlighted tile logs that you hold the field. Responsive: the board and card column stack under 940px, the hex grid shrinks with a fluid track size, and the rule cards become one column.
+
+DESCRIPTION:
+A complete, if tiny, board game. Sixty-three hexagonal fields, five houses, three rounds and one die — and every rule is actually enforced in the code: the gold comes off when you take a house, grain comes on when you land in the open, and the tide comes in after the third round to award the game to whoever holds the most. The chronicle records every decision in a different colour, which is the part that makes a small game feel like a real one.
+
+MAJOR VISUAL TECHNIQUES:
+- Pointy-top hexagons built with clip-path polygons on a CSS grid
+- Faint square grid pattern behind the board to suggest a printed playing surface
+- Die rendered as a cream rounded square with an inset shadow and a tumble keyframe
+- Gold / red / blue state colours for highlight, opponent and captured tiles
+- Monospaced chronicle with coloured spans for good and bad outcomes
+- Hairline-ruled resource bar with gold figures
+- Three numbered rule cards in a print-catalogue rhythm
+
+INTENDED INTERACTION MODEL:
+Roll and play. The die tumbles, the marker advances, the tile resolves against the resources, and the chronicle narrates it. After three rounds the game ends and the button turns into a reset. Nothing is complicated and nothing is hidden — the entire state is on screen.

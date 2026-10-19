@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZOETROPE — the drum of pictures</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#1b1510;--wood:#2a1e16;--ink:#f0e6d0;--dim:#9d8a72;--line:rgba(240,230,208,.15);
+    --cream:#efe0bd;--red:#a63a2b;--brass:#c9a227;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    background-image:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,162,39,.07),transparent 65%);}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50%;border:3px double var(--brass);display:block;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:740px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--brass);}
+  h1{font-size:clamp(2.3rem,6.2vw,4.5rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:52ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 260px;gap:26px;align-items:start;
+    border:1px solid var(--line);padding:26px;background:rgba(0,0,0,.22);}
+  .drumwrap{position:relative;}
+  .drumwrap canvas{width:100%;height:auto;display:block;cursor:grab;touch-action:none;}
+  .drumwrap canvas:active{cursor:grabbing;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .box .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;font:400 12px/1.4 "Courier New",monospace;
+    border-bottom:1px solid rgba(240,230,208,.08);}
+  .box .row:last-child{border-bottom:none;}
+  .box .row span{color:var(--dim);}
+  .box .row b{color:var(--brass);font-weight:400;}
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--brass);color:var(--brass);background:rgba(201,162,39,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols ol{list-style:none;counter-reset:s;margin-top:14px;}
+  .cols ol li{counter-increment:s;font:400 12.5px/1.6 "Courier New",monospace;color:var(--dim);
+    padding:9px 0;border-bottom:1px solid var(--line);}
+  .cols ol li b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Zoetrope</div>
+    <div class="meta">Paris, 1834 · 12 pictures · 1 slit</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Persistence of vision</div>
+    <h1>Sixteen pictures<br>and <b>one</b> moving<br>one</h1>
+    <p>A zoetrope is a drum with a ring of pictures around the inside and a slit at the top. Spin it, look through the slit, and the pictures do not flicker — they run. The eye cannot resolve a change faster than about fifty times a second, so if the drum passes the slit often enough, the separate pictures are stitched into motion.</p>
+  </section>
+
+  <section class="stage">
+    <div class="drumwrap"><canvas id="cv" width="700" height="700"></canvas></div>
+    <div class="side">
+      <div class="box">
+        <h2>Instrument</h2>
+        <div class="row">Pictures <b id="fp">12</b></div>
+        <div class="row">Slit <b id="sl">1</b></div>
+        <div class="row">Speed <b id="sp">0.0 rpm</b></div>
+        <div class="row">Direction <b id="dr">clockwise</b></div>
+        <div class="row">Apparent <b id="ap">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Controls</h2>
+        <div class="ctrl" style="margin-top:0">
+          <button class="btn on" id="spin">Spin</button>
+          <button class="btn" id="rev">Reverse</button>
+          <button class="btn" id="peek">Peek</button>
+          <button class="btn" id="more">More</button>
+        </div>
+      </div>
+      <div class="box">
+        <h2>Note</h2>
+        <p style="font-size:.85rem;line-height:1.8;color:var(--dim);margin:0">Drag the drum to spin it by hand. Peek removes the slit so you can see all the pictures at once — which is the whole trick, and the whole secret.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The oldest<br>movie<br>projector</h2>
+      <p>The zoetrope is attributed to William George Horner, a Bristol engraver, who published it in 1834 as a "daedaleum" — a mechanical toy that showed the illusion of motion. Three years later the Parisian optician SimonStampfer patented a version with a slitted cardboard drum, and it was a triumph at the Paris industrial exhibition of 1839.</p>
+      <p>The later phenakistiscope, spinning disc with painted figures seen through a hole, is the same idea flattened. And in 1889 Étienne-Jules Marey and Georges Eastman were both independently making the leap from the spinning drum to the strip of film.</p>
+    </div>
+    <div>
+      <h2>Conditions</h2>
+      <ol>
+        <li><b>Enough pictures.</b> Below about ten the motion jerks and the eye catches the gaps.</li>
+        <li><b>A narrow slit.</b> Wide slit, wide flicker. One slit is the classic arrangement.</li>
+        <li><b>Enough speed.</b> The drum must pass the slit faster than the eye can follow separately.</li>
+        <li><b>Even light.</b> A stuttering lamp in a dark room ruins it faster than anything.</li>
+        <li><b>Consistent spacing.</b> Uneven picture spacing shows up as a hitch in the gait.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <span>Zoetrope — the drum of pictures</span>
+    <span>Drag the drum · peek to see the pictures</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var S=cv.width, cx=S/2, cy=S/2, R=S*0.42;
+  var frames=12, angle=0, vel=0, spinning=true, dir=1, peek=false;
+  var drum=document.createElement('canvas');
+  drum.width=S; drum.height=S;
+  var dctx=drum.getContext('2d');
+
+  // draw a bird in the given frame, at origin, in local coordinates
+  function bird(c, f, n){
+    var ph=f/n*Math.PI*2;
+    var flap=Math.sin(ph);
+    c.save();
+    c.strokeStyle='#2a1c12'; c.fillStyle='#2a1c12'; c.lineWidth=6; c.lineCap='round';
+    // body
+    c.beginPath(); c.ellipse(0,0,58,26,0,0,6.283); c.fill();
+    // head + neck
+    c.beginPath(); c.moveTo(48,6); c.quadraticCurveTo(84,-8,92,-30); c.lineWidth=16; c.stroke();
+    c.beginPath(); c.arc(94,-34,15,0,6.283); c.fill();
+    // beak
+    c.beginPath(); c.moveTo(106,-36); c.lineTo(136,-30); c.lineTo(106,-24); c.closePath(); c.fill();
+    // eye
+    c.fillStyle='#efe0bd'; c.beginPath(); c.arc(99,-39,4.5,0,6.283); c.fill();
+    // tail
+    c.beginPath(); c.moveTo(-52,0); c.lineTo(-104,-24); c.lineTo(-96,-2); c.lineTo(-108,20); c.closePath(); c.fill();
+    // wings
+    c.save(); c.translate(-6,-6);
+    c.rotate(flap*0.75);
+    c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(-30,-64,-92,-58); c.quadraticCurveTo(-52,-18,0,10); c.closePath(); c.fill();
+    c.restore();
+    c.save(); c.translate(6,8);
+    c.rotate(-flap*0.35);
+    c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(-26,52,-84,46); c.quadraticCurveTo(-48,14,0,8); c.closePath(); c.fill();
+    c.restore();
+    c.restore();
+  }
+
+  function buildDrum(){
+    dctx.clearRect(0,0,S,S);
+    dctx.save();
+    dctx.translate(cx,cy);
+    dctx.rotate(angle);
+    var slice=6.2832/frames;
+    for(var i=0;i<frames;i++){
+      dctx.save();
+      dctx.rotate(i*slice);
+      // slice background
+      dctx.beginPath();
+      dctx.moveTo(0,0);
+      dctx.arc(0,0,R,-slice/2,slice/2);
+      dctx.closePath();
+      dctx.fillStyle=(i%2)?'#efe0bd':'#e6d4ab';
+      dctx.fill();
+      dctx.save();
+      dctx.clip();
+      dctx.translate(0,-R*0.42);
+      dctx.scale(0.72,0.72);
+      bird(dctx,i,frames);
+      dctx.restore();
+      // slot line
+      dctx.beginPath(); dctx.moveTo(0,0);
+      dctx.lineTo(Math.cos(-slice/2)*R, Math.sin(-slice/2)*R);
+      dctx.strokeStyle='rgba(42,28,18,.35)'; dctx.lineWidth=3; dctx.stroke();
+      dctx.restore();
+    }
+    // hub
+    dctx.beginPath(); dctx.arc(0,0,R*0.14,0,6.283); dctx.fillStyle='#8a6a3f'; dctx.fill();
+    dctx.restore();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,S,S);
+    // back wall
+    ctx.fillStyle='#241a13'; ctx.fillRect(0,0,S,S);
+    // drum disc
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283); ctx.clip();
+    ctx.drawImage(drum,0,0);
+    ctx.restore();
+    // rim
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283);
+    ctx.strokeStyle='#8a6a3f'; ctx.lineWidth=14; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.99,0,6.283);
+    ctx.strokeStyle='rgba(201,162,39,.5)'; ctx.lineWidth=2; ctx.stroke();
+
+    if(!peek){
+      // cover the drum except for a slit at the top
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0,0,S,S);
+      ctx.rect(cx-58, cy-R-6, 116, 74);
+      ctx.fillStyle='#241a13';
+      ctx.fill('evenodd');
+      ctx.restore();
+      // slit
+      ctx.save();
+      ctx.beginPath(); ctx.rect(cx-58,cy-R-6,116,74); ctx.clip();
+      ctx.drawImage(drum,0,0);
+      ctx.restore();
+      // brass slit plate
+      ctx.strokeStyle='#c9a227'; ctx.lineWidth=5;
+      ctx.beginPath(); ctx.moveTo(cx-58,cy-R-6); ctx.lineTo(cx+58,cy-R-6);
+      ctx.moveTo(cx-58,cy-R+68); ctx.lineTo(cx+58,cy-R+68); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx-58,cy-R-6); ctx.lineTo(cx-58,cy-R+68);
+      ctx.moveTo(cx+58,cy-R-6); ctx.lineTo(cx+58,cy-R+68); ctx.stroke();
+    }else{
+      ctx.fillStyle='rgba(36,26,19,.55)'; ctx.fillRect(0,0,S,S);
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283); ctx.clip();
+      ctx.drawImage(drum,0,0);
+      ctx.restore();
+      ctx.fillStyle='rgba(201,162,39,.9)';
+      ctx.font='13px "Courier New",monospace';
+      ctx.fillText('SLIT REMOVED — ' + frames + ' PICTURES', 24, 30);
+    }
+    // hub cap
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.14,0,6.283);
+    ctx.fillStyle='#8a6a3f'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.14,0,6.283);
+    ctx.strokeStyle='#c9a227'; ctx.lineWidth=3; ctx.stroke();
+  }
+
+  function loop(){
+    if(spinning) angle += 0.028*dir;
+    if(Math.abs(vel)>0.0001){ angle += vel; vel*=0.94; }
+    buildDrum();
+    draw();
+    var rpm=Math.abs(spinning?0.028*dir:0)*60/(6.2832);
+    document.getElementById('sp').textContent=rpm.toFixed(1)+' rpm';
+    document.getElementById('ap').textContent=(rpm*frames/60).toFixed(1)+' Hz';
+    document.getElementById('dr').textContent=dir>0?'clockwise':'anticlockwise';
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  var dragging=false,lastX=0;
+  cv.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    var r=cv.getBoundingClientRect();
+    var dx=(e.clientX-lastX)/r.width*S;
+    angle+=dx/R; vel=dx/R*0.4; lastX=e.clientX;
+  });
+  cv.addEventListener('pointerup',function(){dragging=false;});
+  document.getElementById('spin').addEventListener('click',function(){
+    spinning=!spinning; this.classList.toggle('on',spinning); this.textContent=spinning?'Spin':'Stopped';
+  });
+  document.getElementById('rev').addEventListener('click',function(){
+    dir*=-1; this.classList.toggle('on',dir<0);
+  });
+  document.getElementById('peek').addEventListener('click',function(){
+    peek=!peek; this.classList.toggle('on',peek); this.textContent=peek?'Slit on':'Peek';
+  });
+  document.getElementById('more').addEventListener('click',function(){
+    frames = frames===12?18:(frames===18?24:12);
+    document.getElementById('fp').textContent=frames;
+  });
+})();
+</script>
+</body>
+</html>

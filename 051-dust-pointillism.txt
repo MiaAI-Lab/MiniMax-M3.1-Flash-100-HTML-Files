@@ -1,0 +1,19 @@
+TITLE: DUST — a portrait in twelve thousand points
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "DUST — a portrait in twelve thousand points". Art direction: a pointillist study on a dark plate. Palette: ground #101014, plate #0c0c10, ink #f2efe8, dim #8a8a94, hairline rgba(242,239,232,.13), warm tone #e8a45c, cool #5f7fbf. Layout: a header with a wide-tracked wordmark, a glowing dot logo and three pill controls (Auto / Breathe / Invert); then a stage split into a large square canvas and a 300px control rail separated by a hairline — the rail carries a large point count, a short note, three sliders (light position, point size, density from 2,000 to 30,000), a five-swatch tone palette and a closing line; below, a two-column note on pointillism and halftone; and a footer. The canvas draws the portrait from nothing: eleven overlapping soft radial fields (forehead, face, two eye sockets, nose, shadow, jaw, two cheeks, shoulders, rim light) are evaluated per sample to give a brightness, that brightness is written into an ImageData buffer as a warm grey, and then up to thirty thousand dark points are scattered across the frame, each sized by how much light reaches it — so the picture lives in the dot sizes, exactly as a printed halftone works. A directional term from the light position shades the far side of the face. Interaction: moving the pointer over the canvas moves the light and redraws; Auto sweeps the light in a slow ellipse; Breathe pulses the point size; Invert swaps light for dark; the sliders set light, size and density live; the tone swatches change the accent colour. Responsive: the rail moves below the canvas under 900px.
+
+DESCRIPTION:
+A face that is really a lighting diagram. Eleven soft radial fields describe a skull, and a directional term from the light position shades it. Then twelve thousand points are scattered over the top, each sized by how much light reaches it — so the portrait emerges from the dots rather than being drawn by them. Move the pointer and the whole face relights, which is the most satisfying thing about pointillism and also, it turns out, the most satisfying thing about a lighting rig.
+
+MAJOR VISUAL TECHNIQUES:
+- Per-sample evaluation of overlapping Gaussian fields for a synthetic subject
+- ImageData buffer write of the underlying luminance field
+- Thousands of scattered points whose radius encodes local brightness
+- Directional light term from the pointer position with distance falloff
+- Gaussian point falloff and a high-frequency luminance base
+- Density, size and light sliders that redraw the whole plate
+- Warm/cool tone palette and an invert mode
+
+INTENDED INTERACTION MODEL:
+Light it. Move the pointer to relight the portrait, or switch Auto on to let the light sweep; Breathe pulses the dots; Invert turns the plate negative; the three sliders change size, density and light. Everything redraws immediately.

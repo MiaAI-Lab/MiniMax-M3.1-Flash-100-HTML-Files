@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHLADNI — the figures in sand</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0a0c;--ink:#ece9e2;--dim:#807d75;--line:rgba(236,233,226,.13);--sand:#efe6cf;--plate:#1b1b1f;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;border:1px solid var(--sand);position:relative;}
+  .brand i:after{content:"";position:absolute;inset:5px;background:var(--sand);opacity:.25;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--sand);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--sand);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;display:grid;template-columns:1fr 250px;gap:26px;align-items:start;
+    border:1px solid var(--line);background:#08080a;padding:24px;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--sand);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--sand);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--sand);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--sand);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--sand);color:var(--sand);background:rgba(239,230,207,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Chladni</div>
+    <div class="meta">Square plate · free edges · mode (m, n)</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Vibrations</div>
+    <h1>Sand finds the<br>lines where<br>nothing <b>moves</b></h1>
+    <p>Sprinkle fine sand on a plate of metal and draw a violin bow across its edge, and the sand jumps, and then it runs — always away from the places where the plate is moving most, and always towards the places where it is still. Within a second the plate has drawn its own mode in sand, and the figure is a picture of the wave standing on it.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="820" height="620"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Mode</h2>
+        <div class="row"><span>Indices (m, n)</span><b id="s1">—</b></div>
+        <div class="row"><span>Frequency</span><b id="s2">—</b></div>
+        <div class="row"><span>Node lines</span><b id="s3">—</b></div>
+        <div class="row"><span>Antinodes</span><b id="s4">—</b></div>
+        <div class="row"><span>Aspect</span><b id="s5">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Sand</h2>
+        <div class="row"><span>Grains</span><b id="s6">—</b></div>
+        <div class="row"><span>Settled</span><b id="s7">—</b></div>
+        <div class="row"><span>Still moving</span><b id="s8">—</b></div>
+        <div class="row"><span>Plate</span><b>240 mm steel</b></div>
+        <div class="row"><span>Driving</span><b>bow, 440 Hz</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Mode m <output id="oa">5</output></label>
+      <input type="range" id="m" min="1" max="14" value="5">
+    </div>
+    <div class="fld">
+      <label>Mode n <output id="ob">3</output></label>
+      <input type="range" id="n" min="1" max="14" value="3">
+    </div>
+    <div class="fld">
+      <label>Grains <output id="oc">4 000</output></label>
+      <input type="range" id="grains" min="500" max="12000" value="4000">
+    </div>
+    <div class="btns">
+      <button class="btn" id="shake">Shake the plate</button>
+      <button class="btn" id="clear">Clear the sand</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>sand<br>goes<br>to the<br>nodes</h2>
+      <p>A grain sitting on a vibrating plate is thrown about by the acceleration of the surface beneath it. Where the plate moves fast, the grain bounces and skips, wandering more or less at random. Where the plate is still, the grain simply sits.</p>
+      <p>So the sand is doing a gradient descent on the square of the displacement — walking downhill towards the places where the vibration is smallest. That is why the figures are so clean: the pattern is not painted on, it is the shape of the zeros of the mode function, and the sand finds them by brute force.</p>
+    </div>
+    <div>
+      <h2>The<br>boundary<br>problem</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">A square plate with <b>free</b> edges does not vibrate like a drum. The mode shapes are not simple sine patterns but combinations of them that satisfy the free-edge condition, and they are not exactly the same as the ones you get from a simple cosine product — which is what is drawn here.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">What the cosine approximation gets right is the topology: the number of node lines, the symmetry, and the fact that the figures close on themselves. Ernst Chladni's own experiments, in the seventeen-nineties, produced exactly these patterns and he had no way at all to explain where they came from.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Chladni — the figures in sand</span>
+    <span>Sand descends the gradient of the mode</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var m=5,n=3,grainCount=4000;
+  var parts=[], shake=0;
+  var PX=90, PY=70, PS=Math.min(W-PX*2,H-PY*2);
+
+  function mode(x,y){
+    // x,y in 0..1
+    return Math.cos(m*Math.PI*x)*Math.cos(n*Math.PI*y)
+         - Math.cos(n*Math.PI*x)*Math.cos(m*Math.PI*y);
+  }
+  function seed(){
+    parts=[];
+    for(var i=0;i<grainCount;i++){
+      parts.push({x:Math.random(),y:Math.random(),s:false,dx:0,dy:0});
+    }
+  }
+  function step(dt){
+    var h=0.0015;
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      if(p.s) continue;
+      var z=mode(p.x,p.y);
+      // gradient of z^2
+      var gx=(mode(p.x+h,p.y)*mode(p.x+h,p.y)-mode(p.x-h,p.y)*mode(p.x-h,p.y))/(2*h);
+      var gy=(mode(p.x,p.y+h)*mode(p.x,p.y+h)-mode(p.x,p.y-h)*mode(p.x,p.y-h))/(2*h);
+      var m2=Math.hypot(gx,gy);
+      if(m2<1e-5){ p.s=true; continue; }
+      var step2=0.00055*(1+shake);
+      p.x-=gx/m2*step2;
+      p.y-=gy/m2*step2;
+      if(p.x<0)p.x=0; if(p.x>1)p.x=1;
+      if(p.y<0)p.y=0; if(p.y>1)p.y=1;
+      if(Math.abs(z)<0.012){ p.s=true; p.dx=p.x; p.dy=p.y; }
+    }
+    if(shake>0) shake-=0.02;
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0a0a0c'; ctx.fillRect(0,0,W,H);
+    // plate
+    var g=ctx.createLinearGradient(PX,PY,PX+PS,PY+PS);
+    g.addColorStop(0,'#22222a'); g.addColorStop(0.5,'#191920'); g.addColorStop(1,'#111116');
+    ctx.fillStyle=g;
+    ctx.fillRect(PX,PY,PS,PS);
+    // mode field drawn faintly
+    var res=70;
+    for(var iy=0;iy<res;iy++){
+      for(var ix=0;ix<res;ix++){
+        var z=mode((ix+0.5)/res,(iy+0.5)/res);
+        var a=Math.min(0.22,Math.abs(z)*0.30);
+        ctx.fillStyle= z>0? 'rgba(224,180,81,'+a.toFixed(3)+')' : 'rgba(90,150,220,'+a.toFixed(3)+')';
+        ctx.fillRect(PX+ix*PS/res, PY+iy*PS/res, PS/res+1, PS/res+1);
+      }
+    }
+    // plate border
+    ctx.strokeStyle='rgba(236,233,226,.35)'; ctx.lineWidth=2;
+    ctx.strokeRect(PX,PY,PS,PS);
+    // sand
+    var settled=0,moving=0;
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      var sx=PX+p.x*PS, sy=PY+p.y*PS;
+      if(p.s){ settled++; ctx.fillStyle='rgba(239,230,207,.92)'; }
+      else { moving++; ctx.fillStyle='rgba(239,230,207,.45)'; }
+      ctx.fillRect(sx,sy,1.7,1.7);
+    }
+    document.getElementById('s1').textContent='('+m+', '+n+')';
+    document.getElementById('s2').textContent=(110+m*8+n*13)+' Hz';
+    document.getElementById('s3').textContent=(m+n);
+    document.getElementById('s4').textContent=Math.abs(m*n);
+    document.getElementById('s5').textContent=(m>n? m+':'+n : n+':'+m);
+    document.getElementById('s6').textContent=grainCount.toLocaleString();
+    document.getElementById('s7').textContent=settled.toLocaleString();
+    document.getElementById('s8').textContent=moving.toLocaleString();
+  }
+  function loop(){
+    step(1/60);
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('m').addEventListener('input',function(){
+    m=parseInt(this.value,10);
+    document.getElementById('oa').textContent=m;
+    seed();
+  });
+  document.getElementById('n').addEventListener('input',function(){
+    n=parseInt(this.value,10);
+    document.getElementById('ob').textContent=n;
+    seed();
+  });
+  document.getElementById('grains').addEventListener('input',function(){
+    grainCount=parseInt(this.value,10);
+    document.getElementById('oc').textContent=grainCount.toLocaleString();
+    seed();
+  });
+  document.getElementById('shake').addEventListener('click',function(){
+    shake=1;
+    parts.forEach(function(p){ p.s=false; });
+  });
+  document.getElementById('clear').addEventListener('click',function(){ seed(); });
+  seed();
+})();
+</script>
+</body>
+</html>

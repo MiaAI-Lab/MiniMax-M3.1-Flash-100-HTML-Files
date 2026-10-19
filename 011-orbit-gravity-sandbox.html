@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORBIT — A gravity sandbox</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#05060d;--ink:#e9edf7;--dim:#6f7893;--gold:#ffcf6b;--cyan:#6fe3ff;--violet:#b08cff;}
+  body{background:var(--bg);color:var(--ink);font-family:"SF Pro Text","Segoe UI",system-ui,sans-serif;overflow-x:hidden;min-height:100vh;}
+  .wrap{position:relative;z-index:3;display:grid;grid-template-columns:1fr 300px;gap:0;min-height:100vh;}
+  .main{position:relative;overflow:hidden;}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;}
+  .hud{position:absolute;left:0;right:0;top:0;padding:24px 28px;display:flex;justify-content:space-between;
+    align-items:flex-start;gap:16px;pointer-events:none;flex-wrap:wrap;}
+  .hud .ttl{font-size:12px;letter-spacing:.4em;text-transform:uppercase;}
+  .hud .ttl b{color:var(--gold);}
+  .hud .sub{font-size:11px;color:var(--dim);letter-spacing:.16em;margin-top:8px;max-width:44ch;line-height:1.7;}
+  .hud .stat{text-align:right;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  .hud .stat b{display:block;font-size:1.5rem;color:var(--cyan);font-weight:300;letter-spacing:-.02em;margin-top:4px;}
+  .legend{position:absolute;left:28px;bottom:24px;display:flex;gap:20px;flex-wrap:wrap;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--dim);pointer-events:none;}
+  .legend span{display:flex;align-items:center;gap:8px;}
+  .legend i{width:9px;height:9px;border-radius:50%;display:block;}
+
+  .side{border-left:1px solid rgba(255,255,255,.1);padding:26px 24px;display:flex;flex-direction:column;gap:24px;
+    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));}
+  .side h1{font-size:1.5rem;font-weight:300;letter-spacing:-.01em;}
+  .side .k{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);}
+  .side p{font-size:.88rem;line-height:1.75;color:var(--dim);margin-top:10px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:400;font-size:12px;letter-spacing:.04em;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(255,255,255,.16);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--cyan);
+    cursor:ew-resize;box-shadow:0 0 12px rgba(111,227,255,.6);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--cyan);cursor:ew-resize;}
+  .btns{display:grid;gap:9px;}
+  .btn{border:1px solid rgba(255,255,255,.18);background:transparent;color:var(--ink);padding:12px 14px;
+    font-family:inherit;font-weight:400;font-size:10.5px;line-height:1;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;transition:.3s;text-align:left;
+    display:flex;justify-content:space-between;align-items:center;}
+  .btn:hover{border-color:var(--gold);color:var(--gold);}
+  .btn.on{border-color:var(--cyan);color:var(--cyan);}
+  .tools{display:grid;gap:8px;}
+  .tool{display:flex;align-items:center;gap:11px;font-size:11.5px;color:var(--dim);cursor:pointer;
+    padding:9px 11px;border-radius:10px;transition:.25s;}
+  .tool:hover{background:rgba(255,255,255,.05);color:var(--ink);}
+  .tool i{width:13px;height:13px;border-radius:50%;display:block;flex:none;}
+  .tool.on{color:var(--ink);}
+  .note{border-top:1px solid rgba(255,255,255,.1);padding-top:18px;font-size:.78rem;line-height:1.8;color:#5c6480;}
+  .foot{margin-top:auto;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#4b5268;}
+
+  @media(max-width:900px){.wrap{grid-template-columns:1fr;}.side{border-left:none;border-top:1px solid rgba(255,255,255,.1);}
+    .main{min-height:70vh;}.side .tools{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:560px){.hud{padding:18px;}.side .tools{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="main">
+    <canvas id="cv"></canvas>
+    <div class="hud">
+      <div>
+        <div class="ttl">ORBIT <b>/</b> gravity sandbox</div>
+        <div class="sub">Drag to pull the field. Release to let it snap back. Everything obeys one equation.</div>
+      </div>
+      <div class="stat">Bodies<b id="bcount">0</b>Energy<b id="energy">0.0</b></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:#ffcf6b"></i>Core</span>
+      <span><i style="background:#6fe3ff"></i>Trace</span>
+      <span><i style="background:#b08cff"></i>Captured</span>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div>
+      <div class="k">Experiment 01</div>
+      <h1>Gravity, drawn</h1>
+      <p>A thousand particles fall toward a single mass and occasionally escape. Drag the mass; the system reorganises in about two seconds, which is how long a real orbit takes to forget what it was.</p>
+    </div>
+
+    <div class="ctl">
+      <label>Central mass <b id="vMass">1.00</b></label>
+      <input type="range" id="mass" min="10" max="300" value="100">
+    </div>
+    <div class="ctl">
+      <label>Orbit damping <b id="vDamp">0.99</b></label>
+      <input type="range" id="damp" min="980" max="1000" value="992">
+    </div>
+    <div class="ctl">
+      <label>Particle speed <b id="vSpeed">1.00</b></label>
+      <input type="range" id="speed" min="20" max="260" value="100">
+    </div>
+
+    <div class="btns">
+      <button class="btn" id="reset">Reset field <span>↺</span></button>
+      <button class="btn" id="burst">Release burst <span>✦</span></button>
+      <button class="btn on" id="trails">Trails <span>◠</span></button>
+    </div>
+
+    <div>
+      <div class="k" style="margin-bottom:10px">Pointer</div>
+      <div class="tools">
+        <div class="tool on" data-mode="pull"><i style="background:#6fe3ff"></i>Pull</div>
+        <div class="tool" data-mode="push"><i style="background:#ff6b6b"></i>Push</div>
+        <div class="tool" data-mode="orbit"><i style="background:#b08cff"></i>Orbit</div>
+      </div>
+    </div>
+
+    <div class="note">
+      F = G·m₁·m₂ / r². Close to the core the force climbs as the square of the inverse distance, so an escaping body needs a kick of ever-larger size — which is why most of them do not escape.
+    </div>
+    <div class="foot">Canvas 2D · 1,000 bodies</div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('cv'), ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+  function resize(){
+    var r=cvs.parentElement.getBoundingClientRect();
+    W=r.width;H=r.height;cvs.width=W*DPR;cvs.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resize(); window.addEventListener('resize',resize);
+
+  var N=1000, parts=[], mass=1, damp=0.992, speedK=1, trails=true, mode='pull';
+  var core={x:0,y:0,vx:0,vy:0}, pointer={x:0,y:0,down:false,active:false};
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function reset(){
+    parts=[];core={x:W/2,y:H/2,vx:0,vy:0};
+    for(var i=0;i<N;i++){
+      var a=rnd(0,Math.PI*2), d=rnd(40,Math.max(W,H)*0.62);
+      var v=Math.sqrt(1/d)*rnd(60,140);
+      parts.push({x:core.x+Math.cos(a)*d, y:core.y+Math.sin(a)*d,
+        vx:-Math.sin(a)*v, vy:Math.cos(a)*v, life:1, hot:0});
+    }
+  }
+  reset();
+
+  function bindRange(id,out,fn,fmt){
+    var el=document.getElementById(id),o=document.getElementById(out);
+    el.addEventListener('input',function(){var v=+el.value;fn(v);o.textContent=fmt(v);});
+  }
+  bindRange('mass','vMass',function(v){mass=v/100;},function(v){return (v/100).toFixed(2);});
+  bindRange('damp','vDamp',function(v){damp=v/1000;},function(v){return (v/1000).toFixed(3);});
+  bindRange('speed','vSpeed',function(v){speedK=v/100;},function(v){return (v/100).toFixed(2);});
+
+  document.getElementById('reset').addEventListener('click',reset);
+  document.getElementById('burst').addEventListener('click',function(){
+    for(var i=0;i<160;i++){
+      var a=rnd(0,Math.PI*2), v=rnd(120,420);
+      parts.push({x:core.x,y:core.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,hot:1});
+    }
+  });
+  document.getElementById('trails').addEventListener('click',function(){
+    trails=!trails; this.classList.toggle('on',trails);
+  });
+
+  document.querySelectorAll('.tool').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tool').forEach(function(x){x.classList.remove('on');});
+      t.classList.add('on'); mode=t.dataset.mode;
+    });
+  });
+
+  cvs.addEventListener('pointerdown',function(e){pointer.down=true;pointer.active=true;move(e);});
+  window.addEventListener('pointerup',function(){pointer.down=false;pointer.active=false;});
+  window.addEventListener('pointermove',move);
+  function move(e){
+    var r=cvs.getBoundingClientRect();
+    pointer.x=e.clientX-r.left; pointer.y=e.clientY-r.top;
+  }
+
+  var E=0;
+  function step(dt){
+    var G=6.2*mass;
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      var dx=core.x-p.x, dy=core.y-p.y;
+      var d2=dx*dx+dy*dy+80, d=Math.sqrt(d2);
+      var f=G/d2;
+      var ax=dx/d*f, ay=dy/d*f;
+      p.vx+=ax*dt; p.vy+=ay*dt;
+      // pointer influence
+      if(pointer.active){
+        var pdx=pointer.x-p.x, pdy=pointer.y-p.y;
+        var pd2=pdx*pdx+pdy*pdy+200, pd=Math.sqrt(pd2);
+        var pf=24000/pd2*(mode==='push'?-1:1);
+        if(mode==='orbit'){
+          p.vx += -pdy/pd*pf*dt*0.6;
+          p.vy +=  pdx/pd*pf*dt*0.6;
+        }else{
+          p.vx += pdx/pd*pf*dt*0.35;
+          p.vy += pdy/pd*pf*dt*0.35;
+        }
+      }
+      // core reacts slightly to the field
+      core.vx -= ax*dt*0.02; core.vy -= ay*dt*0.02;
+      p.vx*=damp; p.vy*=damp;
+      p.x+=p.vx*dt; p.y+=p.vy*dt;
+      p.life-=0.0012*dt;
+      if(p.life<=0 || d<14){
+        p.life=1; p.hot=1;
+        var a=rnd(0,Math.PI*2), dd=rnd(120,Math.max(W,H)*0.6);
+        p.x=core.x+Math.cos(a)*dd; p.y=core.y+Math.sin(a)*dd;
+        var vv=Math.sqrt(1/dd)*rnd(60,150);
+        p.vx=-Math.sin(a)*vv; p.vy=Math.cos(a)*vv;
+      }
+      if(p.x<-50)p.x=W+50; if(p.x>W+50)p.x=-50;
+      if(p.y<-50)p.y=H+50; if(p.y>H+50)p.y=-50;
+    }
+    core.x+=core.vx*dt; core.y+=core.vy*dt;
+    core.vx*=0.985; core.vy*=0.985;
+  }
+
+  function draw(){
+    ctx.fillStyle='rgba(5,6,13,.34)';
+    ctx.fillRect(0,0,W,H);
+    if(!trails){ctx.fillStyle='#05060d';ctx.fillRect(0,0,W,H);}
+
+    // core
+    var g=ctx.createRadialGradient(core.x,core.y,0,core.x,core.y,70);
+    g.addColorStop(0,'rgba(255,207,107,.95)');
+    g.addColorStop(.35,'rgba(255,160,60,.45)');
+    g.addColorStop(1,'rgba(255,160,60,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(core.x,core.y,70,0,6.283); ctx.fill();
+    ctx.fillStyle='#fff5df'; ctx.beginPath(); ctx.arc(core.x,core.y,4,0,6.283); ctx.fill();
+
+    // particles
+    ctx.globalCompositeOperation='lighter';
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      var a=Math.min(1,p.life);
+      ctx.fillStyle = p.hot>0.4 ? 'rgba(176,140,255,'+(a*0.85)+')' : 'rgba(111,227,255,'+(a*0.55)+')';
+      ctx.fillRect(p.x,p.y,1.7,1.7);
+      if(p.hot>0)p.hot-=0.02;
+    }
+    ctx.globalCompositeOperation='source-over';
+  }
+
+  var last=performance.now(), frames=0, energy=0;
+  function loop(t){
+    var dt=Math.min(2.6,(t-last)/16.67); last=t;
+    var steps=2;
+    for(var s=0;s<steps;s++) step(dt/steps*speedK);
+    draw();
+    frames++;
+    if(frames%20===0){
+      energy=0;
+      for(var i=0;i<parts.length;i+=7){
+        var p=parts[i];
+        energy += 0.5*(p.vx*p.vx+p.vy*p.vy);
+      }
+      document.getElementById('bcount').textContent=parts.length.toLocaleString('en-US');
+      document.getElementById('energy').textContent=(energy/1000).toFixed(1)+'k';
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

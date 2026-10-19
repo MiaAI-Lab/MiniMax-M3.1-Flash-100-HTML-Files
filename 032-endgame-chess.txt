@@ -1,0 +1,19 @@
+TITLE: ENDGAME — a study in sixty-four squares
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ENDGAME — a study in sixty-four squares", a page of playable chess endgame studies. Art direction: printed chess study, warm and quiet. Palette: paper #f2ece0, board dark #7a5638, board light #e9dcbe, ink #241a12, body grey #4c4034, dim #8a7a63, study red #a8321f, brass #b8893c. Layout: a header with a Didone wordmark and the current study name; a two-column main region — on the left an 8×8 board drawn entirely with CSS grid (64 square divs, alternating tones, a 10px dark wooden border with an inset shadow), on the right a column of three cards: "The problem" with a Didone statement of the goal, a paragraph and a live status line; "Variation" with a monospaced list of the moves played and Undo/Reset buttons; and "Studies" listing the four available compositions. Below the board region, a two-column editorial section on why endgames are the honest part of chess. Interaction: clicking a piece of the side to move selects it (the square takes a brass inset outline and the piece lifts on hover); clicking another square moves the piece there, records the move in the variation list, marks the last square in study red, and flips the side to move; the status line reports the move, confirms when the correct solution line is played, and gently rejects a wrong line; Undo steps back and re-renders; Reset restores the position; the study list switches to a different composition with its own goal text, position and solution. The board is drawn from a JavaScript position map with Unicode chess glyphs, coloured for white and black. Responsive: the board and the card column stack under 900px with the board capped at 480px.
+
+DESCRIPTION:
+Four composed chess studies you can actually play. The board is CSS grid, the pieces are Unicode glyphs shaded to look carved, and the move checker compares your play against the solution line as you go — telling you when you've found it and when you haven't. The interesting part is that the wrong moves are accepted on the board; only the variation list and the status line judge.
+
+MAJOR VISUAL TECHNIQUES:
+- 8×8 CSS grid board with alternating tones, wooden border and inset shadow
+- Unicode chess glyphs styled with separate white and black text-shadows for a carved look
+- Inset box-shadow outlines for selection (brass) and last move (study red)
+- Board state held as a square→piece map, rendered from scratch on every change
+- Solution matching against a coordinate string list
+- Monospaced variation list with a leading move coordinate in red
+- Hairline-ruled editorial section and a study list with a highlighted active row
+
+INTENDED INTERACTION MODEL:
+Play it. Select, move, and watch the variation list and the status line judge. Undo and Reset are always available, and the study list lets you switch problems at any time. The board itself never refuses a move — only the commentary does.

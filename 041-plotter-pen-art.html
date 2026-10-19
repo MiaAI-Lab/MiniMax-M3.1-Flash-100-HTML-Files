@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLOTTER — a pen on paper</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#f7f4ec;--ink:#14120e;--pen:#1b1b1b;--dim:#8b8578;--red:#c0392b;--line:rgba(20,18,14,.16);}
+  body{background:#ddd9d0;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;padding:22px 16px 60px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  .head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+  .brand{font-size:12px;letter-spacing:.46em;text-transform:uppercase;}
+  .brand span{color:var(--red);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#6f6a5e;}
+  .board{position:relative;background:var(--paper);box-shadow:0 30px 60px -30px rgba(0,0,0,.45);
+    border:1px solid rgba(0,0,0,.15);overflow:hidden;}
+  canvas{display:block;width:100%;height:auto;}
+  .caption{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:14px 18px;border-top:1px solid rgba(0,0,0,.12);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:#5f5a50;}
+  .caption b{color:var(--ink);font-weight:600;}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .tool{background:var(--paper);border:1.5px solid #1b1b1b;color:#1b1b1b;padding:11px 18px;cursor:pointer;
+    font:600 10.5px/1 inherit;letter-spacing:.2em;text-transform:uppercase;transition:.22s;
+    box-shadow:3px 3px 0 rgba(27,27,27,.25);}
+  .tool:hover{background:#1b1b1b;color:var(--paper);box-shadow:1px 1px 0 rgba(27,27,27,.25);transform:translate(2px,2px);}
+  .tool.on{background:var(--red);border-color:var(--red);color:#fff;}
+  .sliders{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:24px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:#6f6a5e;margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:600;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:#1b1b1b;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--red);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--red);cursor:pointer;}
+  .notes{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;background:var(--paper);
+    padding:26px 24px;border:1px solid rgba(0,0,0,.12);}
+  .notes h3{font-size:.95rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+  .notes p{font-size:.88rem;line-height:1.8;color:#4a463d;}
+  .notes .n{font-size:10px;letter-spacing:.3em;color:var(--red);margin-bottom:12px;display:block;}
+  @media(max-width:800px){.sliders{grid-template-columns:1fr;}.notes{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="brand">Plotter <span>·</span> Axiom 4 — ballpoint</div>
+    <div class="meta">A1 · 0.35 mm · 2400 steps per inch</div>
+  </div>
+
+  <div class="board">
+    <canvas id="cv" width="1100" height="760"></canvas>
+    <div class="caption">
+      <div>Plate <b id="pl">07</b> of 12 · <span id="shapeName">Contour field</span></div>
+      <div><b id="lineCount">0</b> segments · pen <b id="penState">down</b></div>
+    </div>
+  </div>
+
+  <div class="tools">
+    <button class="tool" data-shape="0">Contour</button>
+    <button class="tool" data-shape="1">Hatch</button>
+    <button class="tool" data-shape="2">Spiral</button>
+    <button class="tool" data-shape="3">Voronoi</button>
+    <button class="tool" id="redraw">Redraw</button>
+    <button class="tool" id="toggle">Lift pen</button>
+  </div>
+
+  <div class="sliders">
+    <div class="ctl"><label>Lines <b id="vLines">120</b></label><input type="range" id="lines" min="20" max="260" value="120"></div>
+    <div class="ctl"><label>Jitter <b id="vJit">0.6</b></label><input type="range" id="jit" min="0" max="30" value="6"></div>
+    <div class="ctl"><label>Pen angle <b id="vAng">45°</b></label><input type="range" id="ang" min="0" max="180" value="45"></div>
+  </div>
+
+  <section class="notes">
+    <article><span class="n">01 / THE MACHINE</span><h3>No brush, no wheel</h3>
+      <p>A pen plotter is a machine that only knows how to move a pen in straight lines. Everything expressive about it comes from what a nervous hand and a cheap motor can do with those constraints.</p></article>
+    <article><span class="n">02 / THE INK</span><h3>It skips</h3>
+      <p>Ballpoint pens on coated paper leave a faint skip at every direction change. Most of the beauty of a plotted drawing is in the places where the machine was asked to do something it does not like.</p></article>
+    <article><span class="n">03 / THE PAPER</span><h3>Everything is one colour</h3>
+      <p>Because there is only one pen, the only way to get tone is density. Cross-hatching, stippling and contour stacking are all the same trick: put more lines closer together.</p></article>
+  </section>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('cv'), ctx=cvs.getContext('2d');
+  var W=1100,H=760;
+  var shape=0, lines=120, jit=0.6, ang=45, penDown=true, segs=0;
+  var NAMES=['Contour field','Cross hatch','Archimedean spiral','Voronoi cells'];
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  function draw(){
+    segs=0;
+    var rnd=mulberry32(1234+shape*97+lines);
+    ctx.fillStyle='#f7f4ec'; ctx.fillRect(0,0,W,H);
+    // paper edge
+    ctx.strokeStyle='rgba(20,18,14,.12)'; ctx.lineWidth=1;
+    ctx.strokeRect(24.5,24.5,W-49,H-49);
+
+    ctx.strokeStyle='#1b1b1b';
+    ctx.lineWidth=0.7;
+    ctx.lineCap='round';
+
+    var i,j,x,y,px,py;
+    if(shape===0){
+      // contour field from a scalar function
+      for(i=0;i<lines;i++){
+        var level=i/lines;
+        ctx.beginPath();
+        var started=false;
+        for(x=40;x<W-40;x+=3){
+          y=H-40-level*(H-80);
+          var f=Math.sin(x*0.006+level*7)*60+Math.cos(x*0.011-level*4)*30;
+          y+=f;
+          if(!started){ ctx.moveTo(x,y); started=true; } else ctx.lineTo(x,y);
+          segs++;
+        }
+        ctx.stroke();
+      }
+    }else if(shape===1){
+      // cross hatch at the pen angle
+      var a=ang*Math.PI/180;
+      var dx=Math.cos(a)*1.4, dy=Math.sin(a)*1.4;
+      var step=Math.max(6, (W+H)/lines*0.6);
+      for(i=0;i<lines;i++){
+        var off=i*step-W*0.2;
+        ctx.beginPath(); started=false;
+        for(j=-H;j<W+H;j+=4){
+          x=40+j*dx*0.2+off*0; y=40+j*0.2+off;
+          x=40+off*Math.sin(a)+j*Math.cos(a)*0.2;
+          y=40+off*Math.cos(a)+j*Math.sin(a)*0.2;
+          if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+          segs++;
+        }
+        ctx.stroke();
+      }
+      // second pass at 90 degrees
+      ctx.beginPath();
+      for(i=0;i<lines;i+=2){
+        var o2=i*step;
+        started=false;
+        for(j=-H;j<W+H;j+=4){
+          x=40+o2+j*0.2*Math.cos(a); y=40+j*0.2*Math.sin(a);
+          if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+          segs++;
+        }
+        ctx.stroke();
+      }
+    }else if(shape===2){
+      // spiral
+      ctx.beginPath();
+      for(i=0;i<lines*14;i++){
+        var t2=i/ (lines*14);
+        var r=t2*Math.min(W,H)*0.46;
+        var th=t2*Math.PI*18;
+        x=W/2+Math.cos(th)*r; y=H/2+Math.sin(th)*r*0.92;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        segs++;
+      }
+      ctx.stroke();
+    }else{
+      // voronoi-ish: scatter points, then draw a "cell" as a small polygon around each
+      var pts=[];
+      var n=Math.max(6,Math.floor(lines/3));
+      for(i=0;i<n;i++) pts.push({x:60+rnd()*(W-120),y:60+rnd()*(H-120)});
+      for(i=0;i<pts.length;i++){
+        var p=pts[i];
+        var R=28+rnd()*46;
+        ctx.beginPath();
+        for(j=0;j<28;j++){
+          var th2=(j/28)*Math.PI*2;
+          var rr=R*(0.7+rnd()*0.6);
+          x=p.x+Math.cos(th2)*rr; y=p.y+Math.sin(th2)*rr;
+          if(j===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+          segs++;
+        }
+        ctx.closePath(); ctx.stroke();
+      }
+    }
+
+    // pen skips: a few faint gaps
+    ctx.globalAlpha=.25;
+    ctx.fillStyle='#f7f4ec';
+    for(i=0;i<90;i++){
+      var sx=rnd()*W, sy=rnd()*H, sr=rnd()*1.6;
+      ctx.beginPath(); ctx.arc(sx,sy,sr,0,6.283); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    // title block, as every plotter drawing has
+    ctx.fillStyle='#1b1b1b';
+    ctx.font='11px "Courier New",monospace';
+    ctx.fillText('PLOT '+String(shape+1).padStart(2,'0')+'  LINES '+lines+'  ANGLE '+ang+'  JITTER '+jit.toFixed(1),40,H-30);
+    ctx.strokeStyle='rgba(20,18,14,.3)';
+    ctx.strokeRect(W-190,H-58,150,28);
+    ctx.fillText('AXIOM 4 / BALLPOINT',W-180,H-40);
+
+    document.getElementById('lineCount').textContent=segs;
+    document.getElementById('shapeName').textContent=NAMES[shape];
+  }
+
+  document.querySelectorAll('.tools .tool[data-shape]').forEach(function(b){
+    b.addEventListener('click',function(){
+      shape=+b.dataset.shape;
+      document.querySelectorAll('.tools .tool[data-shape]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      document.getElementById('pl').textContent=String(shape+7).padStart(2,'0');
+      draw();
+    });
+  });
+  document.querySelector('.tools .tool[data-shape]').classList.add('on');
+  document.getElementById('redraw').addEventListener('click',draw);
+  document.getElementById('toggle').addEventListener('click',function(){
+    penDown=!penDown;
+    this.classList.toggle('on',!penDown);
+    document.getElementById('penState').textContent=penDown?'down':'up';
+    ctx.globalAlpha=penDown?1:.25;
+  });
+  document.getElementById('lines').addEventListener('input',function(){
+    lines=+this.value; document.getElementById('vLines').textContent=lines; draw();
+  });
+  document.getElementById('jit').addEventListener('input',function(){
+    jit=+this.value/10; document.getElementById('vJit').textContent=jit.toFixed(1); draw();
+  });
+  document.getElementById('ang').addEventListener('input',function(){
+    ang=+this.value; document.getElementById('vAng').textContent=ang+'°'; draw();
+  });
+  draw();
+})();
+</script>
+</body>
+</html>

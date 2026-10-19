@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STELLARIUM — Deep Sky Survey</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#03040c;--ink:#e8eeff;--dim:#7d86a8;--gold:#f5c76b;--blue:#7aa2ff;}
+  body{background:var(--bg);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    overflow-x:hidden;min-height:100vh;position:relative;}
+  canvas#sky{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block;}
+  .shell{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:0 26px 90px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;}
+  .wordmark{font-size:14px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);}
+  .wordmark small{display:block;letter-spacing:.24em;font-size:10px;color:var(--dim);margin-top:6px;}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--dim);padding:8px 16px;
+    border-radius:999px;font-family:inherit;font-weight:400;font-size:11px;line-height:1;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:.3s;}
+  .tools button:hover,.tools button.on{color:#fff;border-color:var(--gold);background:rgba(245,199,107,.1);}
+
+  .hero{padding:60px 0 20px;max-width:780px;}
+  .hero .k{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--blue);}
+  h1{font-size:clamp(2.6rem,7vw,5.2rem);line-height:1.02;font-weight:400;letter-spacing:-.02em;margin:20px 0 22px;}
+  h1 i{font-style:italic;color:var(--gold);}
+  .hero p{color:var(--dim);font-size:1.05rem;line-height:1.85;max-width:52ch;}
+  .hero p b{color:var(--ink);font-weight:400;border-bottom:1px solid rgba(245,199,107,.5);}
+
+  .meta{display:flex;gap:34px;flex-wrap:wrap;margin-top:34px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);}
+  .meta div span{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+  .meta div b{font-size:1.25rem;font-weight:400;color:var(--gold);}
+
+  .finder{margin-top:56px;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:26px;
+    background:rgba(6,8,20,.6);backdrop-filter:blur(14px);}
+  .finder h2{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--blue);margin-bottom:18px;}
+  .rows{display:grid;gap:2px;}
+  .row{display:grid;grid-template-columns:78px 1.4fr 1fr 90px;gap:14px;padding:13px 10px;border-radius:10px;
+    transition:.25s;cursor:pointer;align-items:center;}
+  .row:hover{background:rgba(255,255,255,.06);}
+  .row .cat{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+  .row .name{font-size:1.06rem;}
+  .row .name small{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;color:var(--dim);margin-top:3px;letter-spacing:.04em;}
+  .row .con{font-size:.9rem;color:var(--dim);}
+  .row .mag{font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;color:var(--gold);text-align:right;}
+  .row.hot .name{color:var(--gold);}
+
+  .dossier{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .doss{padding:24px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);}
+  .doss .fig{height:150px;border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 60%,rgba(122,162,255,.35),transparent 62%),#05060f;}
+  .doss .fig svg{width:100%;height:100%;}
+  .doss h3{font-size:1.2rem;font-weight:400;margin-bottom:8px;}
+  .doss p{color:var(--dim);font-size:.9rem;line-height:1.7;}
+  .doss .cap{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+
+  footer{margin-top:70px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.24em;
+    text-transform:uppercase;color:#5c6480;}
+
+  @media(max-width:860px){.dossier{grid-template-columns:1fr;}.row{grid-template-columns:64px 1fr 70px;}.row .con{display:none;}}
+  @media(max-width:520px){.shell{padding:0 15px 70px;}.meta{gap:20px;}.row{grid-template-columns:56px 1fr 56px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<div class="shell">
+  <header>
+    <div class="wordmark">Stellarium<small>Deep Sky Survey · Mm-2</small></div>
+    <div class="tools">
+      <button class="on" data-mode="const">Constellations</button>
+      <button data-mode="dust">Dust</button>
+      <button data-mode="both">All</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Catalogue no. 4,102 — 26 October</div>
+    <h1>Where the light takes<br><i>twenty thousand years</i> to arrive</h1>
+    <p>Our survey sits on a cold ridge in the southern Andes, photographing the same patch of sky every clear night for <b>eleven years</b>. The catalogue below is the first release — 1,482 objects, all of them faint enough to have been missed.</p>
+    <div class="meta">
+      <div><span>Objects catalogued</span><b>1,482</b></div>
+      <div><span>Faintest magnitude</span><b>21.4</b></div>
+      <div><span>Exposure hours</span><b>9,137</b></div>
+      <div><span>Live stars</span><b id="starcount">0</b></div>
+    </div>
+  </section>
+
+  <section class="finder">
+    <h2>Recent discoveries</h2>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <section class="dossier">
+    <article class="doss">
+      <div class="fig">
+        <svg viewBox="0 0 200 150" aria-hidden="true">
+          <defs><radialGradient id="g1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#7aa2ff" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="75" r="46" fill="url(#g1)" opacity=".5"/>
+          <ellipse cx="100" cy="75" rx="62" ry="16" fill="none" stroke="#f5c76b" stroke-width="1" opacity=".6" transform="rotate(-18 100 75)"/>
+          <ellipse cx="100" cy="75" rx="40" ry="9" fill="none" stroke="#7aa2ff" stroke-width="1" opacity=".5" transform="rotate(28 100 75)"/>
+          <circle cx="100" cy="75" r="4" fill="#fff"/>
+          <circle cx="140" cy="60" r="2" fill="#f5c76b"/><circle cx="58" cy="92" r="1.6" fill="#fff" opacity=".7"/>
+        </svg>
+      </div>
+      <div class="cap">Figure 01 — Protoplanetary disc</div>
+      <h3>HD 142527</h3>
+      <p>A spiral of dust caught mid-formation, its gap carved by a planet we have never seen. The disc is 1,400 AU across and still forming.</p>
+    </article>
+    <article class="doss">
+      <div class="fig">
+        <svg viewBox="0 0 200 150" aria-hidden="true">
+          <rect width="200" height="150" fill="#05060f"/>
+          <path d="M20 110 Q60 60 100 100 T180 70" stroke="#7aa2ff" stroke-width="1.4" fill="none" opacity=".8"/>
+          <path d="M20 125 Q60 80 100 115 T180 88" stroke="#f5c76b" stroke-width="1" fill="none" opacity=".5"/>
+          <g fill="#fff">
+            <circle cx="46" cy="96" r="2.4"/><circle cx="88" cy="104" r="3.2"/><circle cx="132" cy="86" r="2"/>
+            <circle cx="168" cy="76" r="1.4"/><circle cx="24" cy="118" r="1.2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="cap">Figure 02 — Emission nebula</div>
+      <h3>Sh2-233</h3>
+      <p>Hydrogen-alpha filaments climbing a molecular cloud wall, lit from behind by newborn massive stars still wrapped in their cocoons.</p>
+    </article>
+    <article class="doss">
+      <div class="fig">
+        <svg viewBox="0 0 200 150" aria-hidden="true">
+          <g stroke="#7aa2ff" stroke-width=".7" opacity=".55">
+            <path d="M30 120 L70 80 L110 100 L150 50 L180 78" fill="none"/>
+            <path d="M70 80 L90 40 M110 100 L100 130 M150 50 L120 20" fill="none" opacity=".5"/>
+          </g>
+          <g fill="#fff">
+            <circle cx="30" cy="120" r="2.6"/><circle cx="70" cy="80" r="4"/><circle cx="110" cy="100" r="2.6"/>
+            <circle cx="150" cy="50" r="3.4"/><circle cx="180" cy="78" r="1.8"/><circle cx="90" cy="40" r="1.5"/>
+            <circle cx="100" cy="130" r="1.6"/><circle cx="120" cy="20" r="2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="cap">Figure 03 — Globular cluster</div>
+      <h3>NGC 6626</h3>
+      <p>One hundred and fifty thousand stars bound in a sphere a hundred and fifty light years across — the remains of a galaxy eaten by the Milky Way.</p>
+    </article>
+  </section>
+
+  <footer>
+    <span>Stellarium Survey — Public catalogue, CC-BY</span>
+    <span>Cerro(Array) · Altitude 3,900 m</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('sky'), ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+  function resize(){W=window.innerWidth;H=window.innerHeight;cvs.width=W*DPR;cvs.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+  resize(); window.addEventListener('resize',resize);
+
+  var N=340, stars=[], dust=[], cons=[], mode='const';
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  for(var i=0;i<N;i++){
+    stars.push({x:Math.random(),y:Math.random(),r:rnd(.35,1.7),tw:rnd(.4,2.2),ph:Math.random()*6.28,
+      hue:Math.random()<.12?(Math.random()<.5?'#f5c76b':'#7aa2ff'):'#ffffff'});
+  }
+  for(var d=0;d<90;d++){
+    dust.push({x:Math.random(),y:Math.random(),r:rnd(1,4.5),v:rnd(.02,.09),a:rnd(.02,.12)});
+  }
+  // constellation: 6 anchors forming a shape
+  var anchors=[{x:.18,y:.24},{x:.34,y:.4},{x:.5,y:.2},{x:.62,y:.46},{x:.8,y:.3},{x:.72,y:.62}];
+  var links=[[0,1],[1,2],[2,3],[3,4],[1,3],[3,5]];
+  cons=anchors.map(function(a){return {x:a.x*W,y:a.y*H};});
+  var conNodes=anchors.map(function(a,i){return {x:a.x*W,y:a.y*H,r:2.4,i:i};});
+
+  document.getElementById('starcount').textContent=(N*97).toLocaleString('en-US');
+
+  var mouse={x:-999,y:-999};
+  window.addEventListener('pointermove',function(e){mouse.x=e.clientX;mouse.y=e.clientY;});
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    // deep background gradient
+    var g=ctx.createRadialGradient(W*.5,H*.4,0,W*.5,H*.5,Math.max(W,H)*.9);
+    g.addColorStop(0,'#0a1024'); g.addColorStop(.6,'#05060f'); g.addColorStop(1,'#010208');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // milky way band
+    ctx.save();
+    ctx.globalCompositeOperation='screen';
+    var bw=ctx.createLinearGradient(0,H*.1,W,H*.9);
+    bw.addColorStop(0,'rgba(70,90,160,0)');
+    bw.addColorStop(.45,'rgba(90,110,190,.10)');
+    bw.addColorStop(.55,'rgba(140,150,220,.13)');
+    bw.addColorStop(1,'rgba(70,90,160,0)');
+    ctx.fillStyle=bw; ctx.fillRect(0,0,W,H);
+    ctx.restore();
+
+    if(mode!=='const'){
+      for(var dd=0;dd<dust.length;dd++){
+        var du=dust[dd];
+        du.x+=du.v*0.002; if(du.x>1) du.x=0;
+        ctx.beginPath();
+        ctx.arc(du.x*W,du.y*H,du.r,0,6.283);
+        ctx.fillStyle='rgba(160,180,255,'+du.a+')';
+        ctx.fill();
+      }
+    }
+
+    // stars
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i];
+      var tw=0.55+0.45*Math.sin(t*0.001*s.tw+s.ph);
+      var x=s.x*W, y=s.y*H;
+      // gentle parallax
+      var px=(mouse.x-W/2)*0.000012*s.r*8, py=(mouse.y-H/2)*0.000012*s.r*8;
+      x+=px; y+=py;
+      ctx.beginPath(); ctx.arc(x,y,s.r*tw,0,6.283);
+      ctx.fillStyle=s.hue; ctx.globalAlpha=0.35+0.65*tw; ctx.fill(); ctx.globalAlpha=1;
+      if(s.r>1.4){
+        ctx.globalAlpha=0.10*tw;
+        ctx.beginPath(); ctx.arc(x,y,s.r*6,0,6.283);
+        ctx.fillStyle=s.hue; ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    }
+
+    if(mode!=='dust'){
+      // constellation lines
+      ctx.strokeStyle='rgba(122,162,255,.35)';
+      ctx.lineWidth=1;
+      for(var l=0;l<links.length;l++){
+        var a=cons[links[l][0]], b=cons[links[l][1]];
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+      // nodes with pulse
+      for(var n=0;n<conNodes.length;n++){
+        var nd=conNodes[n];
+        var p=0.5+0.5*Math.sin(t*0.0016+n);
+        ctx.beginPath(); ctx.arc(nd.x,nd.y,nd.r+2.2*p,0,6.283);
+        ctx.strokeStyle='rgba(245,199,107,'+(0.15+0.35*p)+')'; ctx.lineWidth=1; ctx.stroke();
+        ctx.beginPath(); ctx.arc(nd.x,nd.y,nd.r,0,6.283);
+        ctx.fillStyle='#fff'; ctx.fill();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // mode buttons
+  var btns=document.querySelectorAll('.tools button');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      btns.forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); mode=b.dataset.mode;
+    });
+  });
+
+  // catalogue rows
+  var data=[
+    ['Nebula','NGC 2170','Monkeys Head, 2,400 ly',21.1,true],
+    ['Supernova','SN 1987A','LMC remnant, 168,000 ly',20.4,false],
+    ['Globular','NGC 6522','Sagittarius core',19.8,false],
+    ['Dark nebula','Barnard 68','Pipe, 460 ly',20.2,false],
+    ['Galaxy','ESO 137-001','Pencil, 1,070,000 ly',18.6,false],
+    ['Reflection','NGC 1999','Orion, 1,300 ly',20.9,true],
+    ['Planetary','NGC 2438','Dog Star, 2,900 ly',19.4,false],
+    ['Dark nebula','B 86','Ink, 1,600 ly',20.6,false]
+  ];
+  var rows=document.getElementById('rows');
+  data.forEach(function(d){
+    var el=document.createElement('div');
+    el.className='row'+(d[4]?' hot':'');
+    el.innerHTML='<div class="cat">'+d[0]+'</div><div class="name">'+d[1]+'<small>'+d[2]+'</small></div>'+
+                  '<div class="con">'+ (d[4]?'New, Oct 2026':'Confirmed, 2019') +'</div><div class="mag">'+d[3].toFixed(1)+'</div>';
+    el.addEventListener('click',function(){
+      el.style.background='rgba(245,199,107,.14)';
+      setTimeout(function(){el.style.background='';},900);
+    });
+    rows.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>

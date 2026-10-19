@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEPARTURES — board 4</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0d0f10;--case:#1a1d1f;--flap:#24282b;--ink:#e8e4d8;--dim:#8d9196;--amber:#ffb648;--green:#57d98a;--red:#ff6b5e;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;padding:26px 16px 60px;}
+  .board{max-width:1080px;margin:0 auto;background:var(--case);border:1px solid #2c3134;border-radius:14px;
+    padding:20px 20px 26px;box-shadow:0 40px 80px -40px #000;}
+  .head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid #2c3134;padding-bottom:16px;margin-bottom:18px;}
+  .head h1{font-size:1.5rem;font-weight:300;letter-spacing:.24em;text-transform:uppercase;}
+  .head h1 b{color:var(--amber);font-weight:300;}
+  .clock{font-family:"Courier New",monospace;font-size:1.5rem;color:var(--amber);letter-spacing:.08em;}
+
+  .rows{display:grid;gap:6px;}
+  .r{display:grid;grid-template-columns:78px 1fr 150px 84px;gap:10px;align-items:center;}
+  .colhead{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);padding-bottom:6px;}
+  .flaprow{display:grid;grid-template-columns:78px 1fr 150px 84px;gap:10px;align-items:center;
+    background:linear-gradient(180deg,#2b3033,#1e2225);border-radius:6px;padding:5px;position:relative;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);}
+  .ch{display:flex;gap:3px;justify-content:center;}
+  .ch i{width:19px;height:30px;background:linear-gradient(180deg,#33393d,#1d2124);border-radius:3px;
+    position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 3px rgba(0,0,0,.5);}
+  .ch i::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.55);}
+  .ch i span{position:absolute;inset:0;display:grid;place-items:center;font:700 15px/1 "Courier New",monospace;
+    color:var(--ink);z-index:2;text-shadow:0 1px 2px #000;}
+  .ch i.flip span{animation:flip .18s ease;}
+  @keyframes flip{0%{transform:rotateX(0);}50%{transform:rotateX(-84deg);}100%{transform:rotateX(0);}}
+  .dest{font-size:1.05rem;letter-spacing:.06em;padding-left:6px;}
+  .dest small{display:block;font-size:.7rem;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
+  .time{text-align:center;font:700 15px/1 "Courier New",monospace;color:var(--ink);}
+  .time.late{color:var(--red);}
+  .time.soon{color:var(--amber);}
+  .gate{text-align:center;font:700 15px/1 "Courier New",monospace;color:var(--amber);}
+  .status{font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:3px 9px;border-radius:99px;
+    justify-self:start;}
+  .s-go{background:rgba(87,217,138,.15);color:var(--green);}
+  .s-delay{background:rgba(255,182,72,.15);color:var(--amber);}
+  .s-cancel{background:rgba(255,107,94,.15);color:var(--red);}
+
+  .board2{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .card{background:var(--case);border:1px solid #2c3134;border-radius:12px;padding:18px;}
+  .card h3{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;font-weight:500;}
+  .ann{font-size:.95rem;line-height:1.8;color:#c9c5bb;}
+  .ann li{list-style:none;padding:8px 0;border-bottom:1px dotted #2c3134;}
+  .ann li b{color:var(--amber);font-weight:500;margin-right:8px;font-family:"Courier New",monospace;font-size:.85rem;}
+  .ann ul{display:grid;}
+  .weather{font-size:2.2rem;font-weight:200;letter-spacing:-.02em;color:var(--ink);}
+  .weather span{font-size:.8rem;color:var(--dim);letter-spacing:.2em;text-transform:uppercase;display:block;margin-top:6px;}
+  .meter{height:6px;background:#2c3134;border-radius:99px;overflow:hidden;margin-top:12px;}
+  .meter i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:99px;}
+  footer{max-width:1080px;margin:22px auto 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#5f6468;}
+  @media(max-width:760px){.r,.flaprow{grid-template-columns:64px 1fr 74px;}.flaprow .gate{display:none;}
+    .colhead .gate{display:none;}.board2{grid-template-columns:1fr;}.ch i{width:16px;height:26px;}}
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="head">
+    <h1>Departures <b>·</b> Board 4</h1>
+    <div class="clock" id="clock">00:00:00</div>
+  </div>
+
+  <div class="row colhead">
+    <div>Time</div><div>Destination</div><div style="text-align:center">Gate</div><div style="text-align:center">Status</div>
+  </div>
+  <div class="rows" id="rows"></div>
+
+  <div class="board2">
+    <div class="card">
+      <h3>Announcements</h3>
+      <div class="ann"><ul>
+        <li><b>04:12</b>Quay 4 services suspended — points failure at Hourtin branch.</li>
+        <li><b>05:00</b>All departures re-platformed to the upper concourse.</li>
+        <li><b>05:40</b>Single service to Alderney; bicycles accepted, no limit stated.</li>
+        <li><b>06:20</b>Fog on the eastern approach. Please wait for the crossing signal.</li>
+      </ul></div>
+    </div>
+    <div class="card">
+      <h3>Conditions</h3>
+      <div class="weather">7°<span>Visibility 400 m · wind SW 4</span></div>
+      <div class="meter"><i style="width:26%"></i></div>
+      <div class="small" style="margin-top:18px;font-size:.82rem;line-height:1.8;color:#9a9ea3;">
+        Crossings run to the advertised time. Delays are posted in the hall and on this board, and are usually caused by wind, visibility or the number of bicycles.</div>
+    </div>
+  </div>
+</div>
+<footer>
+  <span>Departures — Board 4</span>
+  <span>Flaps driven by a virtual clock</span>
+</footer>
+
+<script>
+(function(){
+  var FLIGHT=[
+    {t:'06:12',dest:'Alderney',sub:'Ferry · Car deck',gate:'4',st:'go'},
+    {t:'06:45',dest:'Saint-Pierre',sub:'Ferry · Foot passengers',gate:'2',st:'go'},
+    {t:'07:20',dest:'Hourtin',sub:'Regional · coach 41',gate:'7',st:'delay'},
+    {t:'07:58',dest:'Île Ch accreditation',sub:'Ferry · Freight',gate:'1',st:'go'},
+    {t:'08:30',dest:'Kermorvan',sub:'Ferry · Car deck',gate:'4',st:'cancel'},
+    {t:'09:05',dest:'Le Croisic',sub:'Regional · coach 12',gate:'3',st:'go'},
+    {t:'09:40',dest:'Belle-Île',sub:'Ferry · seasonal',gate:'5',st:'go'},
+    {t:'10:15',dest:'Groix',sub:'Ferry · seasonal',gate:'2',st:'go'}
+  ];
+  var rows=document.getElementById('rows');
+  var states=[];
+
+  function pad(s,n){ while(s.length<n) s='0'+s; return s; }
+  function mkChar(){
+    var d=document.createElement('div');
+    d.className='ch';
+    return d;
+  }
+  function setChars(container,text){
+    var need=text.length;
+    while(container.children.length<need){
+      var c=document.createElement('i');
+      c.appendChild(document.createElement('span'));
+      container.appendChild(c);
+    }
+    while(container.children.length>need) container.removeChild(container.lastChild);
+    for(var i=0;i<need;i++){
+      var cell=container.children[i];
+      var span=cell.firstChild;
+      if(span.textContent!==text[i]){
+        span.textContent=text[i];
+        cell.classList.remove('flip'); void cell.offsetWidth; cell.classList.add('flip');
+      }
+    }
+  }
+  function build(){
+    rows.innerHTML='';
+    states=[];
+    FLIGHT.forEach(function(f){
+      var r=document.createElement('div');
+      r.className='flaprow';
+      var tc=document.createElement('div'); tc.className='ch';
+      var dc=document.createElement('div'); dc.className='dest';
+      dc.innerHTML=f.dest+'<small>'+f.sub+'</small>';
+      var gc=document.createElement('div'); gc.className='ch';
+      var st=document.createElement('div'); st.className='status';
+      r.appendChild(tc); r.appendChild(dc); r.appendChild(gc); r.appendChild(st);
+      rows.appendChild(r);
+      states.push({tc:tc,gc:gc,st:st,f:f,shown:'',shownGate:'',shownSt:''});
+    });
+  }
+  build();
+
+  function update(){
+    var now=new Date();
+    var h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
+    document.getElementById('clock').textContent=pad(h,2)+':'+pad(m,2)+':'+pad(s,2);
+    var mins=h*60+m;
+    states.forEach(function(st){
+      var parts=st.f.t.split(':');
+      var tm=+parts[0]*60+ +parts[1];
+      var diff=tm-mins;
+      var label=st.f.t;
+      if(diff<0) label='—';
+      if(st.shown!==label){ setChars(st.tc,label); st.shown=label; }
+      var tc=st.tc.querySelector('i');
+      if(tc) tc.classList.toggle('late',diff<0);
+      var gpad=st.f.gate;
+      if(st.shownGate!==gpad){ setChars(st.gc,gpad); st.shownGate=gpad; }
+      var scls = st.f.st==='go'?'s-go':st.f.st==='delay'?'s-delay':'s-cancel';
+      if(st.shownSt!==st.f.st){
+        st.shownSt=st.f.st;
+        st.st.className='status '+scls;
+        st.st.textContent = st.f.st==='go'?'Boarding':st.f.st==='delay'?'Delayed 25 min':'Cancelled';
+      }
+    });
+  }
+  update(); setInterval(update,1000);
+})();
+</script>
+</body>
+</html>

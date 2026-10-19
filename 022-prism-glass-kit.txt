@@ -1,0 +1,21 @@
+TITLE: PRISM — a glass interface kit
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that is a showcase for a glassmorphism component kit called "PRISM". Art direction: a dark, saturated product page where every surface is frosted glass floating over a living background. Palette: ground #0a0a12, ink #f2f3f8, dim #8a8fa8, hairline rgba(255,255,255,.1), violet #a97bff, teal #4fe0d0, rose #ff6b8a, yellow #ffd166. A fixed full-viewport canvas draws three large drifting radial colour fields composited in screen blend so the glass always has something to refract. The shared .glass class is defined once and used by every surface: 24px radius, a 1px hairline border, a translucent white gradient fill, backdrop blur with saturation, a deep drop shadow, an inner top highlight, and a gradient border drawn with a mask-composite trick on a pseudo-element. Layout: a header with a conic-gradient brand square and a version tag; a centred hero with a huge light-weight headline whose second line is filled with a violet-to-teal gradient clipped to the text, a paragraph and two buttons; then a showcase divided into three labelled sections — Controls (buttons in three variants, a switch with a spring-animated knob, a gradient slider, and a search input with an inline SVG icon), Feedback (an animated gradient progress bar, a teal notification card, and a mini player with an animated 22-bar equaliser and a play/pause button that morphs from a triangle to a pause glyph via clip-path), and Surfaces (three cards showing the Prism, Tint and Frost variants of the same glass rules); then a single-select chip row. Interaction: every component is live — the switch toggles and updates its label, the slider echoes its value, the search field reports a character count, the chips move the selected state, and the player pauses and resumes the equaliser. Responsive: the four-up control row becomes two columns under 980px and the three-up rows become one column under 600px.
+
+DESCRIPTION:
+A component library page that uses its own components. Every card, chip, button, notification and player on the page is the real thing from the kit, sitting on the same shared .glass rule, floating over a canvas background of drifting violet, teal and rose light so the blur and saturation are visible rather than asserted. The equaliser in the player is twenty-two individually timed bars, and the play button morphs between a triangle and a pause symbol without changing size.
+
+MAJOR VISUAL TECHNIQUES:
+- Shared glass surface rule with backdrop blur + saturate, hairline border and inner highlight
+- Gradient hairline border via mask-composite on a pseudo-element
+- Canvas background of three drifting radial colour fields composited in screen blend
+- Conic-gradient logo square with a coloured glow
+- Gradient-clipped display type using background-clip on a bold span
+- Animated multi-stop gradient progress bar driven by background-position
+- Twenty-two equaliser bars with randomised durations and staggered delays
+- Play/pause glyph morph using clip-path on a pseudo-element
+- Spring-eased switch knob using an overshooting cubic-bezier
+
+INTENDED INTERACTION MODEL:
+Everything on the page is operable. The switch toggles and renames itself, the slider reports its value, the input counts characters, the chip set is single-select, and the player starts and stops the equaliser. Cards lift on hover. Nothing is decorative-only except the section headings.

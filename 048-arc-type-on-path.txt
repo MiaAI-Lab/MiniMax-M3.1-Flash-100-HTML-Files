@@ -1,0 +1,19 @@
+TITLE: ARC — type that follows a line
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ARC — type that follows a line". Art direction: a type specimen for text on a path. Palette: warm paper #f2efe8, card #fbf9f4, ink #16150f, dim #8a8478, hairline rgba(22,21,15,.16), red #d8412f, blue #1f5fa8. Layout: a header with a wide-tracked wordmark and a specification line; a bordered stage containing a 1100×460 inline SVG where a guide path is drawn as a hairline and a bold word is set along it using SVG's textPath with a startOffset of 50% and a middle anchor; beneath the stage, three sliders (size 18–120px, tracking −20 to +80 per thousand of the size, and a baseline offset of −60 to +60); a row of five pill chips (Wave / Arc / Spiral / Loop / Seal); then a two-column grid of five cards, each with a gradient swatch, a name and a note on what that shape does to the reading of the word; then a two-column note on why a curve changes how a word is read; and a footer. Interaction: each chip replaces the guide path, the word and the accent colour; each of the five cards does the same thing when clicked and also syncs the chip row; the three sliders restyle the live textPath in real time — size, letter-spacing and the dy offset that lifts the word off the line. Responsive: the slider row, the card grid and the note all become one column under 880px.
+
+DESCRIPTION:
+Live type on a path, set with SVG's textPath so the letters remain actual text — selectable, searchable and scalable. Five path shapes are offered, and the difference between them is the point: a wave inverts the letters as it climbs, a spiral turns the last of them upside down, and the plain rectangle is there to prove that the curve was doing all the work. Size, tracking and baseline offset sliders restyle everything instantly.
+
+MAJOR VISUAL TECHNIQUES:
+- SVG textPath with startOffset and text-anchor for centred path typesetting
+- Live letter-spacing computed as a fraction of the current font size
+- dy offset slider to lift type off its baseline
+- Five hand-authored path definitions: a cubic wave, a quadratic arc, an arc-drawn circle, a figure-of-eight cubic and a rectangle
+- Hairline guide path drawn beneath the type
+- Inline defs path referenced by the textPath
+- Single shared <defs> path id rebuilt on every change
+
+INTENDED INTERACTION MODEL:
+Play with the geometry. Pick a path from the chips or the cards, then drag the three sliders to change the size, the tracking and the position of the word on the line. Everything updates as you move.

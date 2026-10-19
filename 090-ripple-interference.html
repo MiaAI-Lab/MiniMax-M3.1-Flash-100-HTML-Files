@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIPPLE — a tank of interference</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#060a0d;--ink:#e4eef2;--dim:#74888f;--line:rgba(228,238,242,.13);--teal:#4fd0c8;--warm:#ffb45e;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border:1px solid var(--teal);border-radius:50%;display:block;position:relative;}
+  .brand i:after{content:"";position:absolute;inset:6px;border-radius:50%;border:1px solid var(--warm);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px.}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--teal);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--warm);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#04070a;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--teal);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--teal);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--teal);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--teal);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--teal);color:var(--teal);background:rgba(79,208,200,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.2rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--warm);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Ripple</div>
+    <div class="meta">Ripple tank · two dippers · λ = 40 mm</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Wave interference</div>
+    <h1>Two sources,<br>and the light<br>between them is <b>dark</b></h1>
+    <p>Where the two wavefronts arrive in step, the water goes up further. Where they arrive half a wavelength out of step, they cancel and the water does not move at all. Those still lines are the nodes, and they are what makes the whole pattern measurable — because the distance between them depends only on the wavelength and the separation of the sources.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="600"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Wavelength <output id="oa">40 mm</output></label>
+      <input type="range" id="wl" min="12" max="110" value="40">
+    </div>
+    <div class="fld">
+      <label>Source separation <output id="ob">80 mm</output></label>
+      <input type="range" id="sep" min="20" max="220" value="80">
+    </div>
+    <div class="fld">
+      <label>Damping <output id="oc">0.012</output></label>
+      <input type="range" id="dmp" min="2" max="60" value="12">
+    </div>
+    <div class="btns">
+      <button class="btn on" id="run">Running</button>
+      <button class="btn" id="one">Single source</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Wavelength</u><s id="s1">—</s></div>
+    <div><u>Fringe spacing</u><s id="s2">—</s></div>
+    <div><u>Fringes across tank</u><s id="s3">—</s></div>
+    <div><u>Phase on axis</u><s id="s4">—</s></div>
+    <div><u>Wave speed</u><s id="s5">—</s></div>
+    <div><u>Depth</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>What the<br>tank<br>measures</h2>
+      <p>A ripple tank is a shallow tray of water with a lamp above it and two dippers that touch the surface. The crests and troughs of the wave focus the light into bright lines, so the pattern you see is a photograph of the antinodes. It was the standard demonstration of interference for most of a century, and it is still the clearest way to show that waves add.</p>
+      <p>What the tank gives you that a screen cannot is the <b>fringe spacing</b>: the distance between adjacent bright lines, measured on a straight line across the pattern. That distance is not arbitrary. It is set by the wavelength of the wave and the separation of the two sources, and the two together give the wavelength — which is exactly how Young's wavelength was first measured, and how it is still measured in a laboratory.</p>
+    </div>
+    <div>
+      <h2>The<br>geometry</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">Put the two sources a distance <b>d</b> apart, look at a point a long way <b>D</b> away on the centre line, and the path difference is about <b>d·x/D</b> for a point a distance <b>x</b> from the centre. Constructive interference happens when that path difference is a whole wavelength, so the bright fringes sit at intervals of <b>x = λD/d</b>.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">That single formula is why the fringes get closer together as you move the sources apart, and why the whole pattern narrows. Move the sliders and the fan of bright lines narrows exactly as the formula says it must.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ripple — a tank of interference</span>
+    <span>Surface solved per pixel</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var lambda=40, sep=80, damping=0.012, single=false, running=true;
+  var t=0;
+  var SC=6; // pixels per mm
+
+  function sources(){
+    if(single) return [{x:W*0.5,y:H*0.5}];
+    return [{x:W*0.5-sep*SC/2,y:H*0.5},{x:W*0.5+sep*SC/2,y:H*0.5}];
+  }
+  function height(x,y,srcs,tm){
+    var h=0;
+    for(var i=0;i<srcs.length;i++){
+      var dx=x-srcs[i].x, dy=y-srcs[i].y;
+      var r=Math.hypot(dx,dy)/SC;
+      var amp=1/(1+r*0.012);
+      h+=amp*Math.sin(2*Math.PI*r/lambda - tm*2.4);
+    }
+    return h;
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var srcs=sources();
+    var step=3;
+    for(var y=0;y<H;y+=step){
+      for(var x=0;x<W;x+=step){
+        var h=height(x,y,srcs,t);
+        // map to colour ramp
+        var v=(h+2)/4; v=Math.max(0,Math.min(1,v));
+        var r,g,b;
+        if(v<0.5){
+          var u=v/0.5;
+          r=8+u*30; g=40+u*170; b=58+u*150;
+        }else{
+          var u2=(v-0.5)/0.5;
+          r=38+u2*217; g=210+u2*30; b=208-u2*120;
+        }
+        ctx.fillStyle='rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
+        ctx.fillRect(x,y,step,step);
+      }
+    }
+    // node contours
+    ctx.strokeStyle='rgba(6,12,16,.75)'; ctx.lineWidth=1.6;
+    for(var ang=0;ang<360;ang+=1){
+      var found=false;
+      ctx.beginPath();
+      for(var rr=0;rr<900;rr+=3){
+        var a2=ang*Math.PI/180;
+        var px=W*0.5+Math.cos(a2)*rr, py=H*0.5+Math.sin(a2)*rr;
+        if(px<0||py<0||px>W||py>H) break;
+        var hh=height(px,py,srcs,t);
+        if(Math.abs(hh)<0.06){
+          if(!found){ ctx.moveTo(px,py); found=true; }
+          else ctx.lineTo(px,py);
+        }else found=false;
+      }
+      ctx.stroke();
+    }
+    // sources
+    srcs.forEach(function(s){
+      ctx.beginPath(); ctx.arc(s.x,s.y,7,0,6.283);
+      ctx.fillStyle='#ffb45e'; ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x,s.y,13,0,6.283);
+      ctx.strokeStyle='rgba(255,180,94,.4)'; ctx.lineWidth=1.5; ctx.stroke();
+    });
+    // lamp
+    var lg=ctx.createRadialGradient(W/2,0,10,W/2,0,H*0.7);
+    lg.addColorStop(0,'rgba(255,180,94,.10)'); lg.addColorStop(1,'rgba(255,180,94,0)');
+    ctx.fillStyle=lg; ctx.fillRect(0,0,W,H);
+
+    // readouts
+    var D=520; // mm to the far wall
+    var fringe=lambda*D/sep;
+    var count=Math.floor((W/SC)/fringe);
+    document.getElementById('s1').textContent=lambda+' mm';
+    document.getElementById('s2').textContent=fringe.toFixed(0)+' mm';
+    document.getElementById('s3').textContent=count;
+    var ph=sep*SC/2;
+    document.getElementById('s4').textContent=((2*Math.PI*ph/lambda)%(2*Math.PI)).toFixed(2)+' rad';
+    document.getElementById('s5').textContent=(lambda*1.9).toFixed(0)+' mm/s';
+    document.getElementById('s6').textContent='18 mm';
+    document.getElementById('hud').innerHTML='λ <b>'+lambda+' mm</b><br>'+
+      'd <b>'+sep+' mm</b><br>FRINGE <b>'+fringe.toFixed(0)+' mm</b>';
+  }
+  function loop(){
+    if(running) t+=0.05;
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('wl').addEventListener('input',function(){
+    lambda=parseInt(this.value,10);
+    document.getElementById('oa').textContent=lambda+' mm';
+  });
+  document.getElementById('sep').addEventListener('input',function(){
+    sep=parseInt(this.value,10);
+    document.getElementById('ob').textContent=sep+' mm';
+  });
+  document.getElementById('dmp').addEventListener('input',function(){
+    damping=parseInt(this.value,10)/1000;
+    document.getElementById('oc').textContent=damping.toFixed(3);
+  });
+  document.getElementById('run').addEventListener('click',function(){
+    running=!running; this.classList.toggle('on',running); this.textContent=running?'Running':'Paused';
+  });
+  document.getElementById('one').addEventListener('click',function(){
+    single=!single; this.classList.toggle('on',single);
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    lambda=40; sep=80; damping=0.012; single=false; t=0;
+    document.getElementById('wl').value=40; document.getElementById('sep').value=80; document.getElementById('dmp').value=12;
+    document.getElementById('oa').textContent='40 mm';
+    document.getElementById('ob').textContent='80 mm';
+    document.getElementById('oc').textContent='0.012';
+    document.getElementById('one').classList.remove('on');
+  });
+})();
+</script>
+</body>
+</html>

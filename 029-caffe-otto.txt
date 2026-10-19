@@ -1,0 +1,19 @@
+TITLE: CAFFÈ OTTO — a small espresso bar
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) for a fictional Milanese espresso bar called "CAFFÈ OTTO". Art direction: warm, dim, tactile — a marble counter at six in the evening. Palette: espresso-brown ground #1b1512, cream #f0e6d8, copper #c07a44, brass #e0b072, ink #2a1f19, dim #8d7a6b, and a single machine green #7dbf6a for the gauge's working band. A fixed full-page canvas draws drifting steam puffs as soft radial gradients that rise and fade. Layout: a header with a Didone wordmark and an "open until six" status with a pulsing dot; a two-column hero — on the left a kicker, a three-line Didone headline with an italic brass line, a paragraph and a brass "Pull a shot" button with a live hint line; on the right a machine panel containing a pressure gauge (a radial-gradient face with conic-gradient green and red working bands, a needle pivoting from the bottom centre, a hub and a digital bar readout) and a cup station: a CSS-drawn espresso cup with a saucer, a handle and a crema layer whose height fills as the shot pulls, plus a four-cell readout (time, pressure, yield, crema). Below, three coffee-notebook cards (origin, roast, water), a menu list with prices, and a footer. Interaction: pressing "Pull a shot" runs a 28-second extraction: the needle swings up to 9 bar in the first 1.5 s, decays to 5.6 bar, the crema layer rises, and the readouts update every frame; the gauge returns to zero when the shot finishes and the button offers another. Responsive: the hero stacks under 960px, the readout becomes 2×2 under 620px, the notebook cards stack and the menu drops its middle column.
+
+DESCRIPTION:
+An espresso machine you can operate, with the two things that matter rendered honestly: a real pressure profile and a cup that fills. The gauge is a conic-gradient dial with a green working band and a red over-pressure band, and the needle tracks the lever's actual behaviour — fast rise, slow decay, a hold at 5.6 bar in the last third. Steam drifts up the page the entire time. Everything else is a quiet bar: brass, cream, and a menu with prices in euros.
+
+MAJOR VISUAL TECHNIQUES:
+- Conic-gradient pressure bands on a radial-gradient gauge face with a pivoting needle
+- CSS-drawn espresso cup: layered body, handle, saucer and a rising crema layer
+- Crema surface built from a radial gradient plus a repeating-conic swirl
+- Canvas steam: soft radial puffs that rise, expand and recycle
+- Extraction model driving gauge, readouts and cup fill from one requestAnimationFrame loop
+- Didone display type with brass italic accents
+- Hairline menu rows with a right-aligned price column
+
+INTENDED INTERACTION MODEL:
+One button, one ritual. Pulling a shot runs a timed extraction with a realistic pressure curve, fills the cup, updates four readouts, and ends with a verdict in the hint line. The steam never stops. Nothing else is interactive — the rest of the page is a menu to read.

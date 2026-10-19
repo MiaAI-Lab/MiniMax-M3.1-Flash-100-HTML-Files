@@ -1,0 +1,18 @@
+TITLE: OSCILLOSCOPE — a green trace
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "OSCILLOSCOPE — a green trace". Art direction: CRT instrument, phosphor glow, monospaced everything. Palette: ground #050907, ink #d6ffe4, dim #4d7a5e, hairline rgba(214,255,228,.13), green phosphor #39ff88, amber #ffb545. A fixed radial-gradient CRT vignette sits behind everything and a fixed repeating-linear-gradient scanline overlay sits on top of the content but under the text, with pointer-events none. Layout: a header with a glowing uppercase wordmark and a model line; then a hero with a green kicker, a large monospace headline with a phosphor text-shadow, and a paragraph; then a bordered instrument panel holding a 1200×420 canvas with an inset green glow, plus a readout strip (channel, amplitude, trigger, sweep, mode) in monospace; then a row of six buttons (Sine, Square, Saw, Triangle, Noise, Freeze); then a two-column note about drawing things that vary; and a footer. The canvas draws a graticule of ten by eight divisions, a brighter centre line, an amber reference trace and a green live trace with a shadowBlur glow. Interaction: the five waveform buttons change the shape being drawn — sine, a true square wave stepped on the phase counter, a sawtooth, a triangle, and per-sample noise — with the amplitude and sweep readout changing to match; Freeze halts the animation and relabels the button. Responsive: the note stacks under 860px and the canvas scales with its width attribute.
+
+DESCRIPTION:
+An oscilloscope with a green phosphor trace and an amber reference channel, drawn live on a canvas every frame. The square wave is genuinely stepped on the phase counter rather than approximated, so the trace has the hard vertical edges of a real digital signal, and the graticule is a proper ten-by-eight division grid with a brighter centre line. Freeze holds the trace so you can read it.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas graticule of ten by eight divisions with a brighter centre line
+- shadowBlur phosphor glow on the trace
+- Amber reference channel drawn under the green live channel
+- Phase-counter square wave and ramped sawtooth
+- Fixed CRT vignette and scanline overlay layers
+- Monospace readout strip that updates with the selected waveform
+
+INTENDED INTERACTION MODEL:
+Watch the signal. Switch waveforms, read the amplitude and sweep changes, and freeze the trace when you want to measure it. Nothing else moves.

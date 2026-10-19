@@ -1,0 +1,19 @@
+TITLE: HALO — a studio for soft light
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "HALO — a studio for soft light", a landing page for a fictional four-person design studio. Art direction: modern mesh-gradient product site — deep near-black with a living field of colour behind glassy surfaces. Palette: ground #07060e, ink #f2f1f7, dim #a5a2b8, hairline rgba(255,255,255,.14), and four accent colours: violet #7c5cff, pink #ff6ba6, teal #43e0d0, gold #ffc857. Layout: a fixed full-viewport mesh layer sits behind everything — four absolutely positioned circles, blurred heavily and composited with mix-blend-mode: screen, drifting on independent sine paths. Above it, a header with a wide-tracked wordmark and three links; a hero with a glass availability pill, a huge light-weight headline mixing a bold line, a paragraph and two buttons (one solid white, one glass with a blur); a three-card row with icon tiles, hairline borders, translucent fills and backdrop blur; a wide "The mesh" panel with four sliders (hue 0–360°, spread 10–100%, blur 10–140px, drift 0–3×) that control the background field; a three-up statistics strip; and a footer. Interaction: the four sliders drive the real mesh — hue applies a hue-rotate filter to each blob, spread changes how far the blobs wander and how large they are, blur changes the filter on the container, and drift changes the speed of the sine motion; the requestAnimationFrame loop relayouts the blobs every frame. Responsive: the card row and statistics strip become one column under 900px, and the slider grid becomes 2 then 1 column.
+
+DESCRIPTION:
+A studio page whose background is genuinely alive. Four blurred colour fields drift on independent sine paths, composited in screen blend and heavily blurred, so the page sits in a slow-moving room of light rather than on a flat picture. The four sliders under "The mesh" are not decoration — they change the hue, the spread, the blur and the speed of that room in real time, which is the most convincing way to show a studio that works with colour.
+
+MAJOR VISUAL TECHNIQUES:
+- Fixed mesh layer of four blurred circles composited with mix-blend-mode: screen
+- Per-blob hue-rotate filters controlled by a global hue slider
+- Radius-based spread control affecting both drift amplitude and blob size
+- Container-level blur radius slider
+- requestAnimationFrame loop relocating blobs on independent sine paths
+- Glass surfaces: translucent fill, hairline border and backdrop blur
+- Conic-gradient four-quadrant logo
+
+INTENDED INTERACTION MODEL:
+Tune the room. Four sliders change the colour, the spread, the softness and the speed of the background field while the page content sits on top of it. Cards lift on hover; the rest is static.

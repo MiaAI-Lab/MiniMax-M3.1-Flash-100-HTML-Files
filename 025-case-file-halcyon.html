@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASE 1147 — The Halcyon Dossier</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0c0d10;--paper:#d9d4c8;--ink:#15161a;--neon:#ff2e63;--cyan:#38e0ff;--amber:#ffc14d;--dim:#6f7178;}
+  body{background:var(--bg);color:#e9e6de;font-family:"Courier New",ui-monospace,monospace;overflow-x:hidden;}
+  .rain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9 0.06' numOctaves='2'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");}
+  .neonline{position:fixed;left:0;right:0;height:2px;top:0;z-index:5;pointer-events:none;
+    background:linear-gradient(90deg,transparent,var(--neon),var(--cyan),transparent);
+    box-shadow:0 0 18px var(--neon);animation:sweep 6s linear infinite;}
+  @keyframes sweep{0%{transform:translateY(0);}50%{transform:translateY(100vh);}100%{transform:translateY(0);}}
+
+  .wrap{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:26px 20px 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid rgba(233,230,222,.18);padding-bottom:16px;}
+  .stamp{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);}
+  .stamp b{color:var(--neon);}
+  .status{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;gap:18px;flex-wrap:wrap;}
+  .status b{color:var(--cyan);font-weight:400;}
+
+  .title{padding:40px 0 26px;border-bottom:1px solid rgba(233,230,222,.18);}
+  .title .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--amber);}
+  .title h1{font-size:clamp(1.9rem,5.4vw,3.8rem);line-height:1.02;margin:16px 0 10px;letter-spacing:-.01em;
+    font-weight:400;font-family:"Helvetica Neue",Arial,sans-serif;}
+  .title h1 em{font-style:normal;color:var(--neon);}
+  .title p{color:#a8a49a;font-size:.92rem;line-height:1.8;max-width:66ch;}
+
+  .dossier{display:grid;grid-template-columns:300px 1fr;gap:26px;margin-top:30px;align-items:start;}
+  .photo{position:relative;background:linear-gradient(160deg,#3a3a40,#15151a 60%);border:1px solid rgba(233,230,222,.2);
+    padding:14px;transform:rotate(-1.2deg);}
+  .photo .face{aspect-ratio:3/4;position:relative;overflow:hidden;
+    background:
+      radial-gradient(ellipse 42% 30% at 50% 26%,rgba(220,220,230,.30),transparent 70%),
+      radial-gradient(ellipse 60% 45% at 50% 78%,rgba(255,46,99,.22),transparent 72%),
+      linear-gradient(170deg,#40404a,#1b1b22 55%,#0e0e12);
+    filter:grayscale(.55) contrast(1.15);}
+  .photo .face::after{content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);
+    mix-blend-mode:multiply;}
+  .photo .scan{position:absolute;left:0;right:0;height:34%;background:linear-gradient(180deg,transparent,rgba(56,224,255,.16),transparent);
+    animation:scanline 4.5s linear infinite;}
+  @keyframes scanline{0%{top:-35%;}100%{top:100%;}}
+  .photo figcaption{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+    padding:12px 2px 2px;display:flex;justify-content:space-between;gap:8px;}
+  .tabs{display:grid;gap:6px;margin-top:12px;}
+  .tabs button{background:transparent;border:1px solid rgba(233,230,222,.2);color:#a8a49a;padding:9px 12px;
+    cursor:pointer;font-family:inherit;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    text-align:left;transition:.25s;}
+  .tabs button:hover{border-color:var(--cyan);color:var(--cyan);}
+  .tabs button.on{background:var(--neon);border-color:var(--neon);color:#0c0d10;font-weight:700;}
+
+  .file{background:var(--paper);color:var(--ink);padding:30px 32px;position:relative;min-height:640px;
+    box-shadow:0 40px 80px -40px #000;}
+  .file::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4'/></filter><rect width='200' height='200' filter='url(%23p)' opacity='.4'/></svg>");
+    mix-blend-mode:multiply;}
+  .file h2{font-family:"Helvetica Neue",Arial,sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;
+    margin:0 0 6px;text-transform:uppercase;}
+  .file .row{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:10px 0;
+    border-bottom:1px dotted rgba(21,22,26,.32);font-size:.86rem;align-items:start;}
+  .file .row b{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:#5a5a52;padding-top:3px;}
+  .file p.narr{font-size:.94rem;line-height:1.85;margin:20px 0 6px;}
+  .redact{background:var(--ink);color:transparent;padding:0 6px;cursor:pointer;border-radius:2px;
+    transition:.35s;user-select:none;}
+  .redact:hover{background:#b8b3a6;}
+  .redact.open{background:transparent;color:var(--ink);}
+  .redact.open::after{content:" ◂";font-size:.7em;color:#777;}
+
+  .timeline{margin-top:26px;border-top:2px solid var(--ink);padding-top:14px;}
+  .te{display:grid;grid-template-columns:82px 14px 1fr;gap:12px;padding:11px 0;align-items:start;}
+  .te time{font-size:11px;letter-spacing:.1em;color:#5a5a52;padding-top:2px;}
+  .te .dot{width:11px;height:11px;border-radius:50%;background:var(--ink);margin-top:4px;position:relative;}
+  .te .dot::after{content:"";position:absolute;left:50%;top:12px;width:1px;height:34px;background:rgba(21,22,26,.3);
+    transform:translateX(-50%);}
+  .te:last-child .dot::after{display:none;}
+  .te p{font-size:.87rem;line-height:1.7;}
+  .te.hot .dot{background:var(--neon);box-shadow:0 0 0 3px rgba(255,46,99,.2);}
+
+  .evidence{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;}
+  .ev{background:rgba(255,255,255,.04);border:1px solid rgba(233,230,222,.16);padding:20px;transition:.35s;cursor:pointer;}
+  .ev:hover{border-color:var(--amber);transform:translateY(-5px);}
+  .ev .tag{font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);}
+  .ev h4{font-size:.98rem;margin:9px 0 7px;font-weight:400;}
+  .ev p{font-size:.8rem;color:#9a968d;line-height:1.7;}
+  .ev .n{font-size:2rem;color:rgba(233,230,222,.14);line-height:1;margin-bottom:8px;}
+
+  .typebox{margin-top:30px;border:1px solid rgba(233,230,222,.2);padding:18px;font-size:.82rem;
+    color:#a8a49a;min-height:110px;line-height:1.9;}
+  .typebox .cur{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;
+    animation:bl 1s steps(1) infinite;}
+  @keyframes bl{50%{opacity:0;}}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid rgba(233,230,222,.18);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:900px){.dossier{grid-template-columns:1fr;}.evidence{grid-template-columns:1fr;}
+    .file .row{grid-template-columns:1fr;gap:2px;}.file{padding:22px 20px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="rain"></div><div class="neonline"></div>
+
+<div class="wrap">
+  <header>
+    <div class="stamp">City Police <b>·</b> Cold Case Unit</div>
+    <div class="status"><span>Case <b>1147</b></span><span>Status <b>Open</b></span><span>Priority <b>Red</b></span></div>
+  </header>
+
+  <section class="title">
+    <div class="k">Halcyon Hotel · 14 March · Room 903</div>
+    <h1>The guest who <em>never arrived</em></h1>
+    <p>A man booked room 903 under the name of V. Auber, paid in cash, and was seen on the ninth floor at 23:40. The room was found empty at 06:00, the lift was at the ninth floor, and the river was four hundred metres away.</p>
+  </section>
+
+  <div class="dossier">
+    <figure class="photo">
+      <div class="face"><div class="scan"></div></div>
+      <figcaption><span>SUBJECT 04</span><span>HALCYON</span></figcaption>
+    </figure>
+
+    <div>
+      <div class="tabs" id="tabs">
+        <button class="on" data-p="file">Dossier</button>
+        <button data-p="witness">Witnesses</button>
+        <button data-p="ledger">Evidence ledger</button>
+      </div>
+
+      <article class="file" id="file">
+        <h2 id="fileTitle">Case summary</h2>
+        <div id="fileBody">
+          <div class="row"><b>Reported</b><span>16 March, 09:12, by night manager E. Kolbe</span></div>
+          <div class="row"><b>Subject</b><span>Male, 40–50, grey coat, <span class="redact">carries a canvas holdall</span></span></div>
+          <div class="row"><b>Last seen</b><span>23:40, ninth floor, west corridor</span></div>
+          <div class="row"><b>Room</b><span>903 — paid in cash, one night, no luggage</span></div>
+          <div class="row"><b>Entry</b><span>Key card used at 21:55, 14 March. No record of exit.</span></div>
+          <p class="narr">The corridor camera for the ninth floor has been running since 2011. It was <span class="redact">replaced in March</span> and the footage between 21:00 and 06:00 was overwritten by a loop. The card reader logs are intact.</p>
+          <p class="narr">A neighbour in 906 reported <span class="redact">someone using the service stair</span> at approximately 00:20. She heard two sets of footsteps going down and one coming up.</p>
+
+          <div class="timeline">
+            <div class="te"><time>21:55</time><span class="dot"></span><p>Key card 9041 used at the west lift. Nobody exits.</p></div>
+            <div class="te"><time>22:30</time><span class="dot"></span><p>Room service brings a coffee to 903. The trolley is returned empty, 22:52.</p></div>
+            <div class="te"><time>23:40</time><span class="dot"></span><p>Subject seen by the night porter at the west corridor, without the holdall.</p></div>
+            <div class="te hot"><time>00:20</time><span class="dot"></span><p>Witness 903/906 reports footsteps in the service stair. Two down, one up.</p></div>
+            <div class="te"><time>06:00</time><span class="dot"></span><p>Room found empty. Window closed. Heater on. Ashtray contains one stub, still warm.</p></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <section class="evidence">
+    <article class="ev"><div class="n">01</div><div class="tag">Physical</div><h4>The coffee cup</h4><p>Lipstick on the rim, no DNA match. The coffee was drunk black; the subject was seen carrying a sugar bowl.</p></article>
+    <article class="ev"><div class="n">02</div><div class="tag">CCTV</div><h4>Ninth floor loop</h4><p>Seventy-two hours, overwritten. The service stair camera is on a separate circuit and was left running.</p></article>
+    <article class="ev"><div class="n">03</div><div class="tag">Financial</div><h4>Cash register</h4><p>The cash drawer was counted correctly. The subject paid with a fifty that was flagged at the front desk, unused for four years.</p></article>
+  </section>
+
+  <div class="typebox" id="typebox"></div>
+
+  <footer>
+    <span>Case 1147 — Halcyon Hotel</span>
+    <span>Click the black bars to declassify</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var FILES={
+    file:{title:'Case summary', body:document.getElementById('fileBody').innerHTML},
+    witness:{title:'Witness statements', body:
+      '<div class="row"><b>Kolbe, E.</b><span>Night manager. States the subject was "not a guest" but "not a stranger either".</span></div>'+
+      '<div class="row"><b>906 / unnamed</b><span>Female, 60s. Heard footsteps in the service stair. Did not open the door.</span></div>'+
+      '<div class="row"><b>Toma, R.</b><span>Room service. "He took the coffee black and then asked for sugar afterwards, which nobody does."</span></div>'+
+      '<div class="row"><b>Pier 4</b><span>Night watchman. A man matching the description left the hotel at 00:31 and did not use the main door.</span></div>'+
+      '<p class="narr">The subject was described twice as "not right" without being asked what that meant. The phrase appears in three statements and no one can explain it.</p>'+
+      '<p class="narr">A canvas holdall was <span class="redact">seen in the corridor at 23:12</span> and was never seen again. The room was searched twice.</p>'},
+    ledger:{title:'Evidence ledger', body:
+      '<div class="row"><b>E-01</b><span>Coffee cup, room 903 — retained, dusted, negative</span></div>'+
+      '<div class="row"><b>E-02</b><span>Ashtray stub — DNA, unidentified male</span></div>'+
+      '<div class="row"><b>E-03</b><span>Key card 9041 — logged 21:55, never returned</span></div>'+
+      '<div class="row"><b>E-04</b><span>Canvas holdall — <span class="redact">recovered from a vehicle in Saint-Malo</span></span></div>'+
+      '<div class="row"><b>E-05</b><span>Service stair footage — 00:04 to 00:41, one figure, face not visible</span></div>'+
+      '<p class="narr">E-04 was logged by a different officer after the original ledger closed, and the entry is dated three days before the officer started the case.</p>'+
+      '<p class="narr">The timestamp on E-05 is <span class="redact">four minutes earlier</span> than the witness statement it appears to support.</p>'}
+  };
+  var tabs=document.getElementById('tabs'), title=document.getElementById('fileTitle'), body=document.getElementById('fileBody');
+  tabs.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    tabs.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    var p=b.dataset.p;
+    title.textContent=FILES[p].title;
+    body.innerHTML=FILES[p].body;
+    bindRedacts();
+  });
+
+  function bindRedacts(){
+    body.querySelectorAll('.redact').forEach(function(r){
+      r.classList.remove('open');
+      r.addEventListener('click',function(){ this.classList.toggle('open'); });
+    });
+  }
+  bindRedacts();
+
+  // typewriter
+  var box=document.getElementById('typebox');
+  var text='— TO: KOLBE, E.   FROM: DET. H. VANCE   RE: 1147 — I KNOW WHY HE DID NOT USE THE LIFT. '+
+          'BRING THE KEY CARD LOG FOR THE EIGHTH FLOOR. IT IS NOT THE SAME BUILDING. — H.V.';
+  var i=0;
+  function type(){
+    if(i<=text.length){
+      box.innerHTML = text.slice(0,i)+'<span class="cur"></span>';
+      i++;
+      setTimeout(type, 16 + Math.random()*34);
+    }else{
+      box.innerHTML = text;
+    }
+  }
+  setTimeout(type, 900);
+})();
+</script>
+</body>
+</html>

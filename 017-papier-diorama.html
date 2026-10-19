@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAPIER — a papercut world</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --cream:#f6efe2;--sky:#e8d9c3;--l1:#d9b98f;--l2:#c39a6d;--l3:#a87a52;
+    --l4:#7d5a3c;--l5:#4a3626;--ink:#2c2018;--red:#c0392b;
+  }
+  body{background:var(--cream);color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
+    overflow-x:hidden;}
+  .grain{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.30;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");}
+  .fibers{position:fixed;inset:0;z-index:39;pointer-events:none;opacity:.22;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='f'><feTurbulence type='turbulence' baseFrequency='0.02 0.9' numOctaves='2'/><filter><feColorMatrix type='saturate' values='0'/></filter><rect width='360' height='360' filter='url(%23f)' opacity='.5'/></svg>");}
+
+  .scene{position:relative;height:100vh;min-height:600px;overflow:hidden;cursor:grab;touch-action:none;}
+  .scene.drag{cursor:grabbing;}
+  .layer{position:absolute;left:-6%;right:-6%;bottom:0;will-change:transform;transition:transform .18s ease-out;}
+  .sky{position:absolute;inset:0;background:linear-gradient(180deg,#f3e6d0 0%,#ecd9bd 48%,#e0c19a 100%);
+    transition:background 1.2s ease;}
+  body.evening .sky{background:linear-gradient(180deg,#3b2a4d 0%,#7c4a56 46%,#c97a52 100%);}
+  body.evening .sun{background:radial-gradient(circle at 42% 38%,#ffe0b0,#f0a05e 58%,rgba(240,160,94,0) 72%);}
+  body.evening .title h1{color:#f3e6d0;text-shadow:0 2px 0 rgba(0,0,0,.2);}
+  body.evening .title p{color:rgba(243,230,208,.8);}
+  body.evening .brand,body.evening .hint{color:rgba(243,230,208,.8);}
+  body.evening .btn{background:#3b2a4d;border-color:#f3e6d0;color:#f3e6d0;box-shadow:3px 3px 0 rgba(0,0,0,.35);}
+  .sun{position:absolute;left:50%;top:16%;width:min(22vw,220px);aspect-ratio:1;transform:translateX(-50%);
+    border-radius:50%;background:radial-gradient(circle at 42% 38%,#fdf0c8,#f2cf86 58%,rgba(242,207,134,0) 72%);
+    filter:blur(1px);}
+  .band{position:absolute;left:0;right:0;}
+  .b1{bottom:0;height:52%;background:var(--l5);}
+  .b2{bottom:0;height:44%;background:var(--l4);}
+  .b3{bottom:0;height:36%;background:var(--l3);}
+  .b4{bottom:0;height:28%;background:var(--l2);}
+  .b5{bottom:0;height:20%;background:var(--l1);}
+  .b6{bottom:0;height:12%;background:#e7d3b3;}
+  .edge{position:absolute;left:0;right:0;height:90px;bottom:inherit;}
+  .e1{background:var(--l5);clip-path:polygon(0 46%,5% 34%,11% 42%,17% 26%,23% 38%,29% 22%,36% 36%,43% 20%,50% 32%,57% 18%,64% 30%,71% 20%,78% 34%,85% 24%,92% 36%,100% 26%,100% 100%,0 100%);}
+  .e2{background:var(--l4);clip-path:polygon(0 54%,6% 42%,12% 52%,19% 34%,26% 48%,33% 32%,40% 46%,47% 30%,54% 44%,61% 28%,68% 42%,75% 30%,82% 44%,89% 32%,96% 46%,100% 38%,100% 100%,0 100%);}
+  .e3{background:var(--l3);clip-path:polygon(0 48%,7% 34%,14% 46%,21% 28%,28% 42%,35% 26%,42% 40%,49% 24%,56% 38%,63% 22%,70% 36%,77% 26%,84% 40%,91% 30%,100% 42%,100% 100%,0 100%);}
+  .e4{background:var(--l2);clip-path:polygon(0 50%,8% 36%,16% 48%,24% 30%,32% 44%,40% 28%,48% 42%,56% 26%,64% 40%,72% 28%,80% 42%,88% 32%,100% 44%,100% 100%,0 100%);}
+  .e5{background:var(--l1);clip-path:polygon(0 52%,9% 40%,18% 50%,27% 36%,36% 48%,45% 34%,54% 46%,63% 32%,72% 44%,81% 34%,90% 46%,100% 38%,100% 100%,0 100%);}
+  .tree{position:absolute;bottom:0;width:0;height:0;}
+  .tree i{position:absolute;bottom:0;left:0;width:0;height:0;border-left:26px solid transparent;
+    border-right:26px solid transparent;border-bottom:64px solid var(--l5);display:block;transform-origin:50% 100%;}
+  .tree i:nth-child(2){border-left-width:20px;border-right-width:20px;border-bottom-width:52px;border-bottom-color:var(--l4);
+    bottom:26px;left:-14px;}
+  .tree i:nth-child(3){border-left-width:15px;border-right-width:15px;border-bottom-width:40px;border-bottom-color:var(--l3);
+    bottom:50px;left:-9px;}
+  .bird{position:absolute;width:22px;height:10px;}
+  .bird::before,.bird::after{content:"";position:absolute;top:0;width:12px;height:10px;border-top:2px solid var(--l5);
+    border-radius:50%;}
+  .bird::before{left:0;transform:rotate(-18deg);}
+  .bird::after{right:0;transform:rotate(18deg);}
+
+  .overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:space-between;
+    padding:30px 4vw 34px;pointer-events:none;}
+  .overlay .top,.overlay .bottom{pointer-events:auto;}
+  .brand{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.42em;text-transform:uppercase;}
+  .brand i{width:22px;height:22px;background:var(--red);display:block;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);}
+  .hint{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(44,32,24,.55);}
+  .title{position:absolute;left:4vw;top:38%;z-index:22;pointer-events:none;max-width:min(620px,80vw);}
+  .title h1{font-size:clamp(2.6rem,7.4vw,6rem);line-height:.94;letter-spacing:-.03em;color:var(--l5);
+    text-shadow:0 2px 0 rgba(255,255,255,.35);}
+  .title h1 em{font-style:normal;color:var(--red);}
+  .title p{margin-top:18px;font-size:.95rem;line-height:1.9;color:rgba(44,32,24,.72);max-width:42ch;}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{background:var(--cream);border:1.5px solid var(--l5);color:var(--l5);padding:10px 18px;cursor:pointer;
+    font-family:inherit;font-weight:400;font-size:10.5px;line-height:1;letter-spacing:.24em;text-transform:uppercase;transition:.3s;
+    box-shadow:3px 3px 0 rgba(74,54,38,.35);}
+  .btn:hover{background:var(--l5);color:var(--cream);transform:translate(-2px,-2px);box-shadow:5px 5px 0 rgba(74,54,38,.45);}
+
+  .pages{position:relative;z-index:30;background:var(--cream);}
+  .sheet{padding:12vh 5vw;display:grid;grid-template-columns:.9fr 1.1fr;gap:6vw;align-items:center;
+    border-top:1px solid rgba(44,32,24,.14);}
+  .sheet .k{font-size:10.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--red);margin-bottom:16px;}
+  .sheet h2{font-size:clamp(1.8rem,4.4vw,3.2rem);line-height:1.05;letter-spacing:-.02em;margin-bottom:18px;}
+  .sheet p{font-size:1rem;line-height:2;color:rgba(44,32,24,.75);max-width:48ch;}
+  .steps{display:grid;gap:0;counter-reset:s;}
+  .step{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:20px 0;border-top:1px solid rgba(44,32,24,.14);}
+  .step:last-child{border-bottom:1px solid rgba(44,32,24,.14);}
+  .step b{font-weight:600;font-size:.95rem;letter-spacing:.06em;}
+  .step p{font-size:.9rem;line-height:1.85;margin-top:6px;}
+  .step i{font-style:normal;font-size:11px;letter-spacing:.2em;color:var(--red);}
+  footer{padding:30px 5vw;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10.5px;
+    letter-spacing:.24em;text-transform:uppercase;color:rgba(44,32,24,.5);border-top:1px solid rgba(44,32,24,.14);}
+
+  @media(max-width:880px){.sheet{grid-template-columns:1fr;gap:32px;}.title{top:26%;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="scene" id="scene">
+  <div class="sky"></div><div class="sun"></div>
+  <div class="layer" data-depth="0.06"><div class="band e1" style="bottom:52%"></div></div>
+  <div class="layer" data-depth="0.14"><div class="band e2" style="bottom:44%"></div></div>
+  <div class="layer" data-depth="0.26"><div class="band e3" style="bottom:36%"></div></div>
+  <div class="layer" data-depth="0.42"><div class="band e4" style="bottom:28%"></div></div>
+  <div class="layer" data-depth="0.62"><div class="band e5" style="bottom:20%"></div></div>
+  <div class="layer" id="trees" data-depth="0.9"></div>
+  <div class="layer" id="birds" data-depth="0.35"></div>
+
+  <div class="title">
+    <h1>Cut from<br><em>seven</em> sheets</h1>
+    <p>Every hill in this scene is a torn edge. Drag the picture to move the layers apart and see how shallow the world really is.</p>
+  </div>
+
+  <div class="overlay">
+    <div class="top">
+      <div class="brand"><i></i>Papier</div>
+    </div>
+    <div class="bottom">
+      <div class="controls">
+        <button class="btn" id="depthBtn">Deepen</button>
+        <button class="btn" id="dayBtn">Evening</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+      <div class="hint">Drag to shift · 7 layers</div>
+    </div>
+  </div>
+</div>
+
+<section class="pages">
+  <div class="sheet">
+    <div>
+      <div class="k">The method</div>
+      <h2>Make a world out of flat things</h2>
+      <p>Cut paper dioramas have been made for four hundred years. The technique is unchanged: draw the nearest shape, cut it, mount it a few millimetres in front of the next, and let the gap do the work of depth.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><i>01</i><div><b>Draw the nearest edge</b><p>Only the silhouette of the closest layer is visible, so only the silhouette needs to be beautiful. Everything else can be implied.</p></div></div>
+      <div class="step"><i>02</i><div><b>Tear, do not cut</b><p>A torn edge keeps the fibre of the sheet and catches light unevenly. It reads as landscape; a cut edge reads as paper.</p></div></div>
+      <div class="step"><i>03</i><div><b>Mount with a gap</b><p>Four millimetres between layers is enough. The eye supplies the rest, and the world becomes as deep as you are patient enough to build.</p></div></div>
+      <div class="step"><i>04</i><div><b>Light from one side</b><p>A single warm source at a low angle turns seven flat shapes into a valley, a forest and a sky.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Papier — a papercut world</span>
+  <span>7 layers · no images</span>
+</footer>
+
+<script>
+(function(){
+  var scene=document.getElementById('scene');
+  var layers=[].slice.call(document.querySelectorAll('.layer'));
+  var tx=0, ty=0, cx=0, cy=0, raf=null;
+
+  // paper trees
+  var trees=document.getElementById('trees');
+  for(var i=0;i<9;i++){
+    var t=document.createElement('div');
+    t.className='tree';
+    t.style.left=(4+i*11+Math.random()*4)+'%';
+    t.style.transform='scale('+(0.7+Math.random()*0.8).toFixed(2)+')';
+    t.innerHTML='<i></i><i></i><i></i>';
+    trees.appendChild(t);
+  }
+  // birds
+  var birds=document.getElementById('birds');
+  for(var b=0;b<5;b++){
+    var bd=document.createElement('div');
+    bd.className='bird';
+    bd.style.left=(12+Math.random()*70)+'%';
+    bd.style.top=(8+Math.random()*30)+'%';
+    bd.style.opacity=(0.35+Math.random()*0.5).toFixed(2);
+    bd.style.animation='fly '+(18+Math.random()*14)+'s linear infinite';
+    birds.appendChild(bd);
+  }
+  var st=document.createElement('style');
+  st.textContent='@keyframes fly{from{transform:translateX(-40vw)}to{transform:translateX(130vw)}}';
+  document.head.appendChild(st);
+
+  function apply(){
+    cx+=(tx-cx)*0.12; cy+=(ty-cy)*0.12;
+    layers.forEach(function(l){
+      var d=parseFloat(l.dataset.depth);
+      l.style.transform='translate3d('+(cx*d*-1).toFixed(2)+'px,'+(cy*d*-1).toFixed(2)+'px,0)';
+    });
+    if(Math.abs(tx-cx)>0.05||Math.abs(ty-cy)>0.05) raf=requestAnimationFrame(apply);
+    else raf=null;
+  }
+  function kick(){ if(!raf) raf=requestAnimationFrame(apply); }
+
+  var dragging=false,sx=0,sy=0;
+  scene.addEventListener('pointerdown',function(e){
+    dragging=true; sx=e.clientX; sy=e.clientY; scene.classList.add('drag');
+    scene.setPointerCapture(e.pointerId);
+  });
+  scene.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    tx=Math.max(-90,Math.min(90,tx+(e.clientX-sx)*0.45));
+    ty=Math.max(-50,Math.min(50,ty+(e.clientY-sy)*0.22));
+    sx=e.clientX; sy=e.clientY; kick();
+  });
+  window.addEventListener('pointerup',function(){dragging=false;scene.classList.remove('drag');});
+  scene.addEventListener('pointerleave',function(){dragging=false;scene.classList.remove('drag');});
+
+  // deepen / evening / reset
+  var deepen=0;
+  var BASE=[0.06,0.14,0.26,0.42,0.62,0.9,0.35];
+  document.getElementById('depthBtn').addEventListener('click',function(){
+    deepen=(deepen+1)%3;
+    var m=[1,1.9,0.55][deepen];
+    layers.forEach(function(l,i){
+      l.dataset.depth=((BASE[i]||0.4)*m).toFixed(2);
+    });
+    this.textContent=['Normal','Deepen','Flat'][deepen];
+  });
+  document.getElementById('dayBtn').addEventListener('click',function(){
+    document.body.classList.toggle('evening');
+    this.textContent=document.body.classList.contains('evening')?'Morning':'Evening';
+  });
+  document.getElementById('reset').addEventListener('click',function(){ tx=0; ty=0; kick(); });
+})();
+</script>
+</body>
+</html>

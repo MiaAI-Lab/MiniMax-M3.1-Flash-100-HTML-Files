@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRATA — a core through the ground</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#161311;--ink:#efe6d8;--dim:#8d8072;--line:rgba(239,230,216,.14);--ochre:#c98a3c;--rust:#a14a2c;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1150px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;background:repeating-linear-gradient(180deg,#c98a3c 0 4px,#7a4a2a 4px 7px,#efe6d8 7px 8px);
+    display:block;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:740px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--ochre);}
+  h1{font-size:clamp(2.4rem,6.4vw,4.6rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:52ch;}
+
+  .lab{margin-top:5vh;display:grid;grid-template-columns:130px 1fr 1fr;gap:0;border:1px solid var(--line);
+    align-items:stretch;}
+  .ruler{border-right:1px solid var(--line);position:relative;background:rgba(0,0,0,.2);}
+  .ruler div{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--line);font:400 9.5px/1 "Courier New",monospace;
+    color:var(--dim);padding-left:8px;padding-top:3px;}
+  .core{position:relative;overflow:hidden;background:#2a2320;min-height:520px;}
+  .core canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .read{padding:26px;border-left:1px solid var(--line);display:flex;flex-direction:column;}
+  .read .age{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;color:var(--ochre);}
+  .read h2{font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:200;line-height:1.24;margin:14px 0 14px;}
+  .read p{color:var(--dim);font-size:.93rem;line-height:1.95;flex:1;}
+  .read .kv{border-top:1px solid var(--line);margin-top:18px;}
+  .read .kv div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);
+    font:400 11.5px/1.4 "Courier New",monospace;}
+  .read .kv span{color:var(--dim);}
+
+  .ctrl{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--ochre);color:var(--ochre);background:rgba(201,138,60,.1);}
+  .slider{margin-left:auto;display:flex;align-items:center;gap:10px;font:400 10.5px/1 "Courier New",monospace;
+    letter-spacing:.14em;color:var(--dim);}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:150px;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--ochre);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--ochre);cursor:pointer;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.lab{grid-template-columns:1fr;}.ruler{display:none;}.read{border-left:none;border-top:1px solid var(--line);}
+    .cols{grid-template-columns:1fr;}.slider{margin-left:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Strata</div>
+    <div class="meta">Core SL-14 · recovered 2024 · 0–340 m</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Sedimentology</div>
+    <h1>Three hundred<br>metres of <b>yesterday</b></h1>
+    <p>A drill core is a core sample: a cylinder of sediment pulled out of the ground and brought to the surface in sections. Read top to bottom and you are reading backwards through time — the further down, the older it is, and the more the world has changed.</p>
+  </section>
+
+  <section class="lab">
+    <div class="ruler" id="ruler"></div>
+    <div class="core"><canvas id="cv" width="420" height="520"></canvas></div>
+    <div class="read">
+      <div class="age" id="age">0 m · today</div>
+      <h2 id="h">Topsoil</h2>
+      <p id="p">A dark, root-bound loam. Everything above this line has been in contact with air and water for at least a few centuries; on a farm it may be only fifty years old.</p>
+      <div class="kv">
+        <div>Depth <span id="d">0 m</span></div>
+        <div>Grain <span id="g">silt</span></div>
+        <div>Colour <span id="c">dark brown</span></div>
+        <div>Fossil <span id="f">root traces</span></div>
+        <div>Age <span id="a">recent</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" id="down">Deeper</button>
+    <button class="btn" id="up">Shallower</button>
+    <button class="btn" id="scan">Scan core</button>
+    <div class="slider">DEPTH <input type="range" id="dp" min="0" max="100" value="0"></div>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>What the<br>order of<br>the layers<br>means</h2>
+      <p>Sediments settle in the order they arrive, and each layer is a snapshot of a landscape. A band of pale sand is a flood; a band of dark clay is a still, deep water; a bed of shell fragments is a sea that came in and went out again.</p>
+      <p>Read the whole column and you have a coastline that moved. Read it with a magnet in it and you have the reversal of the Earth's field frozen into the floor. Read it with pollen in it and you have what was growing.</p>
+    </div>
+    <div>
+      <h2>Method</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-bottom:14px;">The core is drawn procedurally: each stratum is a band whose colour, grain and thickness are drawn from a seeded sequence, and its edges are irregular, because a real bedding plane is never straight. The scan draws a bright marker line down the column and the read panel follows it.</p>
+      <div class="kv" style="border-top:1px solid var(--line)">
+        <div>Bore <span>SL-14, 340 m</span></div>
+        <div>Recovery <span>96%</span></div>
+        <div>Oldest bed <span>Jurassic, 148 Ma</span></div>
+        <div>Youngest bed <span>Holocene</span></div>
+        <div>Facies <span>fluvial to shallow marine</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Strata — a core through the ground</span>
+    <span>Bed boundaries drawn procedurally</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var BEDS=[
+    {t:0.06,c:'#3b2f22',g:'clay',col:'dark brown',f:'root traces',a:'recent',n:'Topsoil',p:'A dark, root-bound loam. Everything above this line has been in contact with air and water for at least a few centuries; on a farm it may be only fifty years old.'},
+    {t:0.08,c:'#6b5333',g:'silt',col:'ochre',f:'charcoal flecks',a:'2,400 yr',n:'Silt with charcoal',p:'Silt washed downslope from the cleared fields above, carrying with it the burnt carbon of a landscape being put to work. The date comes from radiocarbon on the charcoal.'},
+    {t:0.10,c:'#8d7a56',g:'fine sand',col:'pale brown',f:'—',a:'12,000 yr',n:'Aeolian sand',p:'A pale band of wind-blown sand laid over the soil surface. It marks a cold, dry, windy period — the same conditions that pushed the last ice sheets off the coast.'},
+    {t:0.09,c:'#4a4a44',g:'silt',col:'grey-green',f:'diatoms',a:'40,000 yr',n:'Glacial lake silt',p:'Annual varves, each a pale summer and a dark winter, stacked one on another like the leaves of a book nobody wrote. Counting them gives the year count directly.'},
+    {t:0.12,c:'#7a4a2c',g:'sand',col:'russet',f:'wood fragments',a:'110,000 yr',n:'Flood sand',p:'A single bed of coarse river sand with a scoured base and a graded top: one enormous flood, preserved whole, with the twigs still in it.'},
+    {t:0.14,c:'#5b5348',g:'mud',col:'grey',f:'bivalves',a:'Interglacial',n:'Marine clay',p:'The sea was here, and warm. Oyster shells in life position, in a mud that was once open water. The land we are standing on was, quite recently, under the sea.'},
+    {t:0.15,c:'#8a6a3f',g:'sandstone',col:'buff',f:'trace',a:'Jurassic',n:'Cemented sandstone',p:'The last soft bed. Below this the rock has been compacted and cemented into stone, and the core comes up in fragments rather than in length.'},
+    {t:0.16,c:'#5c4a3c',g:'sandstone',col:'brown',f:'belemnite',a:'148 Ma',n:'Jurassic limestone',p:'Hard, grey, and full of the pencil-shaped fossils called belemnites — the internal shells of squid that lived in the seas this rock was the floor of.'},
+    {t:0.10,c:'#3e3a34',g:'basalt',col:'near black',f:'—',a:'200 Ma',n:'Basement basalt',p:'The bottom of the story: a dark volcanic rock, the last thing the drill reached and the first thing that was ever here.'}
+  ];
+  var depths=[0,12,48,96,140,190,240,290,340];
+  var marker=0, scanning=false, scanY=0;
+
+  function buildRuler(){
+    var r=document.getElementById('ruler');
+    r.innerHTML='';
+    for(var d=0;d<=340;d+=20){
+      var el=document.createElement('div');
+      el.style.top=(d/340*100)+'%';
+      el.textContent=d+' m';
+      r.appendChild(el);
+    }
+  }
+  buildRuler();
+
+  function drawCore(){
+    ctx.clearRect(0,0,W,H);
+    var acc=0;
+    for(var i=0;i<BEDS.length;i++){
+      var b=BEDS[i];
+      var y0=acc*H, y1=(acc+b.t)*H;
+      acc+=b.t;
+      // irregular bedding plane
+      ctx.beginPath();
+      ctx.moveTo(0,y0);
+      for(var x=0;x<=W;x+=10){
+        var wob=Math.sin(x*0.05+i*2.1)*3+Math.sin(x*0.013+i)*6;
+        ctx.lineTo(x,y0+wob);
+      }
+      ctx.lineTo(W,y1+2); ctx.lineTo(0,y1+2); ctx.closePath();
+      ctx.fillStyle=b.c; ctx.fill();
+      // grain speckle
+      ctx.save();
+      ctx.clip();
+      for(var k=0;k<160;k++){
+        var gx=Math.random()*W, gy=y0+Math.random()*(y1-y0);
+        ctx.fillStyle=Math.random()>0.5?'rgba(255,255,255,.06)':'rgba(0,0,0,.10)';
+        ctx.fillRect(gx,gy,1.6,1.6);
+      }
+      ctx.restore();
+      // bedding line
+      ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=1;
+      ctx.beginPath();
+      for(var x2=0;x2<=W;x2+=10){
+        var w2=Math.sin(x2*0.05+i*2.1)*3+Math.sin(x2*0.013+i)*6;
+        if(x2===0) ctx.moveTo(x2,y0+w2); else ctx.lineTo(x2,y0+w2);
+      }
+      ctx.stroke();
+    }
+    // scan marker
+    if(scanning){
+      ctx.strokeStyle='rgba(201,138,60,.95)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(0,scanY); ctx.lineTo(W,scanY); ctx.stroke();
+      ctx.fillStyle='rgba(201,138,60,.2)'; ctx.fillRect(0,0,W,scanY);
+    }
+  }
+  function bedAt(depth){
+    for(var i=0;i<BEDS.length;i++){
+      if(depth<=depths[i+1]) return i;
+    }
+    return BEDS.length-1;
+  }
+  function setDepth(d){
+    d=Math.max(0,Math.min(340,d));
+    var idx=bedAt(d);
+    var b=BEDS[idx];
+    document.getElementById('age').textContent=Math.round(d)+' m · '+b.a;
+    document.getElementById('h').textContent=b.n;
+    document.getElementById('p').textContent=b.p;
+    document.getElementById('d').textContent=Math.round(d)+' m';
+    document.getElementById('g').textContent=b.g;
+    document.getElementById('c').textContent=b.col;
+    document.getElementById('f').textContent=b.f;
+    document.getElementById('a').textContent=b.a;
+    document.getElementById('dp').value=Math.round(d/340*100);
+    marker=d;
+  }
+  var dp=document.getElementById('dp');
+  dp.addEventListener('input',function(){ setDepth(parseInt(this.value,10)/100*340); });
+  document.getElementById('down').addEventListener('click',function(){ setDepth(marker+18); });
+  document.getElementById('up').addEventListener('click',function(){ setDepth(marker-18); });
+  document.getElementById('scan').addEventListener('click',function(){
+    if(scanning) return;
+    scanning=true; scanY=0;
+    var btn=this; btn.classList.add('on');
+    (function step(){
+      if(!scanning) return;
+      scanY+=9;
+      if(scanY>H){ scanY=H; scanning=false; btn.classList.remove('on'); }
+      setDepth(scanY/H*340);
+      drawCore();
+      requestAnimationFrame(step);
+    })();
+  });
+  function loop(){ drawCore(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+  setDepth(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGELINE — four passes, no photographs</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0b1014;--ink:#e7eef0;--dim:#7d8a90;--line:rgba(231,238,240,.14);--pine:#7fa08a;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:34px;height:12px;background:linear-gradient(90deg,transparent,#7fa08a 20%,#7fa08a 60%,transparent);
+    display:block;}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .tools button.on{border-color:var(--pine);color:var(--pine);}
+  .stage{position:relative;margin-top:24px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:#0e1519;}
+  canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;left:18px;top:16px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  .hud b{color:var(--pine);}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:5vh;}
+  .card{border-top:1px solid var(--line);padding-top:16px;}
+  .card .n{font-size:10px;letter-spacing:.3em;color:var(--pine);margin-bottom:10px;}
+  .card h3{font-size:1.1rem;font-weight:400;margin-bottom:8px;}
+  .card p{color:var(--dim);font-size:.9rem;line-height:1.85;}
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:.85fr 1.15fr;gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.15;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Ridgeline</div>
+    <div class="tools">
+      <button class="on" id="fog">Fog</button>
+      <button id="snow">Snow</button>
+      <button id="night">Night</button>
+      <button id="regen">New pass</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <canvas id="cv" width="1240" height="620"></canvas>
+    <div class="hud">Pass <b id="hudName">Col de Viau</b> · seed <b id="hudSeed">4417</b> · <b id="hudLayers">7</b> ridges</div>
+  </div>
+
+  <section class="grid">
+    <article class="card"><div class="n">01 / THE RIDGE</div><h3>One function, seven times</h3>
+      <p>Each ridge is a sum of sines with its own frequencies, so a silhouette that looks geological falls out of four lines of arithmetic.</p></article>
+    <article class="card"><div class="n">02 / THE FOG</div><h3>Depth is a fog bank</h3>
+      <p>Near ridges are dark and sharp, far ridges are pale and soft. Aerial perspective does the work of distance for you.</p></article>
+    <article class="card"><div class="n">03 / THE WEATHER</div><h3>Snow is a threshold</h3>
+      <p>Every ridge is checked against a snowline. Above it, white; below it, forest. The line moves when you ask it to.</p></article>
+  </section>
+
+  <section class="note">
+    <div><h2>There are no<br>photographs<br>on this page</h2></div>
+    <div>
+      <p>Every ridge is generated: a one-dimensional fractal built from summed sine functions with halving amplitudes and doubling frequencies, sampled across the width of the frame. It is the oldest technique in computer graphics and it is still the best way to make a mountain that nobody has seen.</p>
+      <p>What makes it read as distance is not the shape but the fog. Each successive layer is lighter, lower in contrast and drawn with a wider, softer stroke, which is exactly what a camera does to a mountain four kilometres away.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ridgeline — four passes, no photographs</span>
+    <span>Canvas · seeded fractal ridges</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('cv'), ctx=cvs.getContext('2d');
+  var W=1240,H=620;
+  var seed=4417, fog=true, snow=true, night=false;
+  var NAMES=['Col de Viau','Pas de la Colle','Cirque de Nanche','Crête de l\'Aiguille','Borne 1900'];
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  function draw(){
+    var rnd=mulberry32(seed);
+    ctx.clearRect(0,0,W,H);
+    // sky
+    var sky=ctx.createLinearGradient(0,0,0,H*0.8);
+    if(night){ sky.addColorStop(0,'#070c16'); sky.addColorStop(.6,'#101d2c'); sky.addColorStop(1,'#1d2c35'); }
+    else { sky.addColorStop(0,'#b9c9cf'); sky.addColorStop(.55,'#d8dfe0'); sky.addColorStop(1,'#eef1ef'); }
+    ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
+    // sun
+    var sg=ctx.createRadialGradient(W*0.68,H*0.34,0,W*0.68,H*0.34,220);
+    sg.addColorStop(0, night?'rgba(200,215,240,.5)':'rgba(255,246,225,.85)');
+    sg.addColorStop(1,'rgba(255,246,225,0)');
+    ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
+
+    var LAYERS=7;
+    for(var l=LAYERS-1;l>=0;l--){
+      var depth=l/(LAYERS-1);            // 0 = far, 1 = near
+      var base=H*(0.30+depth*0.42);
+      var amp=30+depth*150;
+      var f1=0.0016+rnd()*0.0016, f2=0.0042+rnd()*0.003;
+      var ph1=rnd()*6.28, ph2=rnd()*6.28;
+      var off=rnd()*1000;
+      // colour
+      var far=night? [18,26,36] : [176,190,196];
+      var near=night? [6,10,16] : [22,34,36];
+      var t=Math.pow(depth,0.8);
+      var col=Math.round(far[0]+(near[0]-far[0])*t)+','+
+              Math.round(far[1]+(near[1]-far[1])*t)+','+
+              Math.round(far[2]+(near[2]-far[2])*t);
+      ctx.beginPath();
+      ctx.moveTo(0,H);
+      for(var x=0;x<=W;x+=3){
+        var y=base
+          + Math.sin(x*f1+ph1+off)*amp
+          + Math.sin(x*f2+ph2)*amp*0.4
+          + Math.sin(x*f2*2.7+ph1*2)*amp*0.16;
+        ctx.lineTo(x,y);
+      }
+      ctx.lineTo(W,H); ctx.closePath();
+      ctx.fillStyle='rgb('+col+')';
+      ctx.fill();
+      // snow cap
+      if(snow){
+        ctx.save();
+        ctx.clip();
+        var snowY=base-amp*0.42;
+        var grd=ctx.createLinearGradient(0,snowY,0,snowY+amp*0.8);
+        var sc=night?'220,232,244':'245,248,248';
+        grd.addColorStop(0,'rgba('+sc+','+(0.9-t*0.5).toFixed(2)+')');
+        grd.addColorStop(1,'rgba('+sc+',0)');
+        ctx.fillStyle=grd;
+        ctx.fillRect(0,snowY,W,amp*0.9);
+        ctx.restore();
+      }
+      // fog bank between layers
+      if(fog){
+        var fg=ctx.createLinearGradient(0,base-amp*0.6,0,base+amp*0.6);
+        fg.addColorStop(0,'rgba(255,255,255,0)');
+        fg.addColorStop(.5,'rgba('+(night?'150,170,190':'235,240,240')+',0.16)');
+        fg.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=fg;
+        ctx.fillRect(0,base-amp*0.6,W,amp*1.2);
+      }
+    }
+    // foreground haze
+    var hz=ctx.createLinearGradient(0,H*0.6,0,H);
+    hz.addColorStop(0,'rgba(0,0,0,0)');
+    hz.addColorStop(1, night?'rgba(0,0,0,.55)':'rgba(20,30,34,.35)');
+    ctx.fillStyle=hz; ctx.fillRect(0,H*0.6,W,H*0.4);
+
+    document.getElementById('hudSeed').textContent=seed;
+    document.getElementById('hudLayers').textContent=LAYERS;
+  }
+  function newPass(){
+    seed=Math.floor(Math.random()*9999);
+    document.getElementById('hudName').textContent=NAMES[seed%NAMES.length];
+    draw();
+  }
+  document.getElementById('fog').addEventListener('click',function(){
+    fog=!fog; this.classList.toggle('on',fog); draw();
+  });
+  document.getElementById('snow').addEventListener('click',function(){
+    snow=!snow; this.classList.toggle('on',snow); draw();
+  });
+  document.getElementById('night').addEventListener('click',function(){
+    night=!night; this.classList.toggle('on',night); draw();
+  });
+  document.getElementById('regen').addEventListener('click',newPass);
+  document.getElementById('hudName').textContent=NAMES[seed%NAMES.length];
+  draw();
+})();
+</script>
+</body>
+</html>

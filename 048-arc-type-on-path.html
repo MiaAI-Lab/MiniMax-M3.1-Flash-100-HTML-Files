@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARC — type that follows a line</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#f2efe8;--ink:#16150f;--dim:#8a8478;--line:rgba(22,21,15,.16);--red:#d8412f;--blue:#1f5fa8;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.46em;text-transform:uppercase;}
+  .brand span{color:var(--red);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .stage{margin-top:26px;border:1px solid var(--line);border-radius:18px;background:#fbf9f4;padding:18px;
+    box-shadow:0 26px 50px -38px rgba(22,21,15,.6);}
+  .stage svg{width:100%;height:auto;display:block;}
+  .path{stroke:var(--line);stroke-width:1.5;fill:none;stroke-dasharray:5 6;}
+  .tpath{fill:none;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;
+    letter-spacing:.01em;}
+  .guide{fill:none;stroke:#cfcabc;stroke-width:1.5;}
+
+  .ctrls{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:600;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--ink);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--red);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--red);cursor:pointer;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .chip{border:1px solid var(--line);background:transparent;padding:8px 14px;border-radius:99px;cursor:pointer;
+    font:400 11px/1 inherit;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);transition:.25s;}
+  .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+  .words{margin-top:5vh;display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  .wcard{border:1px solid var(--line);border-radius:16px;padding:22px;background:#fbf9f4;transition:.35s;}
+  .wcard:hover{border-color:var(--red);transform:translateY(-4px);}
+  .wcard h3{font-size:1rem;margin-bottom:8px;font-weight:600;}
+  .wcard p{font-size:.88rem;color:var(--dim);line-height:1.8;}
+  .wcard .swatch{height:80px;border-radius:10px;margin-bottom:16px;background:var(--c);}
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:.85fr 1.15fr;gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.15;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:880px){.ctrls{grid-template-columns:1fr;}.words{grid-template-columns:1fr;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Arc <span>·</span> Type that follows a line</div>
+    <div class="meta">SVG textPath · no images</div>
+  </header>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 1100 460" aria-label="Text on a path"></svg>
+  </div>
+
+  <div class="ctrls">
+    <div class="ctl"><label>Size <b id="vSize">64</b></label><input type="range" id="size" min="18" max="120" value="64"></div>
+    <div class="ctl"><label>Tracking <b id="vTrack">0%</b></label><input type="range" id="track" min="-20" max="80" value="0"></div>
+    <div class="ctl"><label>Offset <b id="vOff">0</b></label><input type="range" id="off" min="-60" max="60" value="0"></div>
+  </div>
+
+  <div class="chips" id="chips" style="margin-top:22px">
+    <div class="chip on" data-p="0">Wave</div>
+    <div class="chip" data-p="1">Arc</div>
+    <div class="chip" data-p="2">Spiral</div>
+    <div class="chip" data-p="3">Loop</div>
+    <div class="chip" data-p="4">Seal</div>
+  </div>
+
+  <section class="words" id="words"></section>
+
+  <section class="note">
+    <div><h2>A line is<br>already a<br>sentence</h2></div>
+    <div>
+      <p>Setting a word along a path is the oldest typographic trick after the drop cap, and it is still the most convincing, because the curve of the line enters the word and changes how it is read. A word on a rising diagonal sounds like it is going somewhere.</p>
+      <p>SVG's textPath element does the geometric work: the browser measures the path, lays the glyphs along it, and rotates each one to the local tangent. The letters remain live text — selectable, searchable, and scalable without redrawing anything.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Arc — type that follows a line</span>
+    <span>Live SVG text, not an image</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('svg');
+  var pathId='p1';
+  var size=64, track=0, off=0, preset=0;
+
+  var PATHS=[
+    'M40 250 C 220 120 380 120 550 250 S 900 380 1060 230',
+    'M40 300 Q 550 60 1060 300',
+    'M550 230 m -150 0 a 150 150 0 1 1 300 0 a 150 150 0 1 1 -300 0',
+    'M300 230 C 300 90 800 90 800 230 C 800 370 300 370 300 230 Z',
+    'M300 140 L800 140 L800 320 L300 320 Z'
+  ];
+  var TEXTS=[
+    'the line is the message',
+    'nothing travels in a straight line',
+    'round and round the point',
+    'a figure of eight to nowhere',
+    'the seal of the office'
+  ];
+  var COLORS=['#16150f','#d8412f','#1f5fa8','#3f7a4a','#6a3fa0'];
+
+  function build(){
+    svg.innerHTML='';
+    var defs=document.createElementNS(NS,'defs');
+    defs.innerHTML='<path id="'+pathId+'" d="'+PATHS[preset]+'"/>';
+    svg.appendChild(defs);
+    // guide path
+    var g=document.createElementNS(NS,'path');
+    g.setAttribute('d',PATHS[preset]); g.setAttribute('class','guide');
+    svg.appendChild(g);
+    // text
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('class','tpath');
+    t.setAttribute('font-size',size);
+    t.setAttribute('letter-spacing',(track/1000*size)+'px');
+    t.setAttribute('dy',off);
+    t.setAttribute('fill',COLORS[preset]);
+    var tp=document.createElementNS(NS,'textPath');
+    tp.setAttribute('href','#'+pathId);
+    tp.setAttribute('startOffset','50%');
+    tp.setAttribute('text-anchor','middle');
+    tp.textContent=TEXTS[preset];
+    t.appendChild(tp);
+    svg.appendChild(t);
+  }
+  build();
+
+  document.getElementById('size').addEventListener('input',function(){
+    size=+this.value; document.getElementById('vSize').textContent=size; build();
+  });
+  document.getElementById('track').addEventListener('input',function(){
+    track=+this.value; document.getElementById('vTrack').textContent=track+'%'; build();
+  });
+  document.getElementById('off').addEventListener('input',function(){
+    off=+this.value; document.getElementById('vOff').textContent=off; build();
+  });
+  document.getElementById('chips').addEventListener('click',function(e){
+    var c=e.target.closest('.chip'); if(!c) return;
+    this.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});
+    c.classList.add('on');
+    preset=+c.dataset.p; build();
+  });
+
+  var WORDS=[
+    {t:'Wave',d:'A long S-curve that alternates the baseline and inverts the letters as it climbs.',c:'linear-gradient(135deg,#16150f,#4a463c)'},
+    {t:'Arc',d:'A single parabola. The gentlest curve, and the one most often used for a word that should feel optimistic.',c:'linear-gradient(135deg,#d8412f,#f0a08c)'},
+    {t:'Spiral',d:'A full circle. Set centred, the word wraps past the halfway point and the last letters are upside down.',c:'linear-gradient(135deg,#1f5fa8,#8fc4e8)'},
+    {t:'Loop',d:'A figure of eight. Rarely used, occasionally brilliant, and hard to get right the first time.',c:'linear-gradient(135deg,#3f7a4a,#a8d8b4)'},
+    {t:'Seal',d:'A rectangle. Straight lines, straight letters — the shape that proves the curve was doing the work.',c:'linear-gradient(135deg,#6a3fa0,#c0a8e8)'}
+  ];
+  var w=document.getElementById('words');
+  WORDS.forEach(function(x,i){
+    var d=document.createElement('article');
+    d.className='wcard';
+    d.innerHTML='<div class="swatch" style="--c:'+x.c+';background:'+x.c+'"></div>'+
+      '<h3>'+x.t+'</h3><p>'+x.d+'</p>';
+    d.addEventListener('click',function(){
+      preset=i; build();
+      document.querySelectorAll('.chip').forEach(function(c,ci){c.classList.toggle('on',ci===i);});
+    });
+    w.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>

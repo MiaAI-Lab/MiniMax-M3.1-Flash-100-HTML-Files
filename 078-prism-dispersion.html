@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISM — the colour inside white</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#08090f;--ink:#eef0f6;--dim:#7e8393;--line:rgba(238,240,246,.14);--white:#fff8ee;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;
+    border-bottom:20px solid var(--ink);display:block;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:780px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:#9ad9ff;}
+  h1{font-size:clamp(2.3rem,6vw,4.4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:56ch;}
+
+  .bench{margin-top:5vh;border:1px solid var(--line);background:#0b0d14;position:relative;}
+  .bench canvas{width:100%;height:auto;display:block;}
+  .legend{position:absolute;left:16px;bottom:14px;display:flex;gap:16px;flex-wrap:wrap;
+    font:400 10.5px/1 "Courier New",monospace;color:var(--dim);pointer-events:none;}
+  .legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:#9ad9ff;font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:#9ad9ff;margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:#9ad9ff;cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:#9ad9ff;color:#9ad9ff;background:rgba(154,217,255,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  .nrows div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .nrows b{color:#9ad9ff;font-weight:400;}
+  .swatch{display:inline-block;width:34px;height:10px;vertical-align:-1px;margin-left:8px;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Prism</div>
+    <div class="meta">Cauchy dispersion · n(λ) = A + B/λ²</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Optics</div>
+    <h1>White light is a<br>rumour the eye<br>believes <b>until</b><br>something splits it</h1>
+    <p>Glass slows red light less than blue, because the glass has resonances in the ultraviolet that blue sits closer to. So a prism does not separate white into colours; it separates the colours that were already there, each travelling at its own speed and bending by its own amount.</p>
+  </section>
+
+  <section class="bench">
+    <canvas id="cv" width="1200" height="560"></canvas>
+    <div class="legend">
+      <span><i style="background:#fff8ee"></i>incident</span>
+      <span><i style="background:#9ad9ff"></i>dispersed</span>
+      <span id="lg">screen</span>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Incidence angle <output id="oa">0°</output></label>
+      <input type="range" id="ang" min="-60" max="60" value="0">
+    </div>
+    <div class="fld">
+      <label>Wavelength <output id="ob">380–700 nm</output></label>
+      <input type="range" id="wl" min="0" max="100" value="100">
+    </div>
+    <div class="btns">
+      <button class="btn" data-m="water">Water</button>
+      <button class="btn on" data-m="crown">Crown glass</button>
+      <button class="btn" data-m="flint">Flint glass</button>
+      <button class="btn" data-m="diamond">Diamond</button>
+      <button class="btn" id="laser">Laser line</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Refraction,<br>and the<br>wrong<br>question</h2>
+      <p>Descartes gave the law of refraction a geometrical explanation in 1637 — light travels faster in air and slower in glass, and the bend is the wavefront simply running into a slower medium. The law itself had been known for a thousand years in China, and Snell had it in the Netherlands in 1621.</p>
+      <p>But the law does not explain a <b>prism</b>. A single index cannot say why a beam of white light spreads into a fan, because by the law of refraction a single ray of a single index goes to a single place. The answer came from Newton, who was not the first to notice the colours — Descartes had, and had thrown it out as a curiosity — but the first to insist that the colours were in the light all along.</p>
+    </div>
+    <div>
+      <h2>The medium</h2>
+      <div class="nrows">
+        <div>Water <b>A 1.3199</b></div>
+        <div>Crown glass <b>A 1.5046</b></div>
+        <div>Flint glass <b>A 1.5935</b></div>
+        <div>Diamond <b>A 2.4100</b></div>
+        <div>Dispersion (B) <b id="b">4 200 nm²</b></div>
+        <div>Spread at screen <b id="sp">—</b></div>
+        <div>Deviation <b id="dv">—</b></div>
+        <div>Refractive index (589 nm) <b id="ri">—</b></div>
+      </div>
+      <p style="margin-top:18px;color:var(--dim);font-size:.92rem;line-height:1.9;">Cauchy's formula n = A + B/λ² fits the index of every transparent solid over the visible range. A is the part that never changes; B is the amount of dispersion, and it is the only thing that matters when you are choosing a glass. Crown glass barely disperses, so it is used for lenses. Flint glass disperses hard, so it is used for prisms, where you want the colours apart.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Prism — the colour inside white</span>
+    <span>Rays traced with Snell's law</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var MEDIUM={
+    water:{A:1.3199,B:6878},
+    crown:{A:1.5046,B:4200},
+    flint:{A:1.5935,B:8750},
+    diamond:{A:2.4100,B:1300}
+  };
+  var med='crown', angle=0, wlMode='all', laser=532;
+  var screenX=W-150;
+
+  function n(lam){ var m=MEDIUM[med]; return m.A + m.B/(lam*lam); }
+  function wavelengthRGB(l){
+    // approximate sRGB for a monochromatic wavelength
+    var r=0,g=0,b=0;
+    if(l<440){r=-(l-440)/60; b=1;}
+    else if(l<490){g=(l-440)/50; b=1;}
+    else if(l<510){g=1; b=-(l-510)/20;}
+    else if(l<580){r=(l-510)/70; g=1;}
+    else if(l<645){r=1; g=-(l-645)/65;}
+    else {r=1;}
+    var f=1;
+    if(l<420){f=0.3+0.7*(l-380)/40;}
+    else if(l>700){f=0.3+0.7*(780-l)/80;}
+    var c=Math.pow(f,0.8);
+    return [Math.round(255*Math.min(1,Math.max(0,r))*c),
+            Math.round(255*Math.min(1,Math.max(0,g))*c),
+            Math.round(255*Math.min(1,Math.max(0,b))*c)];
+  }
+  function refract(dx,dy,nx,ny,n1,n2){
+    var dot=dx*nx+dy*ny;
+    var sgn = dot>0 ? -1 : 1;
+    nx*=sgn; ny*=sgn;
+    var cosi=-(dx*nx+dy*ny);
+    var sini=Math.abs(dx*ny-dy*nx);
+    var k=n1/n2;
+    var sinr=k*sini;
+    if(sinr>1) return null;
+    var cosr=Math.sqrt(1-sinr*sinr);
+    var rx=k*dx+(k*cosi-cosr)*nx;
+    var ry=k*dy+(k*cosi-cosr)*ny;
+    var len=Math.hypot(rx,ry)||1;
+    return [rx/len,ry/len];
+  }
+  // prism geometry
+  var P=[];
+  function geometry(){
+    var cx=W*0.40, cy=H*0.52, s=150;
+    P=[
+      {x:cx-s*0.62,y:cy+s*0.78},   // left base
+      {x:cx+s*0.62,y:cy+s*0.78},   // right base
+      {x:cx,y:cy-s*0.95}          // apex
+    ];
+  }
+  geometry();
+  function segIntersect(p,d,p1,p2){
+    // p + t d = p1 + u (p2-p1)
+    var ex=p2.x-p1.x, ey=p2.y-p1.y;
+    var den=d[0]*ey-d[1]*ex;
+    if(Math.abs(den)<1e-9) return null;
+    var t=((p1.x-p.x)*ey-(p1.y-p.y)*ex)/den;
+    var u=((p1.x-p.x)*d[1]-(p1.y-p.y)*d[0])/den;
+    if(t<0||u<0||u>1) return null;
+    return {x:p.x+d[0]*t,y:p.y+d[1]*t,t:t};
+  }
+  function faceNormal(a,b){
+    var ex=b.x-a.x, ey=b.y-a.y, l=Math.hypot(ex,ey);
+    return {x:ey/l,y:-ex/l};
+  }
+  function trace(lam, dirAngle){
+    var d=[Math.cos(dirAngle),Math.sin(dirAngle)];
+    var start={x:20,y:H*0.5};
+    var nrm1=faceNormal(P[0],P[2]);
+    var hit1=segIntersect(start,d,P[0],P[2]);
+    if(!hit1) return null;
+    var idx=n(lam);
+    var d1=refract(d[0],d[1],nrm1.x,nrm1.y,1,idx);
+    if(!d1) return null;
+    var nrm2=faceNormal(P[1],P[2]);
+    var hit2=segIntersect({x:hit1.x,y:hit1.y},d1,P[1],P[2]);
+    if(!hit2){
+      // exits through the base
+      var nrmB=faceNormal(P[0],P[1]);
+      var hb=segIntersect({x:hit1.x,y:hit1.y},d1,P[0],P[1]);
+      if(!hb) return null;
+      var d2=refract(d1[0],d1[1],nrmB.x,nrmB.y,idx,1);
+      if(!d2) return null;
+      var tb=(screenX-hb.x)/d2[0];
+      if(tb<0) return null;
+      return {a:start,h1:hit1,h2:hb,out:{x:hb.x+d2[0]*tb,y:hb.y+d2[1]*tb},d:d2,dev:Math.atan2(d2[1],d2[0])-dirAngle};
+    }
+    var d2=refract(d1[0],d1[1],nrm2.x,nrm2.y,idx,1);
+    if(!d2) return null;
+    var tb=(screenX-hit2.x)/d2[0];
+    if(tb<0) return null;
+    return {a:start,h1:hit1,h2:hit2,out:{x:hit2.x+d2[0]*tb,y:hit2.y+d2[1]*tb},d:d2,dev:Math.atan2(d2[1],d2[0])-dirAngle};
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0b0d14'; ctx.fillRect(0,0,W,H);
+    var dir=angle*Math.PI/180;
+    // white incident beam
+    ctx.strokeStyle='rgba(255,248,238,.75)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(20,H*0.5); ctx.lineTo(P[0].x+ (P[2].x-P[0].x)*0.2, H*0.5); ctx.stroke();
+    // prism body
+    ctx.beginPath();
+    ctx.moveTo(P[0].x,P[0].y); ctx.lineTo(P[1].x,P[1].y); ctx.lineTo(P[2].x,P[2].y); ctx.closePath();
+    var pg=ctx.createLinearGradient(P[0].x,P[0].y,P[2].x,P[2].y);
+    pg.addColorStop(0,'rgba(180,210,235,.16)'); pg.addColorStop(.5,'rgba(210,235,255,.10)');
+    pg.addColorStop(1,'rgba(140,180,220,.20)');
+    ctx.fillStyle=pg; ctx.fill();
+    ctx.strokeStyle='rgba(190,220,245,.45)'; ctx.lineWidth=1.6; ctx.stroke();
+
+    var rays=[], hits=[];
+    var lams=[];
+    if(wlMode==='all'){ for(var l=380;l<=700;l+=4) lams.push(l); }
+    else lams=[laser];
+    lams.forEach(function(l){
+      var r=trace(l,dir);
+      if(r){ rays.push({l:l,r:r}); hits.push(r.out.y); }
+    });
+    // dispersed rays
+    rays.forEach(function(o){
+      var c=wavelengthRGB(o.l);
+      ctx.strokeStyle='rgba('+c[0]+','+c[1]+','+c[2]+',.95)';
+      ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(o.r.h1.x,o.r.h1.y);
+      ctx.lineTo(o.r.h2.x,o.r.h2.y);
+      ctx.lineTo(o.r.out.x,o.r.out.y);
+      ctx.stroke();
+    });
+    // screen
+    ctx.fillStyle='rgba(255,255,255,.05)';
+    ctx.fillRect(screenX,50,16,H-100);
+    ctx.strokeStyle='rgba(238,240,246,.3)'; ctx.lineWidth=1;
+    ctx.strokeRect(screenX+.5,50.5,16,H-101);
+    // spectrum band on the screen
+    if(hits.length>1){
+      var sorted=hits.slice().sort(function(a,b){return a-b;});
+      for(var i=0;i<rays.length;i++){
+        var col=wavelengthRGB(rays[i].l);
+        ctx.fillStyle='rgba('+col[0]+','+col[1]+','+col[2]+',.95)';
+        ctx.fillRect(screenX, rays[i].r.out.y-1.5, 16, 3);
+      }
+      var ymin=Math.min.apply(null,sorted), ymax=Math.max.apply(null,sorted);
+      document.getElementById('sp').textContent=(ymax-ymin).toFixed(1)+' mm';
+      if(rays.length){
+        document.getElementById('dv').textContent=(rays[0].r.dev*180/Math.PI).toFixed(1)+'°';
+      }
+    } else {
+      document.getElementById('sp').textContent='—';
+    }
+    // labels
+    ctx.fillStyle='rgba(238,240,246,.45)'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('PRISM', P[0].x+6, P[1].y+22);
+    ctx.fillText('SCREEN', screenX-14, 40);
+    ctx.strokeStyle='rgba(238,240,246,.25)';
+    ctx.beginPath(); ctx.moveTo(20,H*0.5); ctx.lineTo(120,H*0.5); ctx.stroke();
+    // incoming ray arrow
+    ctx.beginPath();
+    ctx.moveTo(20,H*0.5); ctx.lineTo(20+Math.cos(dir)*110, H*0.5+Math.sin(dir)*110);
+    ctx.strokeStyle='rgba(255,248,238,.8)'; ctx.lineWidth=2.4; ctx.stroke();
+    document.getElementById('lg').innerHTML='spread <b style="color:#9ad9ff">'+
+      (hits.length?(Math.max.apply(null,hits)-Math.min.apply(null,hits)).toFixed(1)+' mm':'—')+'</b>';
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  var btns=document.querySelectorAll('[data-m]');
+  Array.prototype.forEach.call(btns,function(b){
+    b.addEventListener('click',function(){
+      med=b.getAttribute('data-m');
+      Array.prototype.forEach.call(btns,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      var m=MEDIUM[med];
+      document.getElementById('b').textContent=Math.round(m.B).toLocaleString()+' nm²';
+      document.getElementById('ri').textContent=n(589).toFixed(4);
+    });
+  });
+  document.getElementById('ang').addEventListener('input',function(){
+    angle=parseInt(this.value,10);
+    document.getElementById('oa').textContent=angle+'°';
+  });
+  document.getElementById('wl').addEventListener('input',function(){
+    var v=parseInt(this.value,10);
+    if(v>=100){ wlMode='all'; document.getElementById('ob').textContent='380–700 nm'; }
+    else if(v<=0){ wlMode='all'; document.getElementById('ob').textContent='380–700 nm'; }
+    else { wlMode='laser'; laser=380+v*3.2; document.getElementById('ob').textContent=Math.round(laser)+' nm'; }
+  });
+  document.getElementById('laser').addEventListener('click',function(){
+    wlMode = wlMode==='all' ? 'laser' : 'all';
+    this.classList.toggle('on',wlMode==='laser');
+    if(wlMode==='laser'){ document.getElementById('wl').value=48; document.getElementById('ob').textContent=Math.round(laser)+' nm'; }
+    else { document.getElementById('wl').value=100; document.getElementById('ob').textContent='380–700 nm'; }
+  });
+  document.getElementById('ri').textContent=n(589).toFixed(4);
+})();
+</script>
+</body>
+</html>

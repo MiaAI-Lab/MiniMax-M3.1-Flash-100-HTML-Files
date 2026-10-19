@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MALL OF TOMORROW — open 24 hours</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --win:#c0c0c0;--win2:#dfdfdf;--win3:#fff;--ink:#000;--teal:#008080;--navy:#000080;
+    --magenta:#ff00ff;--lime:#00ff00;--gold:#ffd700;
+  }
+  body{background:var(--teal);font-family:"MS Sans Serif","Tahoma","Geneva",Verdana,sans-serif;color:var(--ink);
+    overflow-x:hidden;min-height:100vh;}
+  .desktop{position:relative;min-height:100vh;padding:14px;overflow:hidden;}
+  .wallpaper{position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(circle at 20% 30%,rgba(255,0,255,.35),transparent 45%),
+      radial-gradient(circle at 80% 20%,rgba(0,255,255,.28),transparent 42%),
+      linear-gradient(160deg,#12002b,#3d0a5e 50%,#0a2b4d);
+    }
+  .wallpaper::after{content:"";position:absolute;inset:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.25'/></svg>");
+    mix-blend-mode:overlay;}
+  .gridfloor{position:absolute;left:-40%;right:-40%;bottom:-20%;height:55%;
+    background-image:linear-gradient(rgba(0,255,255,.55) 2px,transparent 2px),
+      linear-gradient(90deg,rgba(255,0,255,.45) 2px,transparent 2px);
+    background-size:100% 60px,80px 100%;
+    transform:perspective(320px) rotateX(74deg);transform-origin:bottom center;
+    animation:roll 2.4s linear infinite;opacity:.55;}
+  @keyframes roll{to{background-position:0 60px,0 0;}}
+  .sun{position:absolute;left:50%;top:16%;width:min(40vw,380px);aspect-ratio:1;transform:translateX(-50%);
+    border-radius:50%;
+    background:linear-gradient(180deg,#fff37a,#ff8ad0 55%,#b14bff 85%);
+    box-shadow:0 0 90px 24px rgba(255,0,255,.4);}
+  .sun::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-linear-gradient(180deg,transparent 0 6%,rgba(18,0,43,.9) 6% 8%);}
+
+  .taskbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--win);border-top:2px solid #fff;
+    display:flex;align-items:center;gap:4px;padding:3px 4px;box-shadow:0 -2px 0 rgba(0,0,0,.2);}
+  .start{background:var(--win);border:2px outset #fff;padding:4px 12px;font-weight:700;font-size:12px;
+    display:flex;gap:5px;align-items:center;cursor:pointer;}
+  .start .flag{width:14px;height:14px;background:linear-gradient(135deg,#ff3b3b 0 50%,#3b6bff 50% 100%);
+    box-shadow:inset 0 0 0 2px var(--win);}
+  .tbitem{background:var(--win);border:2px outset #fff;padding:4px 10px;font-size:11.5px;display:flex;gap:6px;
+    align-items:center;cursor:pointer;}
+  .tbitem.active{border-style:inset;}
+  .tbitem i{width:12px;height:12px;display:block;}
+  .tray{margin-left:auto;background:var(--win);border:2px inset #fff;padding:2px 10px;font-size:11.5px;
+    display:flex;gap:8px;align-items:center;}
+
+  .winbox{position:absolute;background:var(--win);border:2px outset #fff;box-shadow:4px 6px 0 rgba(0,0,0,.35);
+    min-width:260px;}
+  .winbox .tbar{background:linear-gradient(90deg,var(--navy),#1084d0);color:#fff;display:flex;align-items:center;
+    gap:6px;padding:3px 5px;font-size:12px;font-weight:700;cursor:move;user-select:none;}
+  .winbox .tbar .ctrl{margin-left:auto;display:flex;gap:3px;}
+  .winbox .tbar .ctrl b{width:16px;height:14px;background:var(--win);color:#000;display:grid;place-items:center;
+    font-size:10px;font-weight:700;border:2px outset #fff;}
+  .winbox .body{padding:12px;font-size:12px;line-height:1.6;}
+
+  .w1{left:3%;top:5%;width:min(380px,44vw);}
+  .w2{right:3%;top:8%;width:min(300px,40vw);}
+  .w3{left:8%;bottom:16%;width:min(330px,50vw);}
+
+  .meme{width:100%;border:2px inset #fff;background:#fff;padding:6px;}
+  .meme .top{background:linear-gradient(90deg,#ff9a00,#ff5a00);height:46px;margin:-6px -6px 8px;padding:6px 8px;
+    color:#fff;font:700 12px/34px "MS Sans Serif",sans-serif;letter-spacing:.1em;}
+  .meme .img{height:110px;background:linear-gradient(135deg,#2b0033,#7a00b3 60%,#ff00ff);
+    display:grid;place-items:center;color:#fff;font-size:11px;letter-spacing:.24em;margin-bottom:8px;
+    border:1px solid #999;}
+  .meme .cap{font-weight:700;font-size:12px;text-align:center;}
+  .btn{background:var(--win);border:2px outset #fff;padding:5px 12px;font:400 12px "MS Sans Serif",sans-serif;
+    cursor:pointer;}
+  .btn:active{border-style:inset;}
+  .row{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+  .field{border:2px inset #fff;background:#fff;padding:4px 6px;font:400 12px "MS Sans Serif",sans-serif;flex:1;min-width:80px;}
+  .chk{display:flex;gap:6px;align-items:center;font-size:12px;margin-top:8px;cursor:pointer;}
+  .chk input{width:13px;height:13px;accent-color:var(--navy);}
+  .bar{height:16px;border:2px inset #fff;background:#fff;margin-top:10px;padding:2px;}
+  .bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--navy) 0 8px,transparent 8px 10px);
+    transition:width .2s linear;}
+  .count{font:700 22px/1 "Courier New",monospace;color:var(--navy);}
+
+  .hscroll{position:absolute;left:0;right:0;bottom:42px;height:26px;z-index:50;
+    background:repeating-linear-gradient(90deg,#ff00ff 0 14px,#00ffff 14px 28px);opacity:.35;
+    animation:slide 6s linear infinite;}
+  @keyframes slide{to{background-position:28px 0;}}
+
+  .bubble{position:absolute;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,rgba(255,255,255,.15) 40%,transparent 70%);
+    animation:rise linear infinite;pointer-events:none;}
+  @keyframes rise{from{transform:translateY(0) scale(.6);opacity:0;}20%{opacity:.7;}to{transform:translateY(-110vh) scale(1.2);opacity:0;}}
+
+  @media(max-width:760px){.w1,.w2,.w3{position:static;width:auto;margin-bottom:12px;}
+    .desktop{padding:10px;}.taskbar{overflow:auto;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="desktop">
+  <div class="wallpaper"></div>
+  <div class="sun"></div>
+  <div class="gridfloor"></div>
+
+  <div class="winbox w1">
+    <div class="tbar"><span>Memegenerator.exe</span><span class="ctrl"><b>–</b><b>□</b><b>×</b></span></div>
+    <div class="body">
+      <div class="meme">
+        <div class="top">TOP TEN / THIS WEEK</div>
+        <div class="img" id="memeImg">IMAGE AREA<br>640 × 480</div>
+        <div class="cap" id="memeCap">when the wifi drops mid-upload</div>
+      </div>
+      <div class="row">
+        <input class="field" id="memeText" value="when the wifi drops mid-upload">
+        <button class="btn" id="gen">GENERATE</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="rand">RANDOM</button>
+        <button class="btn" id="dl">DOWNLOAD</button>
+        <span style="font-size:11px;color:#333" id="dlState">not yet</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="winbox w2">
+    <div class="tbar"><span>Visitors</span><span class="ctrl"><b>–</b><b>□</b><b>×</b></span></div>
+    <div class="body">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="count" id="count">0047128</div>
+        <div style="font-size:11px;line-height:1.5;">people are<br>on this page<br>right now</div>
+      </div>
+      <div class="bar"><i id="loadbar"></i></div>
+      <label class="chk"><input type="checkbox" id="sound" checked> Play the dial-up sound</label>
+      <label class="chk"><input type="checkbox" checked> Show the bubbles</label>
+      <label class="chk"><input type="checkbox"> Warn me about cookies</label>
+    </div>
+  </div>
+
+  <div class="winbox w3">
+    <div class="tbar"><span>Mall Directory</span><span class="ctrl"><b>–</b><b>□</b><b>×</b></span></div>
+    <div class="body">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:12px;">
+        <div>◉ Fountain of Tiers</div><div>◉ Sushi 404</div>
+        <div>◉ The Keyhole Arcade</div><div>◉ Bootlace Fountain</div>
+        <div>◉ Null Point Café</div><div>◉ Screens &amp; Dreams</div>
+        <div>◉ The Loading Corridor</div><div>◉ Vinyl Villains</div>
+        <div>◉ Pixel Noodle Bar</div><div>◉ Digital Garden</div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#333;">Store hours: always. The doors remember being locked.</div>
+    </div>
+  </div>
+
+  <div class="hscroll"></div>
+</div>
+
+<div class="taskbar">
+  <div class="start"><span class="flag"></span>Start</div>
+  <div class="tbitem active"><i style="background:linear-gradient(135deg,#ff9a00,#ff5a00)"></i>Memegenerator</div>
+  <div class="tbitem"><i style="background:linear-gradient(135deg,#00b7ff,#0040ff)"></i>Directory</div>
+  <div class="tbitem"><i style="background:linear-gradient(135deg,#00ff9a,#00a05a)"></i>Visitors</div>
+  <div class="tray"><span id="clock">00:00</span><span>🔊</span></div>
+</div>
+
+<script>
+(function(){
+  var CAPS=[
+    'when the wifi drops mid-upload','naming a file final_final_v2',
+    'the printer is out of paper again','my sourdough starter has a name',
+    'the vending machine eats my coins','when autocorrect changes your message',
+    'loading screen with 99%','the demo always works on my machine',
+    'my plant is a cactus now','it works on my machine'
+  ];
+  var GRADS=[['#2b0033','#7a00b3','#ff00ff'],['#002b33','#007a8a','#00ffe1'],
+             ['#331a00','#b35a00','#ff9d00'],['#0d0033','#3a00b3','#6b5bff'],
+             ['#00331a','#00b35a','#5bff9d']];
+  var text=document.getElementById('memeText'), cap=document.getElementById('memeCap');
+  var img=document.getElementById('memeImg'), count=document.getElementById('count');
+  var loadbar=document.getElementById('loadbar');
+  var pi=0;
+
+  function apply(){
+    cap.textContent=text.value||'untitled meme';
+    var g=GRADS[pi%GRADS.length];
+    img.style.background='linear-gradient(135deg,'+g.join(',')+')';
+    img.innerHTML='IMAGE AREA<br>'+(320+Math.floor(Math.random()*320))+' × 240';
+    pi++;
+  }
+  document.getElementById('gen').addEventListener('click',apply);
+  document.getElementById('rand').addEventListener('click',function(){
+    text.value=CAPS[Math.floor(Math.random()*CAPS.length)];
+    apply();
+  });
+  document.getElementById('dl').addEventListener('click',function(){
+    document.getElementById('dlState').textContent='downloaded '+ (Math.random()*9+1).toFixed(1) +' KB';
+  });
+
+  // visitor counter
+  var n=47128;
+  setInterval(function(){
+    n+=Math.floor(Math.random()*7)-2;
+    count.textContent=String(Math.max(0,n)).padStart(7,'0');
+  },900);
+  // loading bar
+  var p=0;
+  setInterval(function(){
+    p+=Math.random()*7;
+    if(p>100)p=0;
+    loadbar.style.width=p.toFixed(1)+'%';
+  },160);
+
+  // clock
+  function tick(){
+    var d=new Date();
+    document.getElementById('clock').textContent=
+      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick,10000);
+
+  // bubbles
+  var desktop=document.querySelector('.desktop');
+  function spawn(){
+    if(!document.getElementById('sound').checked) return;
+    var b=document.createElement('div');
+    b.className='bubble';
+    var s=14+Math.random()*40;
+    b.style.width=s+'px'; b.style.height=s+'px';
+    b.style.left=Math.random()*100+'%';
+    b.style.bottom='-40px';
+    b.style.animationDuration=(9+Math.random()*9)+'s';
+    b.style.animationDelay=(Math.random()*4)+'s';
+    desktop.appendChild(b);
+    setTimeout(function(){ b.remove(); }, 20000);
+  }
+  for(var i=0;i<14;i++) spawn();
+  setInterval(spawn,900);
+})();
+</script>
+</body>
+</html>

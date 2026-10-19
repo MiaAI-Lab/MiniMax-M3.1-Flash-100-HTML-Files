@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUREA — gold leaf and rubrication</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#241a12;--vellum:#efe3c6;--ink:#2b1d10;--dim:#8a7355;--red:#a8291f;--blue:#1e3f7a;
+    --gold:#c9a227;--line:rgba(43,29,16,.25);}
+  body{background:var(--bg);color:var(--vellum);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid rgba(239,227,198,.15);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;background:linear-gradient(135deg,#f3dd8e,#c9a227 40%,#8a6a1a 60%,#f7e9ac);display:block;
+    transform:rotate(45deg);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:#9d8a6b;}
+
+  .hero{padding:8vh 0 4vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.3rem,6.2vw,4.5rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;
+    font-family:Georgia,"Times New Roman",serif;}
+  h1 b{font-weight:700;color:var(--gold);}
+  .hero p{color:#a8916f;font-size:1rem;line-height:1.95;max-width:54ch;font-family:Georgia,serif;}
+
+  .leaf{margin-top:5vh;background:var(--vellum);color:var(--ink);padding:clamp(26px,5vw,66px);
+    box-shadow:0 40px 80px -40px #000, inset 0 0 120px rgba(120,90,40,.16);position:relative;}
+  .leaf:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(0deg,rgba(120,90,40,.05) 0 2px,transparent 2px 5px);}
+  .leaf .rule{width:56px;height:3px;background:var(--red);margin-bottom:22px;}
+  .initial{font-family:Georgia,"Times New Roman",serif;font-size:clamp(6rem,17vw,15rem);line-height:.78;
+    font-weight:400;float:left;margin:6px 22px 0 0;position:relative;}
+  .initial span{display:block;background-size:220% 220%;
+    background-image:linear-gradient(115deg,#8a6a1a 0%,#c9a227 18%,#f7e9ac 32%,#c9a227 46%,#8a6a1a 58%,#e8cf72 74%,#f7e9ac 88%,#a5811d 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 1px rgba(43,29,16,.45));}
+  .leaf p{font-family:Georgia,"Times New Roman",serif;font-size:1.06rem;line-height:2.05;color:#3b2a18;}
+  .rub{color:var(--red);font-variant:small-caps;letter-spacing:.06em;}
+  .cap{margin-top:26px;clear:both;border-top:1px solid var(--line);padding-top:14px;font-style:italic;
+    font-family:Georgia,serif;color:var(--dim);font-size:.94rem;}
+  .marg{position:absolute;right:22px;top:22px;width:110px;height:110px;}
+
+  .ctrl{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px;
+    border-top:1px solid rgba(239,227,198,.14);border-bottom:1px solid rgba(239,227,198,.14);padding:22px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:#9d8a6b;margin-bottom:10px;}
+  .fld output{float:right;color:var(--gold);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:rgba(239,227,198,.2);}
+  input[type=range]::-moz-range-track{height:2px;background:rgba(239,227,198,.2);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--gold);
+    border-radius:50%;margin-top:-6px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--gold);border:none;border-radius:50%;cursor:pointer;}
+  .seg{display:flex;border:1px solid rgba(239,227,198,.25);}
+  .seg button{flex:1;background:transparent;border:none;border-right:1px solid rgba(239,227,198,.25);padding:8px 4px;
+    cursor:pointer;font:400 10px/1 "Courier New",monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--vellum);}
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--gold);color:#241a12;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-family:Georgia,serif;font-size:clamp(1.4rem,3vw,2.1rem);font-weight:400;line-height:1.24;margin-bottom:14px;
+    color:var(--vellum);}
+  .cols p{color:#a8916f;font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols ul{list-style:none;margin-top:14px;}
+  .cols li{font:400 12.5px/1.6 "Courier New",monospace;color:#a8916f;padding:9px 0;border-bottom:1px solid rgba(239,227,208,.1);
+    display:flex;justify-content:space-between;gap:14px;}
+  .cols li span{color:var(--gold);}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid rgba(239,227,198,.15);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;
+    text-transform:uppercase;color:#9d8a6b;}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}.marg{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Aurea</div>
+    <div class="meta">Atelier · 14th c. · gold on vellum</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">The gilded letter</div>
+    <h1>Gold is the only<br>metal that <b>does not<br>tarnish</b></h1>
+    <p>Manuscript illumination was expensive because of what it used: ground gold, beaten thinner than a hair and laid over a raised bed of gesso, with a burnisher to press it smooth. It does not fade, which is why a thousand-year-old initial can still be the brightest thing in the room.</p>
+  </section>
+
+  <section class="leaf">
+    <div class="rule"></div>
+    <div class="initial"><span id="init">A</span></div>
+    <p><span class="rub">Incipit liber</span> — Here begins the book of the green field, in which are set down the hours, the sowing, the coming of the rain, and the names of those who asked after the oxen. <span class="rub">Item</span>, that on the ninth day of the month the mill did not turn, and the reason was not recorded, though the miller was questioned twice. <span class="rub">Item</span>, that the north wall is to be limewashed before the feast, and that the lime is to be brought by the younger brother and no one else.</p>
+    <p><span class="rub">Nota</span> — The leaves of this book are vellum, and the writing upon them is that which the monastery buys by the dozen: a good brown ink, well tempered with gum, which does not crawl. The initial upon this leaf was gilded by the gold-beater, and it is to be burnished with the agate until it shines like a mirror, and no man is to touch it after that with anything but the cloth.</p>
+    <div class="cap">From the Green Field Book, leaf VII. Written at the abbey of Saint-Aubin, in the year of the plague, by a hand that was probably not the one named.</div>
+    <svg class="marg" viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="none" stroke="#c9a227" stroke-width="1.6">
+        <path d="M50 8 C74 24 88 44 86 64 C84 82 68 92 50 92 C32 92 16 82 14 64 C12 44 26 24 50 8 Z"/>
+        <path d="M50 20 C68 32 78 48 76 63 C74 76 63 84 50 84 C37 84 26 76 24 63 C22 48 32 32 50 20 Z"/>
+        <path d="M50 32 C62 40 68 52 67 63 C66 72 58 78 50 78 C42 78 34 72 33 63 C32 52 38 40 50 32 Z"/>
+        <path d="M50 8 L50 92 M14 64 L86 64"/>
+      </g>
+      <circle cx="50" cy="52" r="6" fill="#a8291f"/>
+    </svg>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Leaf thickness <output id="oa">0.4 µm</output></label>
+      <input type="range" id="leaf" min="0" max="100" value="40">
+    </div>
+    <div class="fld">
+      <label>Burnish <output id="ob">60%</output></label>
+      <input type="range" id="burn" min="0" max="100" value="60">
+    </div>
+    <div class="fld">
+      <label>Angle</label>
+      <div class="seg" id="seg">
+        <button data-a="115" class="on">Fixed</button>
+        <button data-a="35">Raking</button>
+        <button data-a="200">Flat</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>initial is<br>raised</h2>
+      <p>Gold leaf cannot be laid flat on a page and survive. It has to be bedded into a raised area of gesso — chalk and glue, built up in several layers and polished — and then burnished with an agate until the gold is continuous. Where the gesso dips, the leaf tears, and you get the fine cracks that run through old gilded initials like dried mud.</p>
+      <p>The leaf was beaten to about a tenth of a micron. It is so thin that the colour of the gesso beneath shows through wherever the burnishing has failed, and the play of light across a single initial changes completely as the reader moves.</p>
+    </div>
+    <div>
+      <h2>The atelier</h2>
+      <ul>
+        <li>Support <span>calfskin vellum</span></li>
+        <li>Ground <span>gesso, 3 layers</span></li>
+        <li>Leaf <span>gold, 0.1–0.4 µm</span></li>
+        <li>Tool <span>agate burnisher</span></li>
+        <li>Pigment <span>vermilion, ultramarine</span></li>
+        <li>Ink <span>brown, gum arabic</span></li>
+        <li>Initial <span>6 lines</span></li>
+        <li>Date <span>c. 1350</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Aurea — gold leaf and rubrication</span>
+    <span>Letterform painted in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var init=document.getElementById('init');
+  var leaf=document.getElementById('leaf'), burn=document.getElementById('burn');
+  var angle=115;
+  function apply(){
+    var l=parseInt(leaf.value,10)/100;
+    var b=parseInt(burn.value,10)/100;
+    document.getElementById('oa').textContent=(0.1+l*0.3).toFixed(1)+' µm';
+    document.getElementById('ob').textContent=burn.value+'%';
+    var stops=[
+      '#8a6a1a 0%','#c9a227 '+(10+l*12).toFixed(0)+'%','#f7e9ac '+(20+l*14).toFixed(0)+'%',
+      '#c9a227 '+(34+l*12).toFixed(0)+'%','#8a6a1a '+(46+l*8).toFixed(0)+'%',
+      '#e8cf72 '+(62+l*10).toFixed(0)+'%','#f7e9ac '+(78+l*8).toFixed(0)+'%','#a5811d 100%'
+    ];
+    init.style.backgroundImage='linear-gradient('+angle+'deg,'+stops.join(',')+')';
+    // burnish: the tighter and brighter the highlight, the cleaner the leaf
+    var blur=(1-b)*2.2;
+    init.style.filter='drop-shadow(0 3px 1px rgba(43,29,16,'+(0.25+b*0.35).toFixed(2)+'))';
+    init.style.textShadow='0 0 '+(blur*3).toFixed(1)+'px rgba(200,160,60,'+(0.25+l*0.3).toFixed(2)+')';
+    init.style.backgroundSize=(180+l*120).toFixed(0)+'% '+(180+l*120).toFixed(0)+'%';
+  }
+  leaf.addEventListener('input',apply);
+  burn.addEventListener('input',apply);
+  var segs=document.querySelectorAll('#seg button');
+  Array.prototype.forEach.call(segs,function(s){
+    s.addEventListener('click',function(){
+      angle=parseInt(s.getAttribute('data-a'),10);
+      Array.prototype.forEach.call(segs,function(x){x.classList.remove('on');});
+      s.classList.add('on');
+      apply();
+    });
+  });
+  apply();
+})();
+</script>
+</body>
+</html>

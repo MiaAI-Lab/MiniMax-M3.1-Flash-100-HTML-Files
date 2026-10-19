@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLIDER — the arithmetic of staying up</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0d1418;--ink:#e6eef0;--dim:#75868c;--line:rgba(230,238,240,.14);--lift:#6fe0c8;--drag:#ff9a6b;--sky:#8fc0d8;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:24px;height:12px;display:block;position:relative;}
+  .brand i:before{content:"";position:absolute;left:0;right:0;top:2px;height:2px;background:var(--lift);transform:rotate(-14deg);}
+  .brand i:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;background:var(--drag);transform:rotate(-14deg);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--lift);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--lift);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#0a1013;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--lift);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--lift);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--lift);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--lift);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--lift);color:var(--lift);background:rgba(111,224,200,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.15rem/1.4 "Courier New",monospace;margin-top:6px;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Glider</div>
+    <div class="meta">Thin airfoil · NACA 2412 · ρ = 1.225 kg/m³</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Aeronautics</div>
+    <h1>Staying up is<br>a matter of<br><b>two angles</b></h1>
+    <p>Lift acts perpendicular to the wing and drag acts along it, and the ratio between them is the glide ratio — how far you go for every metre you fall. The wing's job is to make the air turn downwards, and the whole of the design is in the shape of the curve it makes the air follow.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="560"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Angle of attack <output id="oa">4.0°</output></label>
+      <input type="range" id="aoa" min="-40" max="160" value="40">
+    </div>
+    <div class="fld">
+      <label>Wing area <output id="ob">0.20 m²</output></label>
+      <input type="range" id="area" min="5" max="60" value="20">
+    </div>
+    <div class="fld">
+      <label>Aspect ratio <output id="oc">12.0</output></label>
+      <input type="range" id="ar" min="3" max="30" value="12">
+    </div>
+    <div class="fld">
+      <label>Mass <output id="od">1.6 kg</output></label>
+      <input type="range" id="mass" min="5" max="80" value="16">
+    </div>
+    <div class="btns">
+      <button class="btn" id="trim">Best glide</button>
+      <button class="btn" id="stall">Stall</button>
+      <button class="btn" id="dive">Dive</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Lift coefficient</u><s id="s1">—</s></div>
+    <div><u>Drag coefficient</u><s id="s2">—</s></div>
+    <div><u>Glide ratio</u><s id="s3">—</s></div>
+    <div><u>Sink rate</u><s id="s4">—</s></div>
+    <div><u>Speed</u><s id="s5">—</s></div>
+    <div><u>Range from 100 m</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The<br>whole<br>argument</h2>
+      <p>A wing makes the air turn. Turning the air downwards means pushing it down, and by the third law the air pushes back — upwards. That is lift, and the amount of it depends on how much air is turned and how fast.</p>
+      <p>But turning the air also costs you: the wing has skin friction against the air, and the tilted wake leaves a little energy in turbulence behind it. That second cost is <b>induced drag</b>, and it goes as the square of the lift, which is why a glider flies fast and flat or slow and steeply, and why the best glide is at some particular speed rather than at any speed.</p>
+    </div>
+    <div>
+      <h2>Stalling</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">Lift is linear in the angle of attack only while the flow stays attached. Past about fifteen degrees the boundary layer on the upper surface separates, the wing stops turning the air cleanly, and the lift collapses — while the drag rises steeply. That is a stall, and the airfoil drawn here is a NACA 2412, a conventional shape that stalls at about sixteen degrees.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Watch the lift curve as you sweep the angle past the stall: the trace turns over, the drag goes up like a wall, and the glider on the right stops flying and starts falling.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Glider — the arithmetic of staying up</span>
+    <span>Thin-airfoil theory · NACA section generated</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var aoa=4, area=0.20, AR=12, mass=1.6, rho=1.225;
+  var x=0, y=0, vx=0, vy=0, t=0;
+  var stall=16;
+
+  function naca(xc){
+    // NACA 2412 thickness distribution, xc in 0..1
+    var yt=5*0.12*(0.2969*Math.sqrt(xc)-0.1260*xc-0.3516*xc*xc+0.2843*xc*xc*xc-0.1015*xc*xc*xc*xc);
+    return yt;
+  }
+  function airfoilPoints(n){
+    var pts=[];
+    for(var i=0;i<=n;i++){
+      var xc=i/n;
+      pts.push({x:xc,y:naca(xc)});
+    }
+    for(var j=n-1;j>=0;j--){
+      var xc2=j/n;
+      pts.push({x:xc2,y:-naca(xc2)});
+    }
+    return pts;
+  }
+  function coeffs(){
+    var a=aoa*Math.PI/180;
+    var cl;
+    if(aoa<stall){
+      cl=2*Math.PI*Math.sin(a);
+    }else{
+      var past=Math.min(1,(aoa-stall)/14);
+      cl=(2*Math.PI*Math.sin(stall*Math.PI/180))*(1-past*0.72);
+    }
+    var cd0=0.008+0.00012*AR;
+    var cdi=(cl*cl)/(Math.PI*AR*0.85);
+    var cd=cd0+cdi;
+    return {cl:cl,cd:cd};
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // sky gradient
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#1b3a4a'); g.addColorStop(0.55,'#3d6b7d'); g.addColorStop(1,'#c9b48c');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // ground
+    ctx.fillStyle='#3b3226';
+    ctx.fillRect(0,H-70,W,70);
+    ctx.strokeStyle='rgba(255,240,200,.25)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,H-70); ctx.lineTo(W,H-70); ctx.stroke();
+    // glide path
+    var c=coeffs();
+    var gl=0;
+    if(c.cl>0.02) gl=c.cl/c.cd;
+    var path=[];
+    var gx=0, gy=H-90;
+    for(var i=0;i<=60;i++){
+      path.push([gx,gy]);
+      gx+=W/60*0.9;
+      gy+= (W/60*0.9)/Math.max(0.2,gl);
+    }
+    ctx.strokeStyle='rgba(111,224,200,.45)'; ctx.lineWidth=1.4; ctx.setLineDash([5,5]);
+    ctx.beginPath();
+    path.forEach(function(p,i){ if(i===0)ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); });
+    ctx.stroke(); ctx.setLineDash([]);
+    // glider
+    var px=180, py=H-160;
+    ctx.save();
+    ctx.translate(px,py);
+    ctx.rotate(-aoa*Math.PI/180);
+    // wing section
+    var pts=airfoilPoints(28);
+    var sc=420;
+    ctx.beginPath();
+    pts.forEach(function(p,i){
+      var X=300+(p.x-0.35)*sc, Y=-(p.y)*sc;
+      if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);
+    });
+    ctx.closePath();
+    var wg=ctx.createLinearGradient(0,-60,0,60);
+    wg.addColorStop(0,'#e8f2f5'); wg.addColorStop(0.5,'#b9c9cf'); wg.addColorStop(1,'#6d7d84');
+    ctx.fillStyle=wg; ctx.fill();
+    ctx.strokeStyle='rgba(20,26,30,.6)'; ctx.lineWidth=1.4; ctx.stroke();
+    // fuselage
+    ctx.strokeStyle='rgba(230,238,240,.5)'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(300,0); ctx.stroke();
+    ctx.restore();
+    // velocity
+    var vAng=-Math.atan2(1,Math.max(0.2,gl));
+    ctx.strokeStyle='rgba(240,246,248,.7)'; ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(px,py); ctx.lineTo(px+120*Math.cos(vAng), py+120*Math.sin(vAng));
+    ctx.stroke();
+    // lift (perpendicular to velocity, upward)
+    var lAng=vAng-Math.PI/2;
+    var liftLen=110*Math.min(1.6,Math.abs(c.cl)/1.2);
+    ctx.strokeStyle='#6fe0c8'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px+liftLen*Math.cos(lAng), py+liftLen*Math.sin(lAng)); ctx.stroke();
+    // drag (opposite to velocity)
+    ctx.strokeStyle='#ff9a6b'; ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(px,py); ctx.lineTo(px-90*c.cd*4*Math.cos(vAng), py-90*c.cd*4*Math.sin(vAng));
+    ctx.stroke();
+    // labels
+    ctx.fillStyle='#6fe0c8'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('LIFT', px+liftLen*Math.cos(lAng)+6, py+liftLen*Math.sin(lAng));
+    ctx.fillStyle='#ff9a6b';
+    ctx.fillText('DRAG', px-90*c.cd*4*Math.cos(vAng)+6, py-90*c.cd*4*Math.sin(vAng));
+    // angle of attack arc
+    ctx.strokeStyle='rgba(240,246,248,.5)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(px-40,py,34,-0.2,0); ctx.stroke();
+    ctx.fillStyle='rgba(240,246,248,.7)';
+    ctx.fillText(aoa.toFixed(1)+'°', px-20, py+22);
+    // readouts
+    var Wt=mass*9.81;
+    var V=Math.sqrt(2*Wt/(rho*area*Math.max(0.05,c.cl)));
+    var sink=mass*9.81/(0.5*rho*V*V*area*c.cl);
+    document.getElementById('s1').textContent=c.cl.toFixed(3);
+    document.getElementById('s2').textContent=c.cd.toFixed(4);
+    document.getElementById('s3').textContent=gl.toFixed(1)+' : 1';
+    document.getElementById('s4').textContent=sink.toFixed(2)+' m/s';
+    document.getElementById('s5').textContent=V.toFixed(1)+' m/s';
+    document.getElementById('s6').textContent=(gl*100).toFixed(0)+' m';
+    document.getElementById('hud').innerHTML='α <b>'+aoa.toFixed(1)+'°</b><br>'+
+      'CL <b>'+c.cl.toFixed(2)+'</b> &nbsp; CD <b>'+c.cd.toFixed(4)+'</b><br>'+
+      'L/D <b>'+gl.toFixed(1)+'</b>'+(aoa>=stall?'<br><b>STALLED</b>':'');
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+  document.getElementById('aoa').addEventListener('input',function(){
+    aoa=parseInt(this.value,10)/10;
+    document.getElementById('oa').textContent=aoa.toFixed(1)+'°';
+  });
+  document.getElementById('area').addEventListener('input',function(){
+    area=parseInt(this.value,10)/100;
+    document.getElementById('ob').textContent=area.toFixed(2)+' m²';
+  });
+  document.getElementById('ar').addEventListener('input',function(){
+    AR=parseInt(this.value,10);
+    document.getElementById('oc').textContent=AR.toFixed(1);
+  });
+  document.getElementById('mass').addEventListener('input',function(){
+    mass=parseInt(this.value,10)/10;
+    document.getElementById('od').textContent=mass.toFixed(1)+' kg';
+  });
+  document.getElementById('trim').addEventListener('click',function(){
+    // best glide: maximise cl/cd, which for this model is at low aoa
+    aoa=5; document.getElementById('aoa').value=50;
+    document.getElementById('oa').textContent='5.0°';
+  });
+  document.getElementById('stall').addEventListener('click',function(){
+    aoa=20; document.getElementById('aoa').value=200;
+    document.getElementById('oa').textContent='20.0°';
+  });
+  document.getElementById('dive').addEventListener('click',function(){
+    aoa=-8; document.getElementById('aoa').value=-80;
+    document.getElementById('oa').textContent='-8.0°';
+  });
+})();
+</script>
+</body>
+</html>

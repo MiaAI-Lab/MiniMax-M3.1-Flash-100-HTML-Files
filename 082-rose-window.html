@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSE — a window of stone and light</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#15161c;--ink:#ece7dc;--dim:#86828c;--line:rgba(236,231,220,.14);--gold:#d4a94a;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50%;border:2px solid var(--gold);display:block;
+    background:repeating-conic-gradient(from 0deg,var(--gold) 0 12deg,transparent 12deg 30deg);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:780px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--gold);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:56ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 250px;gap:26px;align-items:start;
+    border:1px solid var(--line);padding:24px;background:#101118;}
+  .stage canvas{width:100%;height:auto;display:block;cursor:pointer;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--ink);font-weight:400;}
+  .row b.g{color:var(--gold);font-weight:400;}
+  .swatches{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+  .swatches i{width:20px;height:20px;display:block;border:1px solid rgba(255,255,255,.2);}
+
+  .ctrl{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--gold);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--gold);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--gold);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--gold);color:var(--gold);background:rgba(212,169,74,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Rose</div>
+    <div class="meta">Tracery · chalk and glass · c. 1220</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Gothic</div>
+    <h1>A hole in a<br>wall, arranged<br>so that the <b>sun</b><br>can get through</h1>
+    <p>The rose window is a stone diagram of the cosmos, and the glass in it was never decoration but information. Blue for the sky, red for the martyrs, gold for the saints, green for the earth — and the whole thing had to be assembled from pieces small enough to be fired in a kiln and strong enough to hold up a roof.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1000" height="1000"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Window</h2>
+        <div class="row"><span>Petals per ring</span><b class="g" id="s1">—</b></div>
+        <div class="row"><span>Rings</span><b id="s2">—</b></div>
+        <div class="row"><span>Total lights</span><b id="s3">—</b></div>
+        <div class="row"><span>Diameter</span><b id="s4">—</b></div>
+        <div class="row"><span>Glass area</span><b id="s5">—</b></div>
+        <div class="row"><span>Sun</span><b id="s6">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Palette</h2>
+        <div class="swatches" id="sw"></div>
+        <p style="font-size:.85rem;line-height:1.8;color:var(--dim);margin-top:12px">Click any light in the window to change its glass.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Petals <output id="oa">8</output></label>
+      <input type="range" id="pet" min="4" max="16" value="8">
+    </div>
+    <div class="fld">
+      <label>Rings <output id="ob">4</output></label>
+      <input type="range" id="rng" min="2" max="6" value="4">
+    </div>
+    <div class="fld">
+      <label>Sun angle <output id="oc">135°</output></label>
+      <input type="range" id="sun" min="0" max="360" value="135">
+    </div>
+    <div class="btns">
+      <button class="btn" id="seed">New glass</button>
+      <button class="btn" id="sym">Symmetric</button>
+      <button class="btn" id="day">Daylight</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>How the<br>tracery<br>works</h2>
+      <p>Everything in a rose window is a piece of cut stone holding up everything else. The <b>bar tracery</b> — the thick straight mullions that divide the window into rectangular lights — was replaced in the thirteenth century by <b>plate tracery</b>, in which a single slab of stone is pierced with openings cut straight through, so that a petal can be a continuous curve rather than a rectangle.</p>
+      <p>That is what makes the window possible. A circle cannot be built out of rectangles, but it can be built out of holes. The masons cut the plate, the glaziers filled each hole with leaded glass, and the whole thing is held in a stone frame that carries the load.</p>
+    </div>
+    <div>
+      <h2>The glass</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">Coloured glass is not transparent. It is coloured by adding metal oxides to the melt — copper for green and red, cobalt for blue, iron for yellow — and the colour comes from the metal itself absorbing the rest of the spectrum. Medieval glass is so saturated that it reads as a solid colour, which is why the windows look like jewels rather than pictures.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">The glass was painted with vitreous enamel and fired again, and details like faces were added in grisaille — grey paint on white glass — because nobody has ever made a good red that will hold a fine line of black.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Rose — a window of stone and light</span>
+    <span>Tracery and glass generated procedurally</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  var PETALS=8, RINGS=4, sunAngle=135, daylight=false, symmetric=false;
+  var oculusR=0;
+  var PALETTE=['#1d4e8c','#2a6fb8','#7a1f2b','#a8322a','#c9a227','#e0c85a','#2f6b4a','#3f8f63',
+               '#6a3f8a','#8a4fa8','#d8d2c0','#f0ead6','#164a6a','#8c4a1d'];
+  var lights=[]; // {ring, idx, color, x,y,r}
+  var seed=12345;
+  function rnd(){ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; }
+  function reseed(){ seed=(Math.random()*1e9)|0; build(); }
+
+  function lancet(r0,r1,half,rot){
+    var a1=rot-half, a2=rot+half;
+    var mid=(r0+r1)/2;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r0,a1,a2);
+    ctx.quadraticCurveTo(cx+Math.cos(a2)*mid*1.02, cy+Math.sin(a2)*mid*1.02,
+                         cx+Math.cos(rot)*r1, cy+Math.sin(rot)*r1);
+    ctx.quadraticCurveTo(cx+Math.cos(a1)*mid*1.02, cy+Math.sin(a1)*mid*1.02,
+                         cx+Math.cos(a1)*r0, cy+Math.sin(a1)*r0);
+    ctx.closePath();
+  }
+  function build(){
+    lights=[];
+    var R=W*0.46;
+    // oculus
+    oculusR=R*0.13;
+    for(var i=0;i<PETALS;i++){
+      var a=i/PETALS*6.2832;
+      lights.push({x:cx+Math.cos(a)*oculusR*0.55, y:cy+Math.sin(a)*oculusR*0.55,
+        r:oculusR*0.34, ring:0, idx:i, color:pick()});
+    }
+    var inner=oculusR;
+    for(var r=0;r<RINGS;r++){
+      var n=PETALS*(r+1);
+      var r0=inner+ (R*0.88-inner)*(r/RINGS);
+      var r1=inner+ (R*0.88-inner)*((r+1)/RINGS);
+      for(var k=0;k<n;k++){
+        var rot=k/n*6.2832 + (r%2?Math.PI/n:0);
+        var half=Math.PI/n*0.94;
+        var col=pick();
+        var mid=(r0+r1)/2;
+        lights.push({x:cx+Math.cos(rot)*mid, y:cy+Math.sin(rot)*mid, r:(r1-r0)*0.42,
+          ring:r+1, idx:k, color:col, rot:rot, r0:r0, r1:r1, half:half});
+      }
+      inner=r1;
+    }
+  }
+  function pick(){
+    if(symmetric) return PALETTE[Math.floor(rnd()*6)];
+    return PALETTE[Math.floor(rnd()*PALETTE.length)];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // stone surround
+    var g=ctx.createRadialGradient(cx,cy,W*0.2,cx,cy,W*0.56);
+    g.addColorStop(0,'#2b2a2c'); g.addColorStop(1,'#131317');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // outer mouldings
+    var R=W*0.46;
+    ctx.beginPath(); ctx.arc(cx,cy,R+26,0,6.283);
+    ctx.fillStyle='#3a3733'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,R+8,0,6.283);
+    ctx.fillStyle='#26241f'; ctx.fill();
+    // dark ground
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283);
+    ctx.fillStyle='#0a0a0c'; ctx.fill();
+    // lights
+    lights.forEach(function(L){
+      if(L.ring===0){
+        ctx.beginPath(); ctx.arc(L.x,L.y,L.r,0,6.283);
+        ctx.fillStyle=L.color; ctx.fill();
+        ctx.strokeStyle='#0a0a0c'; ctx.lineWidth=3; ctx.stroke();
+      }else{
+        lancet(L.r0,L.r1,L.half,L.rot);
+        ctx.fillStyle=L.color; ctx.fill();
+        // painted detail
+        ctx.save(); ctx.clip();
+        ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.lineWidth=1;
+        for(var s=-2;s<8;s++){
+          ctx.beginPath();
+          ctx.moveTo(cx+Math.cos(L.rot+s*0.5)*(L.r0*0.9), cy+Math.sin(L.rot+s*0.5)*(L.r0*0.9));
+          ctx.lineTo(cx+Math.cos(L.rot+s*0.5)*(L.r1*1.05), cy+Math.sin(L.rot+s*0.5)*(L.r1*1.05));
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.strokeStyle='#0a0a0c'; ctx.lineWidth=4; ctx.stroke();
+      }
+    });
+    // lead lines / cames
+    ctx.strokeStyle='rgba(10,10,12,.9)'; ctx.lineWidth=3;
+    for(var r2=1;r2<=RINGS;r2++){
+      ctx.beginPath(); ctx.arc(cx,cy, oculusR+(R*0.88-oculusR)*(r2/RINGS),0,6.283); ctx.stroke();
+    }
+    // central boss
+    ctx.beginPath(); ctx.arc(cx,cy,oculusR*0.42,0,6.283);
+    ctx.fillStyle='#d4a94a'; ctx.fill();
+    ctx.strokeStyle='#0a0a0c'; ctx.lineWidth=4; ctx.stroke();
+    // light sweep
+    var sa=sunAngle*Math.PI/180;
+    var lg=ctx.createLinearGradient(cx+Math.cos(sa)*R, cy+Math.sin(sa)*R, cx-Math.cos(sa)*R, cy-Math.sin(sa)*R);
+    lg.addColorStop(0,'rgba(255,240,200,'+(daylight?0.30:0.16)+')');
+    lg.addColorStop(0.5,'rgba(255,240,200,0)');
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,6.283); ctx.clip();
+    ctx.fillStyle=lg; ctx.fillRect(0,0,W,H);
+    ctx.restore();
+    // frame
+    ctx.beginPath(); ctx.arc(cx,cy,R+26,0,6.283);
+    ctx.strokeStyle='rgba(212,169,74,.35)'; ctx.lineWidth=2; ctx.stroke();
+    // stats
+    document.getElementById('s1').textContent=PETALS;
+    document.getElementById('s2').textContent=RINGS;
+    document.getElementById('s3').textContent=lights.length;
+    document.getElementById('s4').textContent=(R*2/5).toFixed(2)+' m';
+    document.getElementById('s5').textContent=(Math.PI*R*R/10000).toFixed(1)+' m²';
+    document.getElementById('s6').textContent=sunAngle+'°';
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  // palette swatches
+  var sw=document.getElementById('sw');
+  PALETTE.forEach(function(c){
+    var i=document.createElement('i'); i.style.background=c; sw.appendChild(i);
+  });
+
+  cv.addEventListener('click',function(e){
+    var r=cv.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
+    var best=null,bd=1e9;
+    lights.forEach(function(L){
+      var d=Math.hypot(L.x-x,L.y-y);
+      if(d<L.r+10 && d<bd){bd=d;best=L;}
+    });
+    if(best){
+      var i=PALETTE.indexOf(best.color);
+      best.color=PALETTE[(i+1)%PALETTE.length];
+    }
+  });
+  document.getElementById('pet').addEventListener('input',function(){
+    PETALS=parseInt(this.value,10);
+    document.getElementById('oa').textContent=PETALS;
+    build();
+  });
+  document.getElementById('rng').addEventListener('input',function(){
+    RINGS=parseInt(this.value,10);
+    document.getElementById('ob').textContent=RINGS;
+    build();
+  });
+  document.getElementById('sun').addEventListener('input',function(){
+    sunAngle=parseInt(this.value,10);
+    document.getElementById('oc').textContent=sunAngle+'°';
+  });
+  document.getElementById('seed').addEventListener('click',reseed);
+  document.getElementById('sym').addEventListener('click',function(){
+    symmetric=!symmetric; this.classList.toggle('on',symmetric); build();
+  });
+  document.getElementById('day').addEventListener('click',function(){
+    daylight=!daylight; this.classList.toggle('on',daylight);
+  });
+  build();
+})();
+</script>
+</body>
+</html>

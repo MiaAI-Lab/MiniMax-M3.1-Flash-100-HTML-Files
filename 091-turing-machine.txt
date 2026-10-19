@@ -1,0 +1,18 @@
+TITLE: TURING — a machine on a tape
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "TURING — a machine on a tape", a working Turing machine. Art direction: laboratory bench, black machine, amber state light, paper tape. Palette: ground #101318, ink #e8ecef, dim #7b838c, hairline rgba(232,236,239,.14), paper #e7e2d4, accent #ffb454, halt green #7ee081. Layout: a header with a square logo mark and a monospaced specification line; then a hero with an amber kicker, a huge light-weight headline with one green bold word, and a paragraph; then a bordered bench holding a 1200×240 canvas that draws the paper tape as a scrolling strip of ruled cells with the ones filled in black, the current state named above the head and the head drawn as an amber bracket with a vertical guide line; then a two-column section: on the left the transition table as a real HTML table with a row per state and a cell per symbol, each cell holding a button showing the write symbol and the direction plus a dropdown for the next state, with the currently firing cell highlighted; on the right a read-only table of the machine's state, the symbol under the head, the head position, the number of steps, the number of ones on the tape, the extent of the tape and whether it has halted; then a control row of Step, Run and Reset, a rule, and three preset machines (Stripes, Counter, Halts); then a two-column section pairing an essay on why the paper tape is the right image with a note on Turing's argument; and a footer. The machine is real: a tape that is a sparse map, so it is genuinely unbounded, a head that moves left or right, a state variable, and a rule for each pair of state and symbol that says what to write, which way to move and which state to go to. Interaction: Step advances one transition, Run advances continuously on a timer, Reset clears the tape, the three preset buttons load different machines, clicking a table cell cycles the write symbol and then the direction, and the dropdown sets the next state. Responsive: the two-column sections stack under 880px.
+
+DESCRIPTION:
+A Turing machine that actually runs: a sparse tape, so it is genuinely unbounded, a head that moves left and right, a state, and a rule table you can edit. Step through it a transition at a time and watch a row of ones appear; run one of the three preset machines and watch the stripes, the counter or the halt. The table is live, so you can change the machine and see a different machine.
+
+MAJOR VISUAL TECHNIQUES:
+- Scrolling paper tape drawn as ruled cells with ones filled in black
+- Amber head bracket with a vertical guide line to the current cell
+- Sparse map used as the tape so it is genuinely unbounded
+- Editable transition table with write/direction buttons and state dropdowns
+- Machine presets covering stripes, a counter and a halting machine
+- Live readouts of state, symbol, position, steps, ones and tape extent
+
+INTENDED INTERACTION MODEL:
+Run the machine. Step it, run it, reset it, load a preset, and edit the rules in the table until the machine does something new.

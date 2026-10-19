@@ -1,0 +1,18 @@
+TITLE: ZOETROPE — the drum of pictures
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ZOETROPE — the drum of pictures". Art direction: Victorian optical toy, dark wood and brass, cream paper. Palette: ground #1b1510, back wall #241a13, ink #f0e6d0, dim #9d8a72, hairline rgba(240,230,208,.15), cream #efe0bd, brass #c9a227. Layout: a header with a double-ring logo mark and a monospaced catalogue line; then a hero with a brass kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a wide bordered box split into a large square canvas on the left and a 260px column of three instrument boxes on the right (Instrument with live readouts for pictures, slit, rpm, direction and apparent frequency; Controls; and a short Note); then a two-column section pairing an essay on the oldest movie projector with a numbered list of the five conditions the illusion needs; and a footer. The drum is drawn on an offscreen canvas: twelve (or eighteen, or twenty-four) pie slices, each holding a procedurally drawn bird whose wings beat through a sine of the frame index, drawn in a local frame so that it stays upright as the disc turns, with a slot line on each boundary. The visible canvas then covers the disc with an even-odd fill so that only a brass-framed slit at the top remains open, and the drum image is re-drawn clipped to that slit — which is the whole illusion. Interaction: drag the drum to spin it by hand with inertia; Spin toggles the automatic rotation; Reverse flips the direction; Peek removes the slit and shows all the pictures at once; More cycles the picture count between 12, 18 and 24. The rpm and apparent-frequency readouts are computed from the actual rotation rate. Responsive: the stage and the two-column section stack under 860px.
+
+DESCRIPTION:
+A working zoetrope. The bird is drawn procedurally, frame by frame, with its wings beating through a sine of the frame index; the disc is masked with an even-odd fill so that only the brass-framed slit at the top stays open, and the drum is re-drawn clipped to that slit. Peek removes the slit and shows you all the pictures at once, which is the whole trick and the whole secret. Drag the drum to spin it by hand.
+
+MAJOR VISUAL TECHNIQUES:
+- Offscreen canvas disc composited into a clipped slit window
+- Even-odd fill used to cut a rectangular hole out of a filled rectangle
+- Procedurally drawn animation frame with a sine-driven wing beat
+- Pointer-drag rotation with inertia and decay
+- Brass double-line slit plate and rim detailing
+- Live rpm and apparent-frame-rate readouts derived from rotation speed
+
+INTENDED INTERACTION MODEL:
+Spin it. Drag the drum by hand, toggle the motor, reverse it, peek through the removed slit, and add pictures to see what breaks.

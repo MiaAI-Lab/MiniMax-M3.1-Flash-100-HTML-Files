@@ -1,0 +1,18 @@
+TITLE: MYCELIUM — the network under the wood
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MYCELIUM — the network under the wood". Art direction: forest floor at night, near-black soil, pale threads, one cold teal accent. Palette: ground #0a0c09, ink #e8ece0, dim #79806e, hairline rgba(232,236,224,.13), thread #e9dfb4, nutrient #4fb0a5. Layout: a header with a logo mark of two dots joined by a hypha and a monospaced plot line; then a hero with a teal kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered field panel with a padding frame, a 720×480 canvas and an absolutely positioned monospace HUD reporting active tips and biomass; then a control band of two sliders (Growth rate, Nutrient load) and four buttons (New colony / Rain / Clear / Add a log); then a two-column section pairing an essay on how the network decides with a statistics table reporting hyphal length, active tips, nutrient remaining and a network-order figure; and a footer. The simulation runs on a 240×160 grid of two float fields — one for mycelium density and one for nutrient — written into an ImageData buffer and then drawn scaled up onto the visible canvas so the threads are soft rather than blocky. Each growing tip samples all eight neighbouring cells, moves to whichever holds the most nutrient, deposits hypha, draws a little nutrient back out of the ground behind it, and branches with a small probability; hypha and nutrient both decay every frame. Interaction: clicking the field drops a blob of nutrient that the network will grow towards; New colony reseeds; Rain distributes nutrient everywhere; Add a log lays a long streak of substrate; Clear wipes the field. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A fungal network grown from local rules. There is no brain and no plan — each tip simply samples its eight neighbours, moves towards whichever holds the most nutrient, and occasionally splits — and the branching fans that emerge are the sum of those thousands of tiny decisions. Click anywhere to drop a blob of food and watch the threads find it.
+
+MAJOR VISUAL TECHNIQUES:
+- Two float fields (nutrient and mycelium) on a 240×160 grid
+- ImageData buffer written and upscaled with smoothing for soft threads
+- Eight-neighbour weighted tip search with stochastic branching
+- Back-translocation of nutrient from the cell behind the tip
+- Per-frame decay of both fields
+- Additive palette maths combining loam, nutrient teal and thread cream
+
+INTENDED INTERACTION MODEL:
+Feed it. Click to drop nutrient, add logs, send rain, reseed or clear, and watch the network reorganise itself around the food.

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TETROMINO — the falling block</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0e0d14;--ink:#efecf4;--dim:#7d7a8c;--line:rgba(239,236,244,.14);--accent:#c8ff4d;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:20px;height:20px;display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .brand i b{background:var(--accent);display:block;}
+  .brand i b:nth-child(2){background:transparent;}
+  .brand i b:nth-child(3){background:transparent;}
+  .brand i b:nth-child(4){background:var(--accent);opacity:.4;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:7vh 0 3vh;max-width:720px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--accent);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--accent);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .game{margin-top:4vh;display:grid;grid-template-columns:auto 180px;gap:22px;align-items:start;
+    border:1px solid var(--line);padding:22px;background:#12111a;}
+  .boardwrap{position:relative;}
+  .boardwrap canvas{display:block;background:#08080d;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:14px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:10px;}
+  .stat{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .stat b{color:var(--ink);font-weight:400;}
+  .stat b.a{color:var(--accent);}
+  .nextcanvas{display:block;width:100%;height:auto;background:#08080d;}
+  .keys{font:400 11px/1.9 "Courier New",monospace;color:var(--dim);}
+  .keys b{color:var(--ink);font-weight:400;}
+  .over{position:absolute;inset:0;display:none;place-items:center;background:rgba(8,8,13,.86);
+    font:400 14px/1.8 "Courier New",monospace;color:var(--accent);text-align:center;letter-spacing:.2em;}
+  .over.on{display:grid;}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--accent);color:var(--accent);background:rgba(200,255,77,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.game{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i><b></b><b></b><b></b><b></b></i>Tetromino</div>
+    <div class="meta">10 × 20 · 7-bag · ghost on</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Puzzle</div>
+    <h1>Seven shapes<br>and a <b>heaven</b><br>of bad luck</h1>
+    <p>Four squares at a time, falling. The whole design is about fairness: a bag of seven pieces, so the worst drought is thirteen pieces, and the piece you need is never further away than that.</p>
+  </section>
+
+  <section class="game">
+    <div class="boardwrap">
+      <canvas id="cv" width="300" height="600"></canvas>
+      <div class="over" id="over">GAME OVER<br>PRESS R TO RESTART</div>
+    </div>
+    <div class="side">
+      <div class="box">
+        <h2>Next</h2>
+        <canvas class="nextcanvas" id="nx" width="160" height="120"></canvas>
+      </div>
+      <div class="box">
+        <h2>Score</h2>
+        <div class="stat"><span>Score</span><b class="a" id="s1">0</b></div>
+        <div class="stat"><span>Lines</span><b id="s2">0</b></div>
+        <div class="stat"><span>Level</span><b id="s3">1</b></div>
+        <div class="stat"><span>Pieces</span><b id="s4">0</b></div>
+        <div class="stat"><span>Time</span><b id="s5">0:00</b></div>
+      </div>
+      <div class="box">
+        <h2>Keys</h2>
+        <div class="keys">
+          <b>←</b> move &nbsp; <b>→</b> move<br>
+          <b>↓</b> soft drop<br>
+          <b>↑</b> rotate<br>
+          <b>space</b> hard drop<br>
+          <b>P</b> pause &nbsp; <b>R</b> restart
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" id="pause">Pause</button>
+    <button class="btn" id="restart">Restart</button>
+    <button class="btn" id="ghost">Ghost on</button>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>bag<br>matters</h2>
+      <p>With a purely random generator you can be given twelve I-pieces in a row, and there is nothing you can do about it. The seven-bag system deals from a shuffled bag of one of each tetromino and only refills when the bag is empty, so the longest drought is thirteen pieces and the mean is seven.</p>
+      <p>Everything else in a good implementation exists to make the same promise. <b>Wall kicks</b> let a piece rotate in a tight space instead of locking up. <b>Ghost</b> shows where the piece will land. <b>Lock delay</b> gives you a moment to move a piece after it lands, which is what stops a fast player from losing a rotation they had earned.</p>
+    </div>
+    <div>
+      <h2>The scoring</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">Clearing one line is worth 100, two is 300, three is 500 and four is 800 — the jump from three to four is the whole point, and it is the only moment in the game that feels like winning rather than tidying. Lines raise the level, and the level sets the speed, so the scoring system and the difficulty system are the same number.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">A soft drop earns one point per cell and a hard drop earns two per cell, which is enough to make dropping a piece quickly worth a little and not worth wrecking your board for.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Tetromino — the falling block</span>
+    <span>Canvas rendering · keyboard and touch</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var nx=document.getElementById('nx'), nctx=nx.getContext('2d');
+  var COLS=10, ROWS=20, CELL=30;
+  var SHAPES={
+    I:[[0,1,2,3]],
+    J:[[0,0,1],[0,1,1]],
+    L:[[1,0,0],[1,1,1]],
+    O:[[1,1],[1,1]],
+    S:[[1,0],[1,1,0]],
+    T:[[0,1,0],[1,1,1]],
+    Z:[[0,1],[1,1,0]]
+  };
+  var COLORS={I:'#4fd6e0',J:'#6a8cff',L:'#ff9f4d',O:'#ffe14d',S:'#6ee38a',T:'#c07bff',Z:'#ff5d6c'};
+  var board=[], cur=null, bag=[], nextPieces=[], score=0, lines=0, level=1, pieces=0;
+  var paused=false, over=false, ghost=true, dropTimer=0, startTime=0, elapsed=0, lastTick=0;
+
+  function reset(){
+    board=[];
+    for(var y=0;y<ROWS;y++){ board.push([]); for(var x=0;x<COLS;x++) board[y].push(null); }
+    bag=[]; nextPieces=[]; score=0; lines=0; level=1; pieces=0;
+    over=false; paused=false; cur=null; dropTimer=0; startTime=Date.now(); elapsed=0;
+    document.getElementById('over').classList.remove('on');
+    pullNext(); pullNext(); spawn();
+  }
+  function refill(){
+    var b=Object.keys(SHAPES);
+    for(var i=b.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=b[i];b[i]=b[j];b[j]=t; }
+    bag=b;
+  }
+  function pullNext(){
+    if(bag.length===0) refill();
+    nextPieces.push(bag.pop());
+  }
+  function makePiece(t){
+    var m=SHAPES[t].map(function(r){return r.slice();});
+    return {t:t,m:m,x:3,y:0,rot:0};
+  }
+  function spawn(){
+    if(nextPieces.length<2) pullNext();
+    cur=makePiece(nextPieces.shift());
+    pullNext();
+    pieces++;
+    var h=cur.m.length;
+    cur.y=ROWS-h-1;
+    if(collides(cur,0,0,cur.m)){ over=true; document.getElementById('over').classList.add('on'); }
+  }
+  function collides(p,dx,dy,m){
+    for(var y=0;y<m.length;y++){
+      for(var x=0;x<m[y].length;x++){
+        if(!m[y][x]) continue;
+        var nx2=p.x+x+dx, ny=p.y+y+dy;
+        if(nx2<0||nx2>=COLS||ny>=ROWS) return true;
+        if(ny>=0 && board[ny][nx2]) return true;
+      }
+    }
+    return false;
+  }
+  function rotateM(m){
+    var h=m.length, w=m[0].length, out=[];
+    for(var x=0;x<w;x++){ out.push([]); }
+    for(var y=0;y<h;y++) for(var x=0;x<w;x++) out[w-1-x].unshift(m[y][x]);
+    return out;
+  }
+  function tryRotate(){
+    var m=rotateM(cur.m);
+    var kicks=[[0,0],[-1,0],[1,0],[-2,0],[2,0],[0,-1],[-1,-1],[1,-1],[0,1]];
+    for(var i=0;i<kicks.length;i++){
+      if(!collides(cur,kicks[i][0],kicks[i][1],m)){
+        cur.m=m; cur.x+=kicks[i][0]; cur.y+=kicks[i][1]; return;
+      }
+    }
+  }
+  function move(dx){
+    if(!collides(cur,dx,0,cur.m)){ cur.x+=dx; return true; }
+    return false;
+  }
+  function softDrop(){
+    if(!collides(cur,0,1,cur.m)){ cur.y++; score+=1; return true; }
+    lock();
+    return false;
+  }
+  function ghostY(){
+    var p={x:cur.x,y:cur.y};
+    while(!collides(p,0,1,cur.m)) p.y++;
+    return p.y;
+  }
+  function lock(){
+    for(var y=0;y<cur.m.length;y++) for(var x=0;x<cur.m[y].length;x++){
+      if(cur.m[y][x]){
+        var ny=cur.y+y, nx2=cur.x+x;
+        if(ny>=0&&ny<ROWS&&nx2>=0&&nx2<COLS) board[ny][nx2]=cur.t;
+      }
+    }
+    // clear lines
+    var cleared=0;
+    for(var r=ROWS-1;r>=0;r--){
+      var full=true;
+      for(var c=0;c<COLS;c++) if(!board[r][c]){full=false;break;}
+      if(full){
+        board.splice(r,1);
+        var blank=[]; for(var q=0;q<COLS;q++) blank.push(null);
+        board.unshift(blank);
+        r++; cleared++;
+      }
+    }
+    if(cleared){
+      lines+=cleared;
+      score += [0,100,300,500,800][cleared]*level;
+      level=1+Math.floor(lines/10);
+    }
+    spawn();
+  }
+  function hardDrop(){
+    var gy=ghostY();
+    score+=(gy-cur.y)*2;
+    cur.y=gy;
+    lock();
+  }
+  function drawCell(c,x,y,size,alpha){
+    c.fillStyle=COLORS[cur?cur.t:'I'];
+    c.globalAlpha=alpha;
+    c.fillRect(x*size+1,y*size+1,size-2,size-2);
+    c.globalAlpha=alpha*0.5;
+    c.fillStyle='#fff';
+    c.fillRect(x*size+1,y*size+1,size-2,3);
+    c.globalAlpha=1;
+  }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#08080d'; ctx.fillRect(0,0,cv.width,cv.height);
+    // grid
+    ctx.strokeStyle='rgba(239,236,244,.05)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var x=0;x<=COLS;x++){ctx.moveTo(x*CELL+.5,0);ctx.lineTo(x*CELL+.5,cv.height);}
+    for(var y=0;y<=ROWS;y++){ctx.moveTo(0,y*CELL+.5);ctx.lineTo(cv.width,y*CELL+.5);}
+    ctx.stroke();
+    // settled
+    for(var r=0;r<ROWS;r++) for(var c2=0;c2<COLS;c2++){
+      if(board[r][c2]){
+        ctx.fillStyle=COLORS[board[r][c2]];
+        ctx.fillRect(c2*CELL+1,r*CELL+1,CELL-2,CELL-2);
+        ctx.fillStyle='rgba(255,255,255,.35)';
+        ctx.fillRect(c2*CELL+1,r*CELL+1,CELL-2,3);
+      }
+    }
+    if(cur && !over){
+      if(ghost){
+        var gy=ghostY();
+        ctx.globalAlpha=0.16;
+        for(var yy=0;yy<cur.m.length;yy++) for(var xx=0;xx<cur.m[yy].length;xx++){
+          if(cur.m[yy][xx]){ ctx.fillStyle=COLORS[cur.t]; ctx.fillRect((cur.x+xx)*CELL+1,(gy+yy)*CELL+1,CELL-2,CELL-2); }
+        }
+        ctx.globalAlpha=1;
+      }
+      for(var y2=0;y2<cur.m.length;y2++) for(var x2=0;x2<cur.m[y2].length;x2++){
+        if(cur.m[y2][x2]){
+          ctx.fillStyle=COLORS[cur.t];
+          ctx.fillRect((cur.x+x2)*CELL+1,(cur.y+y2)*CELL+1,CELL-2,CELL-2);
+          ctx.fillStyle='rgba(255,255,255,.4)';
+          ctx.fillRect((cur.x+x2)*CELL+1,(cur.y+y2)*CELL+1,CELL-2,3);
+        }
+      }
+    }
+    // frame
+    ctx.strokeStyle='rgba(239,236,244,.18)'; ctx.lineWidth=1; ctx.strokeRect(.5,.5,cv.width-1,cv.height-1);
+  }
+  function drawNext(){
+    nctx.clearRect(0,0,nx.width,nx.height);
+    nctx.fillStyle='#08080d'; nctx.fillRect(0,0,nx.width,nx.height);
+    var t=nextPieces[0]; if(!t) return;
+    var m=SHAPES[t], size=24;
+    var w=m[0].length, h=m.length;
+    var ox=(nx.width-w*size)/2, oy=(nx.height-h*size)/2;
+    for(var y=0;y<h;y++) for(var x=0;x<m[y].length;x++){
+      if(!m[y][x]) continue;
+      nctx.fillStyle=COLORS[t];
+      nctx.fillRect(ox+x*size+1,oy+y*size+1,size-2,size-2);
+      nctx.fillStyle='rgba(255,255,255,.4)';
+      nctx.fillRect(ox+x*size+1,oy+y*size+1,size-2,3);
+    }
+  }
+  function updateStats(){
+    document.getElementById('s1').textContent=score;
+    document.getElementById('s2').textContent=lines;
+    document.getElementById('s3').textContent=level;
+    document.getElementById('s4').textContent=pieces;
+    var s=Math.floor((Date.now()-startTime)/1000);
+    document.getElementById('s5').textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);
+  }
+  function loop(t){
+    if(!paused && !over && cur){
+      var interval=Math.max(90, 800-(level-1)*65);
+      if(t-lastTick>interval){ lastTick=t; if(!softDrop()){} }
+    }
+    draw(); drawNext(); updateStats();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='r'||k==='R'){ reset(); return; }
+    if(k==='p'||k==='P'){ paused=!paused; document.getElementById('pause').classList.toggle('on',paused); return; }
+    if(paused||over||!cur) return;
+    if(k==='ArrowLeft'){ move(-1); e.preventDefault(); }
+    else if(k==='ArrowRight'){ move(1); e.preventDefault(); }
+    else if(k==='ArrowDown'){ softDrop(); e.preventDefault(); }
+    else if(k==='ArrowUp'){ tryRotate(); e.preventDefault(); }
+    else if(k===' '){ hardDrop(); e.preventDefault(); }
+  });
+  // touch / pointer controls on the board
+  var startX=null, startY=null;
+  cv.addEventListener('pointerdown',function(e){ startX=e.clientX; startY=e.clientY; });
+  cv.addEventListener('pointerup',function(e){
+    if(startX===null) return;
+    var dx=e.clientX-startX, dy=e.clientY-startY;
+    if(Math.abs(dx)<12 && Math.abs(dy)<12){ tryRotate(); }
+    else if(Math.abs(dx)>Math.abs(dy)){ move(dx>0?1:-1); }
+    else if(dy>0){ softDrop(); }
+    startX=null;
+  });
+  document.getElementById('pause').addEventListener('click',function(){
+    paused=!paused; this.classList.toggle('on',paused); this.textContent=paused?'Resume':'Pause';
+  });
+  document.getElementById('restart').addEventListener('click',reset);
+  document.getElementById('ghost').addEventListener('click',function(){
+    ghost=!ghost; this.classList.toggle('on',ghost);
+  });
+  reset();
+})();
+</script>
+</body>
+</html>

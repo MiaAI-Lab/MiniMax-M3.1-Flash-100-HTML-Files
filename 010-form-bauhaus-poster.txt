@@ -1,0 +1,19 @@
+TITLE: FORM — Bauhaus Poster Studio
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) called "FORM — Bauhaus Poster Studio". Art direction: 1920s German Bauhaus poster workshop on a warm paper ground (#f0ebe0) with ink black (#141310) and the three primaries — red #d8352a, yellow #efb420, blue #1a4fa0. Type: a geometric sans stack (Futura, Century Gothic, Avenir Next) in uppercase with wide tracking. Layout: a thick black masthead rule; a header with a logo made of a red circle overlapping a blue square and a letterspaced wordmark; a two-column stage — on the left a 3:4 aspect-ratio poster canvas (max-height 86vh) that overflows hidden, on the right a bordered control panel on a slightly darker paper; then a thin rule; a four-column band of coloured cards (yellow / red / blue / paper) numbered 01–04 describing Kreis, Dreieck, Quadrat, Farbe; a two-column essay section with a yellow highlighter behind one word; and a footer. The poster itself is drawn entirely with absolutely positioned divs: a big circle, a half-disc (border-radius corner trick), a clip-path triangle, a stroked ring, and a rotated bar — plus two type blocks (a three-line headline top-left with a black rule, a caption block bottom-right). Controls: "Neues Plakat" and "Shuffle shapes" buttons rebuild the composition from the same vocabulary; three range sliders (shape scale, rotation, circle horizontal position) rebuild the poster live; a row of four palette chips sets the accent colour and rebuilds. The poster's German headline and subtitle rotate through word lists on each rebuild. Shapes brighten and grow slightly on hover. Responsive: the stage stacks under 940px with the panel moving below, the four-card band becomes 2×2 then 1 column.
+
+DESCRIPTION:
+A working poster press that runs in the browser. Every composition is assembled from a strict Bauhaus vocabulary — circle, half-disc, triangle, ring, bar — and set with a Futura-like uppercase. Rather than decorating a picture, the page treats the poster as an argument: a three-word headline, a rule, a caption, and a single dominant primary colour. Pressing the button re-runs the procedure and produces a different, equally valid poster.
+
+MAJOR VISUAL TECHNIQUES:
+- Pure-CSS primitive shapes: clip-path triangle, border-radius half-disc, stroked ring, rotated bar
+- Composed poster grid with absolutely positioned elements and randomised (but constrained) placement
+- Bold 3px and 10px black rules dividing every band
+- Futura-like geometric uppercase with heavy letter-spacing
+- Primary-colour card band (yellow / red / blue) with reversed type
+- Live rebuild of geometry on every control change
+- Two-element offset logo (red circle + blue square) built from ::after
+
+INTENDED INTERACTION MODEL:
+The studio is the product. Two buttons generate a new composition; three sliders mutate scale, rotation and circle position, redrawing the poster instantly; palette chips change the dominant colour and redraw; hovering a shape makes it bloom. The essay band and header are static framing.

@@ -1,0 +1,19 @@
+TITLE: MARBRE — a stone library
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MARBRE — a stone library". Art direction: a quiet dark showroom for stone. Palette: ground #131313, panel #1b1b1b, ink #efeeea, dim #8b8a85, hairline rgba(239,238,234,.14), brass #c9a04a. Layout: a header with a wide-tracked wordmark and a specification line; a two-column hero — on the left a large "slab" (a rounded, deeply shadowed square, min-height 440px) containing four stacked layers: a vein layer (absolutely positioned, inset −20%, with a multi-layer background of repeating linear gradients at complementary angles plus two radial highlights), a grain layer (inline SVG feTurbulence in overlay blend), a sheen layer (a soft specular sweep in soft-light blend) and a "cut" overlay that wipes the new slab in; and on the right a column with a huge light-weight headline, a paragraph, a two-by-two specification table (quarry, formation, Mohs hardness, polish) and two sliders (vein complexity 10–100%, polish 0–100%). Below, a responsive grid of twelve stone swatch cards, each showing a gradient preview with its own noise overlay, the stone's name and its country. Then a two-column note explaining that every slab is generated in the browser, and a footer. Interaction: clicking a swatch selects that stone, rewrites the specification table and the slab's label, and plays a two-stage "cut" wipe across the slab (a left-to-right reveal followed by a right-to-left reveal); the vein slider changes the density and angle of the repeating gradient family; the polish slider changes both the strength and the position of the specular sweep and relabels the finish as Matte, Honed or Mirror. Responsive: the hero stacks under 900px and the note becomes one column.
+
+DESCRIPTION:
+Twelve famous marbles, none of them photographed. Each is a family of repeating linear gradients at complementary angles, so the veins run in one direction and the bedding in another, exactly as a real slab does when you know how to read it. The polish slider is the nicest touch: it widens and strengthens the specular sweep until a matte Carrara turns into a mirror-black Marquina without a single image being loaded.
+
+MAJOR VISUAL TECHNIQUES:
+- Procedural marble veining from five repeating linear gradients at jittered complementary angles
+- Layered radial highlights to fake the depth of a polished block
+- Inline SVG feTurbulence grain in overlay blend for stone tooth
+- Specular sweep layer in soft-light blend whose angle and strength follow the polish slider
+- Two-stage scaleX wipe that simulates cutting a new slab open
+- Responsive swatch grid with per-card noise overlays
+- Hairline-ruled specification table and editorial note
+
+INTENDED INTERACTION MODEL:
+Choose a stone and cut it open. Clicking a swatch replaces the slab with a wipe, updates the specification table, and moves the brass selection ring. The two sliders reshape the stone in real time — one for the veining, one for the polish. Nothing else moves.

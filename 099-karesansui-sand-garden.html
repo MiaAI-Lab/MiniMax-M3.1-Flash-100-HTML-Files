@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KARESANSUI — a garden of raked sand</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0e0d0b;--ink:#ece7db;--dim:#857f72;--line:rgba(236,231,219,.13);--sand:#d9cba6;--stone:#6d6a63;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before{content:"";position:absolute;inset:2px;
+    background:repeating-linear-gradient(90deg,#d9cba6 0 3px,#8f8468 3px 5px);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--sand);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--sand);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#070706;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;cursor:crosshair;touch-action:none;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--sand);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--sand);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--sand);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--sand);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--sand);color:var(--sand);background:rgba(217,203,166,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Karesansui</div>
+    <div class="meta">Dry garden · 24 × 16 m · raked gravel</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">The Zen garden</div>
+    <h1>Sand is a<br>fluid that<br>refuses to <b>flow</b></h1>
+    <p>You can rake a pattern into dry sand and it will hold for a week. It holds because the grains are held in a network of frictional contacts, and the network can support a slope of thirty-odd degrees without moving at all. Rake too steep a face and the grains avalanche, and the pattern heals itself overnight.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1100" height="560"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Rake width <output id="oa">14 px</output></label>
+      <input type="range" id="rw" min="3" max="40" value="14">
+    </div>
+    <div class="fld">
+      <label>Depth of cut <output id="ob">6 px</output></label>
+      <input type="range" id="dep" min="1" max="20" value="6">
+    </div>
+    <div class="fld">
+      <label>Angle of repose <output id="oc">34°</output></label>
+      <input type="range" id="rep" min="20" max="55" value="34">
+    </div>
+    <div class="btns">
+      <button class="btn" id="rake">Rake the garden</button>
+      <button class="btn" id="rain">Rain</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>What a<br>garden is<br>for</h2>
+      <p>The dry garden was not invented for decoration. Zen Buddhism took the Chinese idea of a scholar's rock and surrounded it with raked gravel so that the pattern would have to be made again and again, and the making of it — not the garden, the <b>rake</b> — was the practice. A monk sweeps the sand around the stones in the direction of the flow, and the pattern is removed at the end of the working day.</p>
+      <p>It is a machine for making a thing that cannot be finished, which is the entire point of it. The stones stand for mountains; the sand for water; and the raked lines for the water flowing round them.</p>
+    </div>
+    <div>
+      <h2>What is<br>actually<br>happening</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The sand here is a height field on a grid, and the rake is a tool that displaces material sideways: dragging it lowers a line and pushes the displaced grains out to either side, which is exactly what the teeth of a real rake do.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">After every stroke the field is relaxed: any neighbouring pair whose height differs by more than the tangent of the angle of repose passes sand downhill until it does not. That is the avalanche, and it is why a steep cut slowly fills in and a shallow one keeps its edges for days. The stones are impassable and the sand piles against them, as it should.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Karesansui — a garden of raked sand</span>
+    <span>Height field with an angle of repose</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var GW=220, GH=112;
+  var h=new Float32Array(GW*GH);
+  var stones=[], rakeW=14, cut=6, repose=34, wet=false;
+  var cellW=W/GW, cellH=H/GH;
+
+  function idx(x,y){ return y*GW+x; }
+  function reset(){
+    h.fill(0);
+    stones=[];
+    for(var i=0;i<7;i++){
+      stones.push({x:20+Math.random()*(GW-40), y:20+Math.random()*(GH-40), r:6+Math.random()*9});
+    }
+  }
+  function relax(){
+    var tan=Math.tan(repose*Math.PI/180);
+    var dx=cellW, dy=cellH;
+    for(var pass=0;pass<2;pass++){
+      for(var y=0;y<GH;y++) for(var x=0;x<GW;x++){
+        if(x<GW-1){
+          var d=h[idx(x,y)]-h[idx(x+1,y)];
+          var mx=tan*dx;
+          if(Math.abs(d)>mx){
+            var m=(Math.abs(d)-mx)*0.25*Math.sign(d);
+            h[idx(x,y)]-=m; h[idx(x+1,y)]+=m;
+          }
+        }
+        if(y<GH-1){
+          var d2=h[idx(x,y)]-h[idx(x,y+1)];
+          var my=tan*dy;
+          if(Math.abs(d2)>my){
+            var m2=(Math.abs(d2)-my)*0.25*Math.sign(d2);
+            h[idx(x,y)]-=m2; h[idx(x,y+1)]+=m2;
+          }
+        }
+      }
+    }
+  }
+  function inStone(x,y){
+    for(var i=0;i<stones.length;i++){
+      var s=stones[i];
+      var dx=(x-s.x)*cellW, dy=(y-s.y)*cellH;
+      if(dx*dx+dy*dy < s.r*s.r*cellW*cellW*0.8) return true;
+    }
+    return false;
+  }
+  function rakeLine(x0,y0,x1,y1){
+    var steps=Math.max(1,Math.round(Math.hypot(x1-x0,y1-y0)*2));
+    for(var s=0;s<=steps;s++){
+      var t=s/steps;
+      var x=Math.round(x0+(x1-x0)*t), y=Math.round(y0+(y1-y0)*t);
+      for(var dy=-rakeW;dy<=rakeW;dy++){
+        for(var dx=-rakeW;dx<=rakeW;dx++){
+          var d=Math.hypot(dx,dy);
+          if(d>rakeW) continue;
+          var px=x+dx, py=y+dy;
+          if(px<0||py<0||px>=GW||py>=GH) continue;
+          if(inStone(px,py)) continue;
+          var f=1-d/rakeW;
+          h[idx(px,py)]-=cut*f;
+          // push the displaced sand sideways
+          var ox=Math.round(px+(dx/(d||1))*rakeW*0.9);
+          var oy=Math.round(py+(dy/(d||1))*rakeW*0.9);
+          if(ox>=0&&oy>=0&&ox<GW&&oy<GH&&!inStone(ox,oy)) h[idx(ox,oy)]+=cut*f*0.5;
+        }
+      }
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0b0a08'; ctx.fillRect(0,0,W,H);
+    // sand field with raking light from the top left
+    for(var y=0;y<GH;y++){
+      for(var x=0;x<GW;x++){
+        var z=h[idx(x,y)];
+        var lx=0, ly=0;
+        if(x>0) lx=h[idx(x,y)]-h[idx(x-1,y)];
+        if(y>0) ly=h[idx(x,y)]-h[idx(x,y-1)];
+        var shade=1+ (lx*0.9 - ly*1.3);
+        var base=150+Math.max(-40,Math.min(70,z*2.2));
+        var r=Math.max(0,Math.min(255,base*1.03*shade));
+        var g=Math.max(0,Math.min(255,base*0.95*shade));
+        var b=Math.max(0,Math.min(255,base*0.76*shade));
+        ctx.fillStyle='rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
+        ctx.fillRect(x*cellW,y*cellH,cellW+1,cellH+1);
+      }
+    }
+    // stones
+    stones.forEach(function(s){
+      var x=s.x*cellW, y=s.y*cellH, r=s.r*cellW*0.8;
+      var g=ctx.createRadialGradient(x-r*0.35,y-r*0.4,r*0.08,x,y,r);
+      g.addColorStop(0,'#9b978d'); g.addColorStop(.55,'#6d6a63'); g.addColorStop(1,'#393733');
+      ctx.beginPath(); ctx.ellipse(x,y,r,r*0.82,0.3,0,6.283);
+      ctx.fillStyle=g; ctx.fill();
+      ctx.strokeStyle='rgba(20,18,16,.5)'; ctx.lineWidth=1; ctx.stroke();
+    });
+    // wet sheen
+    if(wet){
+      ctx.fillStyle='rgba(120,150,170,.10)'; ctx.fillRect(0,0,W,H);
+    }
+    // readouts
+    var vol=0,mn=99,mx=-99;
+    for(var i=0;i<h.length;i++){ vol+=h[i]; if(h[i]<mn)mn=h[i]; if(h[i]>mx)mx=h[i]; }
+    document.getElementById('hud').innerHTML='SAND <b>'+(-vol).toFixed(0)+'</b> units<br>'+
+      'RANGE <b>'+(mx-mn).toFixed(1)+'</b><br>'+(wet?'WET':'DRY');
+  }
+  var painting=false, last=null;
+  function pos(e){
+    var r=cv.getBoundingClientRect();
+    var t=e.touches?e.touches[0]:e;
+    return [Math.round((t.clientX-r.left)/r.width*GW), Math.round((t.clientY-r.top)/r.height*GH)];
+  }
+  cv.addEventListener('pointerdown',function(e){
+    painting=true; last=pos(e); e.preventDefault();
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(!painting) return;
+    var p=pos(e);
+    rakeLine(last[0],last[1],p[0],p[1]);
+    last=p;
+  });
+  window.addEventListener('pointerup',function(){painting=false;});
+  function loop(){
+    if(!wet) relax();
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('rw').addEventListener('input',function(){
+    rakeW=parseInt(this.value,10);
+    document.getElementById('oa').textContent=rakeW+' px';
+  });
+  document.getElementById('dep').addEventListener('input',function(){
+    cut=parseInt(this.value,10);
+    document.getElementById('ob').textContent=cut+' px';
+  });
+  document.getElementById('rep').addEventListener('input',function(){
+    repose=parseInt(this.value,10);
+    document.getElementById('oc').textContent=repose+'°';
+  });
+  document.getElementById('rake').addEventListener('click',function(){
+    stones.forEach(function(s){
+      for(var a=0;a<360;a+=3){
+        var r0=s.r+3, r1=s.r+34;
+        var x0=s.x+Math.cos(a*Math.PI/180)*r0, y0=s.y+Math.sin(a*Math.PI/180)*r0;
+        var x1=s.x+Math.cos(a*Math.PI/180)*r1, y1=s.y+Math.sin(a*Math.PI/180)*r1;
+        rakeLine(x0,y0,x1,y1);
+      }
+    });
+  });
+  document.getElementById('rain').addEventListener('click',function(){
+    wet=!wet; this.classList.toggle('on',wet); this.textContent=wet?'Dry':'Rain';
+  });
+  document.getElementById('reset').addEventListener('click',reset);
+  reset();
+})();
+</script>
+</body>
+</html>

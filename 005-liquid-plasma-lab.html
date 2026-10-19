@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLASMA — Liquid Gradient Laboratory</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#0b0714;--ink:#f6f2ff;--dim:#a094c2;
+    --a:#ff5f9e;--b:#6f5bff;--c:#28e0c8;--d:#ffcb47;
+  }
+  body{background:var(--bg);color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
+    overflow-x:hidden;min-height:100vh;position:relative;}
+  #stage{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block;}
+  .veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% 0%,transparent 30%,rgba(11,7,20,.82) 100%);}
+  .shell{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:0 24px 90px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:22px 0;border-bottom:1px solid rgba(255,255,255,.12);}
+  .brand{display:flex;align-items:center;gap:11px;font-size:13px;letter-spacing:.34em;text-transform:uppercase;}
+  .brand .bead{width:13px;height:13px;border-radius:50%;background:var(--a);
+    box-shadow:0 0 18px var(--a),6px 0 0 -2px var(--b),12px 0 0 -4px var(--c);animation:bead 3.4s ease-in-out infinite;}
+  @keyframes bead{50%{transform:translateX(5px) scale(1.2);}}
+  .links{display:flex;gap:10px;flex-wrap:wrap;}
+  .links a{color:var(--dim);text-decoration:none;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+    padding:8px 16px;border:1px solid rgba(255,255,255,.16);border-radius:999px;transition:.35s;}
+  .links a:hover{color:#fff;border-color:var(--a);background:rgba(255,95,158,.12);}
+
+  .hero{padding:76px 0 30px;text-align:center;}
+  .kicker{font-size:11px;letter-spacing:.44em;text-transform:uppercase;color:var(--c);}
+  h1{font-size:clamp(3rem,10vw,7.6rem);line-height:.9;letter-spacing:-.05em;font-weight:200;margin:22px 0 20px;}
+  h1 em{font-style:normal;font-weight:700;
+    background:linear-gradient(100deg,var(--a),var(--b) 40%,var(--c) 70%,var(--d));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lede{color:var(--dim);max-width:56ch;margin:0 auto;line-height:1.8;font-size:1.02rem;}
+  .lede b{color:var(--ink);font-weight:600;}
+
+  .lab{margin-top:56px;display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:stretch;}
+  .stagebox{position:relative;border-radius:30px;overflow:hidden;border:1px solid rgba(255,255,255,.14);
+    min-height:420px;background:#0b0714;box-shadow:0 50px 110px -50px rgba(255,95,158,.5);}
+  .stagebox canvas{position:absolute;inset:0;width:100%;height:100%;}
+  .stagebox .hud{position:absolute;left:0;right:0;bottom:0;padding:18px 22px;display:flex;justify-content:space-between;
+    align-items:flex-end;gap:16px;flex-wrap:wrap;
+    background:linear-gradient(0deg,rgba(11,7,20,.9),transparent);}
+  .hud .cap{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+  .hud .cap b{display:block;color:#fff;font-size:1.35rem;letter-spacing:-.01em;margin-top:4px;font-weight:500;}
+  .hud .pts{font-size:10.5px;letter-spacing:.18em;color:var(--dim);text-align:right;}
+
+  .controls{border-radius:30px;border:1px solid rgba(255,255,255,.14);padding:24px;
+    background:rgba(255,255,255,.045);backdrop-filter:blur(18px);
+    display:flex;flex-direction:column;gap:20px;}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:500;font-size:12px;letter-spacing:.05em;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;
+    background:linear-gradient(90deg,var(--a),var(--b));outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.16),0 4px 10px rgba(0,0,0,.5);cursor:grab;}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 4px rgba(255,255,255,.16);}
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+  .sw{aspect-ratio:1;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:.3s;}
+  .sw:hover{transform:scale(1.09);}
+  .sw.on{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.15);}
+  .presets{display:grid;gap:9px;}
+  .preset{padding:11px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);
+    color:var(--dim);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:.3s;
+    text-align:left;font-family:inherit;display:flex;justify-content:space-between;}
+  .preset:hover{color:#fff;border-color:var(--c);}
+  .preset span{color:var(--c);}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-size:12px;color:var(--dim);}
+  .sw2{width:46px;height:25px;border-radius:99px;background:rgba(255,255,255,.14);position:relative;transition:.3s;flex:none;}
+  .sw2::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.3s;}
+  .toggle.on .sw2{background:linear-gradient(90deg,var(--c),var(--b));}
+  .toggle.on .sw2::after{transform:translateX(21px);}
+
+  .strip{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+  .swatch{border-radius:20px;padding:20px;min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;
+    border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden;transition:.4s;}
+  .swatch:hover{transform:translateY(-6px) scale(1.02);}
+  .swatch .hex{font:700 12px/1 ui-monospace,monospace;letter-spacing:.12em;opacity:.92;}
+  .swatch .nm{margin-top:6px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.75;}
+  .swatch .blend{position:absolute;inset:0;opacity:0;transition:.4s;mix-blend-mode:overlay;}
+  .swatch:hover .blend{opacity:1;}
+
+  .notes{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .note{padding:26px;border-radius:22px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);}
+  .note h3{font-size:1.05rem;margin-bottom:9px;font-weight:500;}
+  .note p{color:var(--dim);font-size:.92rem;line-height:1.7;}
+  .note .n{font-size:10.5px;letter-spacing:.3em;color:var(--a);margin-bottom:14px;display:block;}
+
+  footer{margin-top:64px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;color:#6b6188;font-size:11px;letter-spacing:.2em;text-transform:uppercase;}
+
+  @media(max-width:980px){.lab{grid-template-columns:1fr;}.notes{grid-template-columns:1fr;}}
+  @media(max-width:560px){.shell{padding:0 15px 70px;}.hero{padding-top:52px;}.stagebox{min-height:340px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div class="veil"></div>
+
+<div class="shell">
+  <header>
+    <div class="brand"><span class="bead"></span>Plasma Lab</div>
+    <nav class="links">
+      <a href="#lab">Experiment</a><a href="#palette">Palette</a><a href="#notes">Method</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Volumetric gradient research</div>
+    <h1>Fluid <em>colour</em> with a pulse</h1>
+    <p class="lede">PLASMA renders a living field of <b>metaball attractors</b> blended in real time. Move the sliders, re-tint the field, and watch colour behave like a liquid — not a gradient.</p>
+  </section>
+
+  <section class="lab" id="lab">
+    <div class="stagebox">
+      <canvas id="blob"></canvas>
+      <div class="hud">
+        <div class="cap">Field readout<b id="fps">60 fps</b></div>
+        <div class="pts" id="pts">5 attractors · metaball threshold 0.62</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl">
+        <label>Viscosity <b id="vVisc">0.42</b></label>
+        <input type="range" id="visc" min="0" max="100" value="42">
+      </div>
+      <div class="ctl">
+        <label>Attractor count <b id="vN">5</b></label>
+        <input type="range" id="count" min="2" max="9" value="5">
+      </div>
+      <div class="ctl">
+        <label>Flow speed <b id="vFlow">1.00</b></label>
+        <input type="range" id="flow" min="10" max="220" value="100">
+      </div>
+      <div class="ctl">
+        <label>Palette</label>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <div class="ctl">
+        <label>Presets</label>
+        <div class="presets">
+          <button class="preset">Candy static <span>◈</span></button>
+          <button class="preset">Deep current <span>◉</span></button>
+          <button class="preset">Molten glass <span>✦</span></button>
+        </div>
+      </div>
+      <div class="toggle on" id="tog"><span>Auto drift</span><span class="sw2"></span></div>
+    </div>
+  </section>
+
+  <section class="strip" id="palette"></section>
+
+  <section class="notes" id="notes">
+    <article class="note"><span class="n">01 / METHOD</span><h3>Isosurface thresholding</h3><p>Each attractor contributes a radial field. Where the summed field crosses the threshold, the surface is drawn — producing true metaball merging rather than overlapping circles.</p></article>
+    <article class="note"><span class="n">02 / COLOUR</span><h3>Depth-tinted ramps</h3><p>Colour is sampled from a four-stop ramp using the normalised field strength, so denser regions read as hotter, not merely brighter.</p></article>
+    <article class="note"><span class="n">03 / MOTION</span><h3>Perlin-ish drift</h3><p>Attractor paths follow a layered sine field with irrational frequency ratios, so the motion never visibly loops but stays perfectly smooth.</p></article>
+  </section>
+
+  <footer>
+    <span>Plasma Lab — Research Division</span>
+    <span>Canvas 2D · no dependencies</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('blob'), ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+
+  var PALETTES=[
+    {name:'Candy static', stops:['#ff5f9e','#6f5bff','#28e0c8','#ffcb47']},
+    {name:'Deep current', stops:['#0b3d91','#0f7a8a','#38d9a9','#a8ff78']},
+    {name:'Molten glass', stops:['#ff3d00','#ff9500','#ffe600','#7a00ff']},
+    {name:'Sakura dusk', stops:['#ffb3c1','#c86dd7','#6a5acd','#4b0082']},
+    {name:'Toxic mint',  stops:['#00ff9d','#00e0ff','#7bff00','#003d1f']}
+  ];
+  var pal=PALETTES[0], palIndex=0;
+
+  // swatch buttons
+  var swWrap=document.getElementById('swatches');
+  PALETTES.forEach(function(p,i){
+    var b=document.createElement('button');
+    b.className='sw'+(i===0?' on':'');
+    b.style.background='linear-gradient(140deg,'+p.stops.join(',')+')';
+    b.setAttribute('aria-label',p.name);
+    b.addEventListener('click',function(){
+      palIndex=i; pal=p; setPalette();
+      swWrap.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
+      b.classList.add('on');
+    });
+    swWrap.appendChild(b);
+  });
+  function setPalette(){ buildStrip(); }
+
+  // colour strip
+  function buildStrip(){
+    var strip=document.getElementById('palette'); strip.innerHTML='';
+    pal.stops.forEach(function(hex,i){
+      var d=document.createElement('div');
+      d.className='swatch';
+      d.style.background='radial-gradient(120% 120% at 20% 10%, '+hex+' 0%, '+hex+' 45%, rgba(11,7,20,.9) 100%)';
+      d.innerHTML='<div class="blend" style="background:'+pal.stops[(i+1)%4]+'"></div>'+
+                 '<div class="hex">'+hex.toUpperCase()+'</div><div class="nm">'+pal.name+'</div>';
+      strip.appendChild(d);
+    });
+  }
+  buildStrip();
+
+  // canvas sizing
+  function resize(){
+    var box=cvs.parentElement.getBoundingClientRect();
+    W=box.width; H=box.height;
+    cvs.width=W*DPR; cvs.height=H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resize();
+  window.addEventListener('resize',function(){resize();});
+
+  // state
+  var visc=0.42, count=5, flow=1.0, drift=true, t=0;
+  var balls=[];
+  function seed(){
+    balls=[];
+    for(var i=0;i<9;i++){
+      balls.push({
+        x:Math.random(), y:Math.random(),
+        px:Math.random()*100, py:Math.random()*100,
+        f1:0.0031+Math.random()*0.0021, f2:0.0047+Math.random()*0.0026,
+        ph:Math.random()*Math.PI*2, amp:0.12+Math.random()*0.2,
+        r:0.11+Math.random()*0.10
+      });
+    }
+  }
+  seed();
+
+  function hexToRgb(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+
+  function draw(){
+    t+=0.016*flow;
+    ctx.clearRect(0,0,W,H);
+    // dark base
+    var g=ctx.createRadialGradient(W*0.5,H*0.45,0,W*0.5,H*0.5,Math.max(W,H)*0.8);
+    g.addColorStop(0,'#160c26'); g.addColorStop(1,'#07040e');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    var n=count, step=Math.max(1,Math.floor(9/n));
+    var scale=Math.min(W,H);
+    // viscosity tightens the isosurface: a thicker fluid yields a denser, smaller surface
+    var threshold=0.34+visc*0.56;
+
+    // compute field into a low-res buffer for speed
+    var RES=3; // sample every 3 px
+    var w=Math.ceil(W/RES), h=Math.ceil(H/RES);
+    if(!draw.field || draw.field.length!==w*h){
+      draw.field=new Float32Array(w*h);
+      draw.ramp=new Float32Array(w*h);
+    }
+    var field=draw.field, ramp=draw.ramp;
+    var pts=[];
+    for(var k=0;k<n;k++){
+      var b=balls[(k*step)%9];
+      if(drift){
+        b.x=0.5+Math.sin(t*b.f1*60+b.ph)*b.amp*0.9+Math.cos(t*b.f2*40+b.ph*2)*b.amp*0.3;
+        b.y=0.5+Math.cos(t*b.f2*52+b.ph*1.3)*b.amp*0.9+Math.sin(t*b.f1*44+b.ph)*b.amp*0.3;
+      }
+      pts.push({x:b.x*W, y:b.y*H, r:b.r*scale*1.15});
+    }
+    // fill field
+    var idx=0;
+    for(var y=0;y<h;y++){
+      var py=y*RES;
+      for(var x=0;x<w;x++){
+        var px=x*RES, sum=0;
+        for(var p=0;p<pts.length;p++){
+          var dx=px-pts[p].x, dy=py-pts[p].y;
+          var d2=dx*dx+dy*dy;
+          sum += (pts[p].r*pts[p].r)/(d2+1);
+        }
+        var val=sum/ (pts.length*0.85);
+        field[idx]=val;
+        ramp[idx]=Math.max(0,Math.min(1,(val-threshold)/(2.2-threshold)));
+        idx++;
+      }
+    }
+    // draw as image data scaled up
+    var img=ctx.createImageData(w,h);
+    var stops=pal.stops.map(hexToRgb);
+    for(var i=0;i<field.length;i++){
+      var f=ramp[i];
+      if(field[i]<threshold){ img.data[i*4+3]=0; continue; }
+      var seg=Math.min(stops.length-2,Math.floor(f*(stops.length-1)));
+      var lt=f*(stops.length-1)-seg;
+      var c0=stops[seg], c1=stops[seg+1];
+      img.data[i*4]  =c0[0]+(c1[0]-c0[0])*lt;
+      img.data[i*4+1]=c0[1]+(c1[1]-c0[1])*lt;
+      img.data[i*4+2]=c0[2]+(c1[2]-c0[2])*lt;
+      img.data[i*4+3]=Math.min(255,(field[i]-threshold)*420);
+    }
+    if(!draw.buf) draw.buf=document.createElement('canvas');
+    if(draw.buf.width!==w||draw.buf.height!==h){draw.buf.width=w;draw.buf.height=h;}
+    var bctx=draw.buf.getContext('2d');
+    bctx.putImageData(img,0,0);
+    ctx.save();
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
+    ctx.drawImage(draw.buf,0,0,w,h,0,0,W,H);
+    ctx.restore();
+    // specular sheen
+    var sg=ctx.createRadialGradient(W*0.32,H*0.22,0,W*0.32,H*0.22,scale*0.8);
+    sg.addColorStop(0,'rgba(255,255,255,.16)'); sg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+
+    if(drift) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // fps
+  var frames=0,last=performance.now();
+  function loop(t2){
+    frames++;
+    if(t2-last>1000){
+      document.getElementById('fps').textContent=frames+' fps';
+      frames=0; last=t2;
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // controls
+  function bindRange(id,out,fn,fmt){
+    var el=document.getElementById(id), o=document.getElementById(out);
+    el.addEventListener('input',function(){
+      var v=+el.value; fn(v);
+      o.textContent = fmt?fmt(v):v;
+    });
+  }
+  bindRange('visc','vVisc',function(v){visc=v/100;},function(v){return (v/100).toFixed(2);});
+  bindRange('count','vN',function(v){count=v;});
+  bindRange('flow','vFlow',function(v){flow=v/100;},function(v){return (v/100).toFixed(2);});
+
+  var tog=document.getElementById('tog');
+  tog.addEventListener('click',function(){
+    drift=!drift; this.classList.toggle('on',drift);
+    if(drift) requestAnimationFrame(draw);
+  });
+
+  // presets
+  var presets=document.querySelectorAll('.preset');
+  presets.forEach(function(p,i){
+    p.addEventListener('click',function(){
+      palIndex=i%PALETTES.length; pal=PALETTES[palIndex]; buildStrip();
+      swWrap.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
+      if(swWrap.children[palIndex]) swWrap.children[palIndex].classList.add('on');
+      // randomise flow params for a distinct feel
+      var v=30+Math.floor(Math.random()*60);
+      document.getElementById('visc').value=v;
+      visc=v/100; document.getElementById('vVisc').textContent=(v/100).toFixed(2);
+      var c=3+Math.floor(Math.random()*6);
+      document.getElementById('count').value=c;
+      count=c; document.getElementById('vN').textContent=c;
+    });
+  });
+})();
+</script>
+</body>
+</html>

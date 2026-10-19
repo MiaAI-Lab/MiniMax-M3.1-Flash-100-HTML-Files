@@ -1,0 +1,19 @@
+TITLE: STELLARIUM — Deep Sky Survey
+
+PROMPT:
+Build a self-contained HTML page (inline CSS and JS only; no external assets, fonts, CDNs or libraries) for a fictional deep-sky survey catalogue called "STELLARIUM". Art direction: an observatory night — near-black indigo background (#03040c) with a canvas starfield behind everything, an old-style serif for prose (Iowan Old Style / Palatino / Georgia) contrasted against letter-spaced uppercase sans micro-labels, and two accent colours: astronomical gold #f5c76b and starlight blue #7aa2ff. The canvas renders ~340 twinkling stars with per-star twinkle speed, size and colour (mostly white, some gold/blue), a soft "Milky Way" diagonal gradient band, drifting dust motes, and a six-node constellation drawn with thin blue lines and pulsing gold rings around each anchor star. Pointer movement gives a very slight parallax to the starfield. Page structure: a header with a wide-tracked wordmark and three mode buttons (Constellations / Dust / All) that actually switch what the canvas draws; a left-aligned serif hero with a kicker, a two-line headline with an italic gold line, a lead paragraph with an underlined key phrase, and a four-item stat row; a glassy bordered "recent discoveries" table whose rows are generated from a JS data array (category, name, subtitle, confirmation state, magnitude) and highlight gold for new finds — clicking a row flashes a gold wash; a three-card dossier section, each card containing a hand-drawn inline SVG figure (protoplanetary disc with orbital ellipses, emission-nebula wave with stars, globular cluster node graph) and a caption; a footer. Responsive: dossier becomes one column under 860px, the table drops its "confirmation" column under 860px and tightens further under 520px.
+
+DESCRIPTION:
+An astronomer's catalogue rendered with the gravity of an old scientific publication rather than a sci-fi HUD. Serif prose, gold figures, generous margins and a live canvas sky behind it. The visual pleasure comes from restraint: two accent colours, a real twinkling starfield with subtle pointer parallax, and inline-SVG astronomical figures that look drawn rather than clip-arted.
+
+MAJOR VISUAL TECHNIQUES:
+- Full-viewport canvas starfield with per-star sine twinkle (size and alpha) and subtle pointer parallax
+- Screen-blended diagonal Milky Way gradient band
+- Constellation graph: thin stroked polylines between six anchors with pulsing radial rings
+- Drifting dust particle layer toggleable independently of the constellation layer
+- Three inline hand-authored SVG figures (orbital ellipses, nebula wave paths, node-link cluster)
+- Serif/sans typographic pairing with wide-tracked uppercase micro-labels
+- Glass table panel with row-level hover wash and click-triggered gold flash
+
+INTENDED INTERACTION MODEL:
+Ambient and gentle. The sky animates continuously; three mode buttons switch the visible sky layers (constellations only, dust only, or both). Catalogue rows are hoverable and clickable for a brief gold confirmation flash. The figure cards are static illustrations. There is no navigation, no form and no audio.

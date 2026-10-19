@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENDGAME — a study in 64 squares</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--dark:#7a5638;--light:#e9dcbe;--ink:#241a12;--paper:#f2ece0;--dim:#8a7a63;--red:#a8321f;--gold:#b8893c;}
+  body{background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid rgba(36,26,18,.16);}
+  .logo{font-family:"Didot",Georgia,serif;font-size:1.4rem;letter-spacing:.1em;}
+  .logo small{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--dim);margin-top:6px;}
+  .level{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+
+  .main{display:grid;grid-template-columns:1fr 300px;gap:32px;margin-top:34px;align-items:start;}
+  .board{width:100%;max-width:560px;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);
+    grid-template-rows:repeat(8,1fr);border:10px solid #5b3f28;box-shadow:0 30px 60px -30px rgba(36,26,18,.7),
+    inset 0 0 0 2px rgba(0,0,0,.25);background:#5b3f28;position:relative;}
+  .sq{position:relative;display:grid;place-items:center;font-size:clamp(22px,5.2vw,44px);cursor:pointer;
+    user-select:none;line-height:1;transition:box-shadow .2s;}
+  .sq.l{background:var(--light);}
+  .sq.d{background:var(--dark);}
+  .sq.last{box-shadow:inset 0 0 0 4px rgba(168,50,31,.75);}
+  .sq.sel{box-shadow:inset 0 0 0 4px rgba(184,137,60,.9);}
+  .sq .pc{position:relative;z-index:2;transition:transform .18s;display:block;}
+  .sq .pc.w{color:#f6ecd8;text-shadow:0 1px 2px rgba(0,0,0,.6),0 0 1px #000;}
+  .sq .pc.b{color:#241a12;text-shadow:0 1px 1px rgba(255,255,255,.25);}
+  .sq:hover .pc{transform:translateY(-3px) scale(1.06);}
+  .coords{position:absolute;inset:0;pointer-events:none;font-size:9px;color:rgba(0,0,0,.3);font-weight:700;}
+  .coords span{position:absolute;}
+
+  .side{display:grid;gap:18px;}
+  .card{border:1px solid rgba(36,26,18,.16);border-radius:16px;padding:22px;background:rgba(255,255,255,.4);}
+  .card h2{font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;font-weight:500;}
+  .card p{font-size:.94rem;line-height:1.85;color:#4c4034;}
+  .card .goal{font-family:"Didot",Georgia,serif;font-size:1.3rem;line-height:1.25;margin-bottom:10px;}
+  .moves{font-family:"Courier New",monospace;font-size:13px;line-height:2;min-height:80px;color:#4c4034;}
+  .moves b{color:var(--red);font-weight:400;}
+  .btns{display:flex;gap:9px;flex-wrap:wrap;}
+  .btn{border:1.5px solid var(--ink);background:transparent;padding:11px 16px;cursor:pointer;font:600 10.5px/1 inherit;
+    letter-spacing:.2em;text-transform:uppercase;transition:.25s;}
+  .btn:hover{background:var(--ink);color:var(--paper);}
+  .btn.solid{background:var(--ink);color:var(--paper);}
+  .btn.solid:hover{background:var(--red);border-color:var(--red);}
+  .status{font-size:12px;letter-spacing:.06em;color:var(--dim);min-height:20px;margin-top:12px;}
+  .status.ok{color:var(--ok,#2f6b3d);font-weight:600;}
+  .puzzles{display:grid;gap:8px;margin-top:6px;}
+  .pz{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-radius:9px;
+    cursor:pointer;font-size:.86rem;transition:.2s;border:1px solid transparent;}
+  .pz:hover{background:rgba(36,26,18,.05);}
+  .pz.on{border-color:var(--gold);background:rgba(184,137,60,.1);}
+  .pz u{text-decoration:none;color:var(--dim);font-size:10.5px;letter-spacing:.16em;}
+  .pz s{text-decoration:none;color:var(--dim);font-size:11px;}
+
+  .note{margin-top:7vh;border-top:1px solid rgba(36,26,18,.16);padding-top:26px;display:grid;
+    grid-template-columns:.9fr 1.1fr;gap:5vw;}
+  .note h2{font-family:"Didot",Georgia,serif;font-weight:400;font-size:clamp(1.5rem,3.2vw,2.4rem);line-height:1.15;}
+  .note p{color:#4c4034;font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+
+  @media(max-width:900px){.main{grid-template-columns:1fr;}.board{margin:0 auto;max-width:480px;}
+    .note{grid-template-columns:1fr;gap:22px;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Endgame<small>A study in sixty-four squares</small></div>
+    <div class="level" id="levelName">Study No. 3</div>
+  </header>
+
+  <div class="main">
+    <div class="board" id="board"></div>
+    <aside class="side">
+      <div class="card">
+        <h2>The problem</h2>
+        <div class="goal" id="goal">White to move and mate in two.</div>
+        <p id="desc">Every line you play is checked. There is exactly one way through, and the second move is the one that matters.</p>
+        <div class="status" id="status">Select a piece.</div>
+      </div>
+      <div class="card">
+        <h2>Variation</h2>
+        <div class="moves" id="moves"></div>
+        <div class="btns" style="margin-top:14px">
+          <button class="btn solid" id="undo">Undo</button>
+          <button class="btn" id="reset">Reset</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Studies</h2>
+        <div class="puzzles" id="puzzles"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="note">
+    <div><h2>Endgames are<br>the honest part<br>of chess</h2></div>
+    <div>
+      <p>Most games are decided long before the queens come off. What is left at the end is arithmetic: squares, diagonals, the single square a king cannot be caught on. A composed endgame has one idea, and finding it is the same feeling as reading a good short story.</p>
+      <p>The studies here are public domain and were chosen for their geometry rather than their difficulty. The first is a nineteenth-century gift; the second is a modern one that takes an afternoon.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var FILES='abcdefgh';
+  var PUZZLES=[
+    {id:1,name:'Study No. 1',goal:'White to move and mate in two.',
+     desc:'Two attackers, one flight square. Find the square the king cannot leave.',
+     pos:{a8:'r',h8:'k',g6:'K',f5:'R',h1:'r'},side:'w',
+     solution:['Rf6+','Kh7','Rf7#']},
+    {id:2,name:'Study No. 2',goal:'White to move and mate in two.',
+     desc:'The king is boxed in by its own pawn. The rook must go the long way round.',
+     pos:{a8:'k',h8:'r',c6:'K',a2:'p',g1:'R'},side:'w',
+     solution:['Rg7','Kh7','Ra7#']},
+    {id:3,name:'Study No. 3',goal:'White to move and mate in two.',
+     desc:'A back-rank mate hiding behind a pawn. Clear the file first.',
+     pos:{a8:'k',h8:'r',d6:'K',g5:'R',h2:'p'},side:'w',
+     solution:['Rh5+','Kh8','Rg8#']},
+    {id:4,name:'Study No. 4',goal:'White to move and mate in one.',
+     desc:'Only one move works. The rest allow the king to run.',
+     pos:{e8:'k',a7:'r',e5:'K',h5:'R'},side:'w',
+     solution:['Rh8#']}
+  ];
+  var board=document.getElementById('board');
+  var pos={}, side='w', selected=null, history=[], movesEl=document.getElementById('moves');
+  var statusEl=document.getElementById('status'), current=0;
+
+  function render(){
+    board.innerHTML='';
+    for(var r=8;r>=1;r--){
+      for(var f=0;f<8;f++){
+        var name=FILES[f]+r;
+        var sq=document.createElement('div');
+        sq.className='sq '+(((f+(9-r))%2===0)?'l':'d');
+        sq.dataset.sq=name;
+        var p=pos[name];
+        if(p){
+          var pc=document.createElement('span');
+          pc.className='pc '+(p===p.toUpperCase()?'w':'b');
+          pc.textContent=glyph(p);
+          sq.appendChild(pc);
+        }
+        sq.addEventListener('click',function(){ click(this.dataset.sq); });
+        board.appendChild(sq);
+      }
+    }
+    if(history.length) markLast();
+  }
+  function glyph(p){
+    var map={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+    return map[p]||'';
+  }
+  function markLast(){
+    var el=board.querySelector('[data-sq="'+history[history.length-1].to+'"]');
+    if(el) el.classList.add('last');
+  }
+  function load(p){
+    current=PUZZLES.indexOf(p);
+    pos={}; for(var k in p.pos) pos[k]=p.pos[k];
+    side=p.side; selected=null; history=[];
+    document.getElementById('goal').textContent=p.goal;
+    document.getElementById('desc').textContent=p.desc;
+    document.getElementById('levelName').textContent=p.name;
+    movesEl.innerHTML='';
+    statusEl.className='status'; statusEl.textContent='Select a piece.';
+    render();
+    document.querySelectorAll('.pz').forEach(function(el){
+      el.classList.toggle('on',+el.dataset.i===current);
+    });
+  }
+  function click(sq){
+    var p=pos[sq];
+    if(p && ((p===p.toUpperCase())===(side==='w'))){
+      selected=sq;
+      board.querySelectorAll('.sq.sel').forEach(function(e){e.classList.remove('sel');});
+      var el=board.querySelector('[data-sq="'+sq+'"]');
+      if(el) el.classList.add('sel');
+      statusEl.className='status';
+      statusEl.textContent=p.toUpperCase()+' on '+sq+' selected.';
+      return;
+    }
+    if(!selected) { statusEl.textContent='Select a piece first.'; return; }
+    // attempt the move
+    var piece=pos[selected];
+    var from=selected;
+    delete pos[selected];
+    pos[sq]=piece;
+    selected=null;
+    board.querySelectorAll('.sq.sel').forEach(function(e){e.classList.remove('sel');});
+    history.push({from:from,to:sq});
+    movesEl.innerHTML += '<div><b>'+from+'</b> → '+sq+'</div>';
+    side = side==='w'?'b':'w';
+    render();
+    check();
+  }
+  function check(){
+    var p=PUZZLES[current];
+    var played=history.map(function(h){return h.from+h.to;});
+    var sol=p.solution;
+    var ok=true;
+    for(var i=0;i<played.length;i++){
+      if(i>=sol.length || played[i]!==sol[i].toLowerCase()){ ok=false; break; }
+    }
+    if(ok && played.length===sol.length){
+      statusEl.className='status ok';
+      statusEl.textContent='Mate. That is the whole idea.';
+    }else if(!ok && played.length>0){
+      statusEl.className='status';
+      statusEl.textContent='Not that line. Press Undo and try again.';
+    }
+  }
+  document.getElementById('undo').addEventListener('click',function(){
+    if(!history.length) return;
+    var h=history.pop();
+    pos[h.to]=pos[h.from];
+    delete pos[h.from];
+    side = side==='w'?'b':'w';
+    var lines=movesEl.innerHTML.split('</div>');
+    lines.pop();
+    movesEl.innerHTML=lines.join('</div>');
+    render();
+    statusEl.className='status'; statusEl.textContent='Stepped back.';
+  });
+  document.getElementById('reset').addEventListener('click',function(){ load(PUZZLES[current]); });
+
+  var pw=document.getElementById('puzzles');
+  PUZZLES.forEach(function(p,i){
+    var d=document.createElement('div');
+    d.className='pz'; d.dataset.i=i;
+    d.innerHTML='<u>'+String(i+1).padStart(2,'0')+'</u><span>'+p.name.replace('Study No. ','')+'</span><s>'+p.solution.length+' moves</s>';
+    d.addEventListener('click',function(){ load(p); });
+    pw.appendChild(d);
+  });
+
+  load(PUZZLES[0]);
+})();
+</script>
+</body>
+</html>

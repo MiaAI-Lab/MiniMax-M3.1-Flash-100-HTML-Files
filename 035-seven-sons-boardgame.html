@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEVEN SONS — a territory game</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0f1410;--panel:#161d17;--ink:#e8f0e4;--dim:#84917f;--line:rgba(232,240,228,.12);
+        --gold:#e2b45c;--red:#c8503c;--blue:#5a8fc0;--green:#6fae6a;--purple:#9a74c0;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.4em;text-transform:uppercase;}
+  .brand .seven{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#12180f;display:grid;place-items:center;
+    font-weight:800;font-size:15px;letter-spacing:0;}
+  .res{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);}
+  .res b{color:var(--gold);font-weight:500;margin-left:6px;}
+
+  .main{display:grid;grid-template-columns:1fr 300px;gap:22px;margin-top:26px;align-items:start;}
+  .board{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel);
+    background-image:linear-gradient(rgba(232,240,228,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(232,240,228,.05) 1px,transparent 1px);background-size:44px 44px;}
+  .hexwrap{position:relative;padding:24px;display:grid;place-items:center;}
+  .hexgrid{display:grid;grid-template-columns:repeat(9,40px);gap:2px;justify-content:center;}
+  .hex{width:40px;height:44px;background:#1d2a1f;border:1px solid rgba(232,240,228,.08);cursor:pointer;position:relative;
+    transition:.3s;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+  .hex:hover{transform:scale(1.1);z-index:3;}
+  .hex.own{background:var(--blue);}
+  .hex.foe{background:var(--red);}
+  .hex.hot{background:var(--gold);}
+  .hex .dot{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;font-weight:700;color:#0d120e;}
+  .die{width:44px;height:44px;border-radius:9px;background:#f0e9d8;color:#1a2018;display:grid;place-items:center;
+    font-size:20px;font-weight:800;box-shadow:0 8px 18px -8px #000, inset 0 -3px 0 rgba(0,0,0,.18);
+    transition:transform .3s;}
+  .die.roll{animation:roll .5s ease;}
+  @keyframes roll{0%{transform:rotate(0) scale(1);}50%{transform:rotate(180deg) scale(1.2);}100%{transform:rotate(360deg) scale(1);}}
+
+  .side{display:grid;gap:16px;}
+  .card{border:1px solid var(--line);border-radius:16px;padding:20px;background:rgba(255,255,255,.025);}
+  .card h2{font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;font-weight:500;}
+  .rollbtn{width:100%;background:var(--gold);color:#12180f;border:none;padding:15px;border-radius:12px;cursor:pointer;
+    font:800 11px/1 inherit;letter-spacing:.24em;text-transform:uppercase;transition:.25s;}
+  .rollbtn:hover{filter:brightness(1.08);}
+  .rollbtn:disabled{opacity:.4;cursor:default;}
+  .log{font-size:11.5px;line-height:1.95;color:#9aa896;max-height:150px;overflow:auto;font-family:"Courier New",monospace;}
+  .log b{color:var(--gold);font-weight:400;}
+  .log i{font-style:normal;color:var(--red);}
+  .terr{display:grid;gap:6px;}
+  .trow{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;font-size:.84rem;padding:7px 8px;
+    border-radius:8px;}
+  .trow i{width:12px;height:12px;border-radius:3px;display:block;}
+  .trow b{font-weight:400;}
+  .trow span{color:var(--dim);font-variant-numeric:tabular-nums;}
+
+  .rules{margin-top:6vh;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .rule{border-top:1px solid var(--line);padding-top:16px;}
+  .rule .n{font-size:10px;letter-spacing:.3em;color:var(--gold);margin-bottom:10px;}
+  .rule h3{font-size:1.05rem;font-weight:400;margin-bottom:7px;}
+  .rule p{color:var(--dim);font-size:.88rem;line-height:1.85;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:940px){.main{grid-template-columns:1fr;}.hexgrid{grid-template-columns:repeat(9,minmax(24px,40px));}
+    .hex{width:auto;aspect-ratio:40/44;height:auto;}.rules{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="seven">7</span>Seven Sons</div>
+    <div class="res">
+      <span>Gold<b id="rGold">40</b></span><span>Grain<b id="rGrain">18</b></span>
+      <span>Wood<b id="rWood">12</b></span><span>Turn<b id="rTurn">1</b></span>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="board">
+      <div class="hexwrap">
+        <div class="hexgrid" id="grid"></div>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="card">
+        <h2>Roll</h2>
+        <div style="display:grid;place-items:center;margin-bottom:14px">
+          <div class="die" id="die">6</div>
+        </div>
+        <button class="rollbtn" id="roll">Roll the bones</button>
+      </div>
+      <div class="card">
+        <h2>Chronicle</h2>
+        <div class="log" id="log"></div>
+      </div>
+      <div class="card">
+        <h2>Houses</h2>
+        <div class="terr" id="terr"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="rules">
+    <article class="rule"><div class="n">01 / THE ROLL</div><h3>Two bones, one road</h3><p>Roll to move that many fields. A roll of doubles lets you move again and take a house by force.</p></article>
+    <article class="rule"><div class="n">02 / THE HOUSES</div><h3>Gold buys land</h3><p>Each house costs gold, and the number of houses you hold decides who wins the last round.</p></article>
+    <article class="rule"><div class="n">03 / THE END</div><h3>Three rounds, then the tide</h3><p>After the third round the board is scored. Houses break ties; gold settles them.</p></article>
+  </section>
+
+  <footer>
+    <span>Seven Sons — a territory game</span>
+    <span>Three rounds · five houses · one winner</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var N=63;
+  var grid=document.getElementById('grid');
+  var tiles=[], gold=40, grain=18, wood=12, turn=1, round=1, myTurn=true;
+  var HOUSES=[{n:'Ostmark',c:'#5a8fc0',v:0},{n:'Wessex',c:'#6fae6a',v:0},{n:'Holt',c:'#9a74c0',v:0},
+              {n:'Byr',c:'#c8503c',v:0},{n:'Tarn',c:'#e2b45c',v:0}];
+  var logEl=document.getElementById('log'), die=document.getElementById('die');
+
+  function build(){
+    grid.innerHTML=''; tiles=[];
+    for(var i=0;i<N;i++){
+      var d=document.createElement('div');
+      d.className='hex';
+      d.innerHTML='<span class="dot"></span>';
+      d.addEventListener('click',function(){ land(this); });
+      grid.appendChild(d);
+      tiles.push(d);
+    }
+    // place houses
+    [4,17,31,45,57].forEach(function(idx,k){
+      var t=tiles[idx];
+      t.style.background=HOUSES[k].c;
+      t.querySelector('.dot').textContent='⌂';
+      t.dataset.house=k;
+    });
+  }
+  function log(txt,cls){
+    var d=document.createElement('div');
+    d.innerHTML=cls? '<'+cls+'>'+txt+'</':' '+txt;
+    logEl.insertBefore(d,logEl.firstChild);
+    while(logEl.children.length>12) logEl.removeChild(logEl.lastChild);
+  }
+  function update(){
+    document.getElementById('rGold').textContent=gold;
+    document.getElementById('rGrain').textContent=grain;
+    document.getElementById('rWood').textContent=wood;
+    document.getElementById('rTurn').textContent=turn;
+    var t=document.getElementById('terr'); t.innerHTML='';
+    HOUSES.forEach(function(h){
+      var d=document.createElement('div');
+      d.className='trow';
+      d.innerHTML='<i style="background:'+h.c+'"></i><b>'+h.n+'</b><span>'+h.v+'</span>';
+      t.appendChild(d);
+    });
+  }
+  var pos=0;
+  function roll(){
+    var btn=document.getElementById('roll');
+    btn.disabled=true;
+    die.classList.remove('roll'); void die.offsetWidth; die.classList.add('roll');
+    var v=1+Math.floor(Math.random()*6);
+    die.textContent=v;
+    setTimeout(function(){
+      pos=(pos+v)%N;
+      tiles.forEach(function(t){ t.classList.remove('hot'); });
+      tiles[pos].classList.add('hot');
+      var house=tiles[pos].dataset.house;
+      if(house!==undefined){
+        var h=HOUSES[+house];
+        if(gold>=6){
+          gold-=6; h.v++;
+          tiles[pos].classList.remove('hot');
+          tiles[pos].classList.add('own');
+          log('You took <b>'+h.n+'</b> for 6 gold.','b');
+        }else{
+          log('You stood at <i>'+h.n+'</i> with too little gold.','i');
+        }
+      }else{
+        var g=1+Math.floor(Math.random()*3);
+        grain+=g;
+        log('Gathered <b>'+g+'</b> grain on the open field.','b');
+      }
+      turn++;
+      if(turn>6){ turn=1; round++; log('— end of round '+(round-1)+' —','b'); }
+      if(round>3){
+        var best=0, who='the river';
+        HOUSES.forEach(function(h){ if(h.v>best){best=h.v;who=h.n;} });
+        log('Tide comes in. <b>'+who+'</b> holds the most houses ('+best+').','b');
+        btn.disabled=false; btn.textContent='Play again';
+        btn.onclick=resetGame;
+        return;
+      }
+      update();
+      btn.disabled=false;
+    },500);
+  }
+  function land(t){
+    if(!t.classList.contains('hot')) return;
+    log('You hold the field at '+ (tiles.indexOf(t)+1) +'.');
+  }
+  function resetGame(){
+    round=1;turn=1;gold=40;grain=18;wood=12;pos=0;
+    HOUSES.forEach(function(h){h.v=0;});
+    logEl.innerHTML='';
+    build(); update();
+    var btn=document.getElementById('roll');
+    btn.textContent='Roll the bones'; btn.onclick=null;
+    btn.addEventListener('click',roll);
+    log('Round one. The road is wet.','b');
+  }
+  document.getElementById('roll').addEventListener('click',roll);
+  build(); update();
+  log('Round one. The road is wet.','b');
+})();
+</script>
+</body>
+</html>

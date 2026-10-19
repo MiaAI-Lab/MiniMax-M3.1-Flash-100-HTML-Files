@@ -1,0 +1,20 @@
+TITLE: ARBORE — a recursive forest
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ARBORE — a recursive forest". Art direction: a dark botanical laboratory. Palette: near-black green ground #0d1410, ink #e8f0e6, dim sage #7d9182, moss green #8fbf6a, bark #6b4a30, gold leaf #e8c26a, hairline rgba(232,240,230,.12). A fixed radial vignette darkens the edges. Layout: a header with a rotated-diamond brand mark and three pill buttons (Regrow / Wind / Bare); a full-width stage containing a 1200×700 inline SVG with a floating HUD that reports the specimen seed, the branch count and the season; below it a two-column region — a 320px control panel with four range sliders (depth 4–12, branch angle 8–52°, decay 0.50–0.88, lean −20°–+20°) and a seed field with a Random button, and an essay column with a pull-quote and a colour legend; then a three-column note row explaining length, angle and termination; then a footer. The tree is generated in JavaScript as real SVG: a recursive branch() function that draws a line, animates its x2 endpoint with an SVG <animate> element so the tree grows from the trunk outwards, spawns two children at a seeded jittered angle with a geometric length decay, occasionally spawns a third branch, and places small leaf circles with an opacity <animate> on the last two generations only. A mulberry32 pseudo-random generator seeded from the seed field makes every specimen reproducible. Interaction: any slider or the seed field regenerates the tree instantly; Random picks a new seed; Regrow replays the growth animation; Bare toggles the leaves off and on; Wind rotates the branch and leaf groups slightly about the trunk base. The season cycles quietly through summer, autumn and winter, changing the trunk, branch, leaf and background colours.
+
+DESCRIPTION:
+A recursive generator with the pretence of a botanical instrument. The tree is real SVG, not a picture: a seeded random walk through angle, length decay and a third-child probability, with each line animating its own growth so the specimen appears to push itself up from the base. Because the seed is visible and editable, the same tree can be returned to at any time, which turns a toy into a specimen sheet.
+
+MAJOR VISUAL TECHNIQUES:
+- Recursive SVG branch generator with seeded mulberry32 pseudo-randomness
+- Inline SVG <animate> elements growing each line's x2 endpoint from the base outwards
+- Geometric length decay with per-child jitter for irregular silhouettes
+- Third-child branch probability to break the binary lattice
+- Leaf circles with animated opacity, restricted to the terminal generations
+- Season palettes swapping trunk, branch, leaf and background colours
+- Group-level rotation about the trunk base to simulate wind
+- Fixed radial vignette over a dark green ground
+
+INTENDED INTERACTION MODEL:
+Tinker and observe. Four sliders and a seed field regenerate the specimen on every change, Random produces a new seed, Regrow replays the growth animation, Bare strips the leaves, and Wind bends the crown. The season rotates on its own every fourteen seconds. Nothing is a form to submit — everything is immediate.

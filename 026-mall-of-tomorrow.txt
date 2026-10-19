@@ -1,0 +1,20 @@
+TITLE: MALL OF TOMORROW — open 24 hours
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that emulates a late-1990s operating system desktop as a fictional shopping mall called "MALL OF TOMORROW". Art direction: vaporwave/Windows-95 nostalgia. Palette: system grey #c0c0c0, window chrome navy #000080, teal desktop #008080, magenta #ff00ff, cyan #00ffff, orange #ff9a00, with the classic 2px outset/inset border language. The desktop wallpaper is a violet-magenta radial gradient with an SVG noise overlay, a slit-cut sun disc, and a perspective grid floor whose two line families scroll toward the viewer. Layout: three absolutely positioned windows — "Memegenerator.exe" (a white meme card with an orange top banner, an image area, a caption, a text field, GENERATE / RANDOM / DOWNLOAD buttons), "Visitors" (a blue seven-digit counter, a striped progress bar and three checkboxes), and "Mall Directory" (a two-column list of fictional shops) — each with a gradient title bar and the three classic control buttons; a fixed taskbar along the bottom with a Start button, three task items, a system tray with a live clock; a scrolling magenta/cyan strip above the taskbar. Interaction: the meme generator rebuilds the caption and a new gradient image area, RANDOM fills the field from a list of internet-era captions, DOWNLOAD reports a fake file size; the visitor counter increments irregularly; the loading bar advances; the clock ticks; floating bubbles rise across the desktop unless the sound checkbox is cleared. Responsive: under 760px the windows unstack into a normal document flow and the taskbar becomes horizontally scrollable.
+
+DESCRIPTION:
+An operating system as a place. The mall is a desktop: grey chrome, navy title bars, a teal wallpaper with a grid floor running to a banded sun, and three windows doing small satirical jobs — a meme generator, a visitor counter, a directory of shops that only exist in the late 1990s internet. Every classic 2px border and pressed-button state is reproduced by hand, and the bubbles drifting up the screen are the dial-up era's only animation.
+
+MAJOR VISUAL TECHNIQUES:
+- Classic 2px outset/inset 3D border language for windows, buttons, fields and bars
+- Gradient title bars in the old navy-to-blue style with square control buttons
+- Perspective grid floor (perspective + rotateX) with two scrolling line families
+- Slit-cut sun disc using repeating-linear-gradient bands
+- Magnified meme template with an orange banner and inset image area
+- Striped segment progress bar made from a repeating gradient
+- Rising bubble particles with radial-gradient highlights
+- Fake system clock and session counter in the taskbar tray
+
+INTENDED INTERACTION MODEL:
+A toy desktop. The meme generator accepts text, regenerates its image area with a new gradient, can pull a random caption and reports a fake download size. The counter, progress bar and clock run on their own timers. Checkboxes toggle the bubbles and the "dial-up sound". Nothing is submitted and nothing navigates away.

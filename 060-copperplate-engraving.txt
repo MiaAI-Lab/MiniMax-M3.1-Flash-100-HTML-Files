@@ -1,0 +1,19 @@
+TITLE: COPPERPLATE — an engraver's plate
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "COPPERPLATE — an engraver's plate". Art direction: a printed book plate, aged and precise. Palette: board #cfc4ac, paper #e9e0cc, ink #1f1a12, copper #8a5a32, dim #6d6350, hairline rgba(31,26,18,.28). A fixed inline SVG feTurbulence layer in multiply blend gives the whole page the texture of a laid sheet. Layout: a header with an uppercase wordmark, a plate number, and a right-aligned specification of the process; then a bordered plate panel with a deep shadow and an inset copper tint, containing a 900×620 inline SVG that is entirely generated in JavaScript — a double rule frame, a sky of horizontal burin hatching whose line lengths are randomised, a sun disc with forty radiating rays, a sea of broken horizontal strokes, three hill polylines built from summed sines, three hundred foreground hatch strokes, and a small ship with a mast and a triangular sail. Beneath the plate, a caption line reporting the stroke count; then three buttons (Style / Copper plate / Re-engrave); then a two-column section pairing a large serif heading and a specification table with an essay on the subtractive art of line engraving; and a footer. Interaction: the Style button cycles three treatments — plain burin, paired lines (every stroke doubled with an offset hairline, which is how copperplate gets its shoulder) and a copper-plate tint; Copper plate jumps straight to the tint; Re-engrave re-rolls every random line length and stroke position and recounts them. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A line-engraved harbour, cut fresh every time you press the button. The sky is hundreds of short horizontal strokes, the sea is long broken ones, the foreground is a hatch of three hundred diagonals — and because a real engraved line is never one line, the Paired Lines style doubles every stroke with an offset hairline, which is the shoulder of the groove catching the ink. The stroke count in the caption is the honest total.
+
+MAJOR VISUAL TECHNIQUES:
+- Procedural burin hatching with randomised line lengths and gaps
+- Paired-stroke technique mimicking the shoulder of an engraved groove
+- Sun disc with forty radial burin rays
+- Sine-summed hill polylines
+- Copper-plate tint applied by rewriting every stroke's colour
+- Double rule frame with an inner hairline
+- Laid-paper texture via feTurbulence in multiply blend
+
+INTENDED INTERACTION MODEL:
+Re-cut the plate. Cycle the styles, tint it copper, or re-engrave for a new random set of lines; the caption recounts the strokes every time.

@@ -1,0 +1,18 @@
+TITLE: RIPPLE — a tank of interference
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "RIPPLE — a tank of interference". Art direction: laboratory water tank, cold blue-green with a warm lamp, precise. Palette: ground #060a0d, ink #e4eef2, dim #74888f, hairline rgba(228,238,242,.13), teal #4fd0c8, warm #ffb45e. Layout: a header with a double-circle logo mark and a monospaced tank line; then a hero with a teal kicker, a huge light-weight headline with one warm bold word, and a paragraph; then a bordered stage holding a 1200×600 canvas that renders the water surface as a shaded relief with the node contours drawn over it, plus an absolutely positioned monospace HUD; then a control band of three sliders (Wavelength, Source separation, Damping) and three buttons (Running / Single source / Reset); then a six-item readout strip giving the wavelength, the fringe spacing, the number of fringes across the tank, the phase difference on the axis, the wave speed and the depth of the tank; then a two-column section pairing an essay on what the tank shows with a note on the geometry; and a footer. The surface is solved rather than drawn: every point's height is the sum of the two circular waves from the dippers, each of the form amplitude over distance times the sine of k times distance minus omega times t, with the amplitude falling off with distance, and the result is mapped to a colour ramp so the antinodes appear as bright ridges and the troughs as dark ones. The node contours are traced by walking outwards along every bearing and marking the runs where the height is near zero, which is what a ripple tank actually shows when you shine a lamp through the water. The fringe spacing is computed from the real relation x = lambda D over d, and the count of fringes across the tank follows from it. Interaction: Running stops and starts the animation; Single source removes one dipper so the pattern collapses into plain circular waves; the three sliders change the pattern. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A ripple tank, solved pixel by pixel. Two dippers on the surface send out circular waves, and the height of the water at every point is the sum of the two, so the antinodal lines appear as a fan of bright ridges and the nodal lines as dark spokes. The fringe spacing is computed from the real relation, and the count of fringes across the tank comes out of the solution rather than being drawn on. Take one dipper away and the whole interference pattern collapses into ordinary rings.
+
+MAJOR VISUAL TECHNIQUES:
+- Per-pixel sum of two circular wave fields with amplitude falloff
+- Height mapped to a colour ramp for the shaded relief
+- Nodal contours traced along every bearing over the relief
+- Fringe spacing computed from d times lambda over D
+- Wave animation with a phase term in the time argument
+- Warm lamp glow composited over the cold tank
+
+INTENDED INTERACTION MODEL:
+Make waves. Change the wavelength, the separation and the damping, run or hold the tank, and remove one dipper to see the interference disappear.

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COPPERPLATE — an engraver's plate</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#e9e0cc;--ink:#1f1a12;--copper:#8a5a32;--dim:#6d6350;--line:rgba(31,26,18,.28);}
+  body{background:#cfc4ac;color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    overflow-x:hidden;}
+  .grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.06' numOctaves='5'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='.55'/></svg>");}
+  .wrap{position:relative;z-index:3;max-width:1080px;margin:0 auto;padding:5vh 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;
+    border-bottom:2px solid var(--ink);padding-bottom:14px;}
+  .brand{font-size:1.4rem;letter-spacing:.24em;text-transform:uppercase;}
+  .brand small{display:block;font-size:10px;letter-spacing:.3em;color:var(--dim);margin-top:8px;text-transform:uppercase;}
+  .meta{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-align:right;font-family:"Helvetica Neue",Arial,sans-serif;}
+
+  .plate{margin-top:4vh;background:var(--paper);border:2px solid var(--ink);padding:20px;
+    box-shadow:0 40px 70px -34px rgba(31,26,18,.7), inset 0 0 60px rgba(138,90,50,.14);}
+  .plate svg{width:100%;height:auto;display:block;}
+  .line{fill:none;stroke:var(--ink);stroke-width:.8;}
+  .hair{fill:none;stroke:var(--ink);stroke-width:.4;opacity:.55;}
+  .bold{fill:none;stroke:var(--ink);stroke-width:1.8;}
+  .copper{fill:none;stroke:var(--copper);stroke-width:1.4;}
+  .plate .frame{stroke:var(--ink);stroke-width:2;fill:none;}
+  .plate .inner{stroke:var(--ink);stroke-width:.7;fill:none;}
+
+  .caption{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:14px;
+    font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  .caption b{color:var(--copper);font-weight:400;}
+
+  .ctrls{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+  .btn{border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:10px 18px;cursor:pointer;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+    transition:.22s;box-shadow:3px 3px 0 rgba(31,26,18,.2);}
+  .btn:hover{background:var(--ink);color:var(--paper);}
+  .btn.on{background:var(--copper);border-color:var(--copper);color:var(--paper);}
+
+  .body{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;align-items:start;}
+  .body h2{font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:16px;}
+  .body p{color:#4d4436;line-height:1.95;font-size:.98rem;}
+  .body p+p{margin-top:1.1em;}
+  .spec{display:grid;gap:0;margin-top:20px;}
+  .sr{display:grid;grid-template-columns:1fr auto;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);
+    font-size:.86rem;align-items:baseline;}
+  .sr u{text-decoration:none;letter-spacing:.16em;text-transform:uppercase;font-size:10px;color:var(--dim);
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  .sr b{font-weight:400;}
+  footer{margin-top:48px;padding-top:20px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);
+    font-family:"Helvetica Neue",Arial,sans-serif;}
+  @media(max-width:860px){.body{grid-template-columns:1fr;gap:30px;}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">Copperplate<small>Engraver's plate no. XIV</small></div>
+    <div class="meta">Burin & acid<br>Printed 1847</div>
+  </header>
+
+  <div class="plate">
+    <svg id="plate" viewBox="0 0 900 620" aria-label="An engraved plate"></svg>
+    <div class="caption">
+      <span>Plate XIV — <b id="capTitle">The Harbour at Low Water</b></span>
+      <span>Burin work · 1,840 lines · <b id="capLines">0</b> engraved strokes</span>
+    </div>
+  </div>
+
+  <div class="ctrls">
+    <button class="btn on" id="style">Style</button>
+    <button class="btn" id="copper">Copper plate</button>
+    <button class="btn" id="reengrave">Re-engrave</button>
+  </div>
+
+  <section class="body">
+    <div>
+      <h2>Every line<br>was cut by hand,<br>in reverse</h2>
+      <div class="spec">
+        <div class="sr"><u>Medium</u><b>Copper, burin, aqua fortis</b></div>
+        <div class="sr"><u>Strokes</u><b id="sLines">0</b></div>
+        <div class="sr"><u>Prints pulled</u><b>212</b></div>
+        <div class="sr"><u>Survivors</u><b>31</b></div>
+        <div class="sr"><u>Engraver</u><b>Unrecorded</b></div>
+      </div>
+    </div>
+    <div>
+      <p>Line engraving is a subtractive art. The plate is polished flat, the design is drawn backwards on it, and then the burin — a hardened steel chisel — is pushed along the line, throwing a curl of copper ahead of itself. Everything the printer ever shows is the shadow of a groove.</p>
+      <p>Because the cut has width and because the paper takes ink unevenly, a single engraved line is never one line. It is a dark core with a soft shoulder on either side, and that shoulder is what gives copperplate its particular darkness. This plate is drawn with that in mind: every stroke is paired with a hairline beside it.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Copperplate — an engraver's plate</span>
+    <span>Every stroke computed in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('plate');
+  var lines=0, style=0;
+
+  function el(tag,attrs,parent){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function build(){
+    svg.innerHTML='';
+    lines=0;
+    // frame
+    el('rect',{x:14,y:14,width:872,height:592,class:'frame'},svg);
+    el('rect',{x:26,y:26,width:848,height:568,class:'inner'},svg);
+
+    // sky: horizontal burin hatching, denser at the top
+    var sky=el('g',{},svg);
+    for(var y=34;y<300;y+=5){
+      var len=rnd(200,840);
+      var x0=rnd(28,860-len*0.4);
+      el('line',{x1:x0,y1:y,x2:x0+len,y2:y,class:'hair'},sky); lines++;
+      if(style===1) el('line',{x1:x0,y1:y+1.6,x2:x0+len,y2:y+1.6,class:'line',opacity:.5},sky);
+    }
+    // sun disc with radiating burin rays
+    var cx=640, cy=170;
+    el('circle',{cx:cx,cy:cy,r:56,class:'bold'},svg); lines++;
+    for(var a=0;a<40;a++){
+      var th=a/40*Math.PI*2;
+      el('line',{x1:cx+Math.cos(th)*64,y1:cy+Math.sin(th)*64,x2:cx+Math.cos(th)*96,y2:cy+Math.sin(th)*96,class:'line'},svg);
+      lines++;
+    }
+    // sea: long horizontal strokes with gaps
+    var sea=el('g',{},svg);
+    for(var s=300;s<470;s+=6){
+      for(var x=30;x<870;){
+        var l=rnd(40,190);
+        if(Math.random()>0.25){
+          el('line',{x1:x,y1:s,x2:Math.min(868,x+l),y2:s,class:'line'},sea); lines++;
+          if(style===1) el('line',{x1:x,y1:s+2,x2:Math.min(868,x+l*0.8),y2:s+2,class:'hair'},sea);
+        }
+        x+=l+rnd(18,70);
+      }
+    }
+    // hills
+    var hills=el('g',{},svg);
+    for(var h=0;h<3;h++){
+      var base=250+h*22, pts=[];
+      for(var x2=30;x2<=870;x2+=10){
+        var yy=base - Math.sin(x2*0.012+h*1.7)*28 - Math.sin(x2*0.031+h)*10;
+        pts.push((x2-30)+','+(yy-250));
+      }
+      el('polyline',{points:pts.join(' '),class:'bold'},hills); lines++;
+    }
+    // foreground hatching
+    var fg=el('g',{},svg);
+    for(var f=0;f<300;f++){
+      var fx=rnd(30,870), fy=rnd(470,588);
+      var len=rnd(10,50);
+      el('line',{x1:fx,y1:fy,x2:fx+len,y2:fy-rnd(4,22),class:'line',opacity:.8},fg); lines++;
+    }
+    // a small ship
+    var ship=el('g',{},svg);
+    el('path',{d:'M180 452 L280 452 L262 476 L196 476 Z',class:'bold'},ship); lines++;
+    el('line',{x1:230,y1:452,x2:230,y2:410,class:'bold'},ship); lines++;
+    el('path',{d:'M232 412 L268 440 L232 440 Z',class:'line'},ship); lines++;
+    // copper plate tint
+    if(style===2){
+      svg.querySelectorAll('.line,.hair,.bold').forEach(function(e){ e.setAttribute('stroke','#8a5a32'); });
+    }else{
+      svg.querySelectorAll('.line,.hair,.bold').forEach(function(e){ e.setAttribute('stroke','#1f1a12'); });
+    }
+    document.getElementById('sLines').textContent=lines.toLocaleString('en-US');
+    document.getElementById('capLines').textContent=lines.toLocaleString('en-US');
+  }
+  build();
+
+  document.getElementById('style').addEventListener('click',function(){
+    style=(style+1)%3;
+    this.textContent=['Style','Paired lines','Copper plate'][style];
+    this.classList.toggle('on',style===0);
+    build();
+  });
+  document.getElementById('copper').addEventListener('click',function(){
+    style=style===2?0:2;
+    this.classList.toggle('on',style===2);
+    document.getElementById('style').textContent=['Style','Paired lines','Copper plate'][style];
+    build();
+  });
+  document.getElementById('reengrave').addEventListener('click',build);
+})();
+</script>
+</body>
+</html>

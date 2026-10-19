@@ -1,0 +1,18 @@
+TITLE: ECHO — a room that answers
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ECHO — a room that answers". Art direction: acoustic measurement, dark, cyan and amber. Palette: ground #0a0c10, ink #e6eaef, dim #79808c, hairline rgba(230,234,239,.13), cyan #5ad2e6, amber #f0a955. Layout: a header with a ring logo and a monospaced model line; then a hero with a cyan kicker, a huge light-weight headline with one amber bold word, and a paragraph; then a bordered stage holding a 1200×560 canvas that draws a plan of the room with the source, the listener, the direct path and the expanding wavefronts, plus an absolutely positioned monospace HUD; then a bordered impulse-response panel with a 1160×200 canvas showing the echo train and its envelope; then a control band of three sliders (Room length, Room width, Wall absorption) and four buttons (Clap / Concert hall / Cellar / Cathedral); then a six-item readout strip giving the reverberation time, the first echo delay, the direct sound delay, the number of reflections modelled, the critical distance and the room volume; then a two-column section pairing an essay on how a room is turned into a number with a note on what you actually hear; and a footer. The acoustics are real: the impulse response is built with the image-source method in three dimensions — every combination of mirrored images across the six walls is placed, its distance gives a delay of distance over 343 metres per second, and its amplitude is the reflection coefficient raised to the number of reflections and divided by the distance — and each arrival is given a short decaying noise burst so it sounds like a handclap. The same images are drawn on the plan as expanding wavefronts, so the picture and the sound are the same calculation. Interaction: Clap plays a filtered noise burst through a ConvolverNode loaded with the computed impulse response and restarts the wavefront animation; the sliders rebuild the room; the three preset buttons set a concert hall, a cellar and a cathedral and clap in each. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A room you can hear. The impulse response is built with the image-source method in three dimensions — every mirrored copy of the source across the six walls is placed, its distance gives the delay and its amplitude the reflection coefficient raised to the number of bounces — and that array is loaded into a convolver, so the clap you hear is genuinely the room you have built. The plan view draws the same wavefronts expanding and reflecting, from the same list of images.
+
+MAJOR VISUAL TECHNIQUES:
+- Three-dimensional image-source method for a shoebox room
+- ConvolverNode loaded with the computed impulse response
+- Wavefronts drawn from the image list and clipped to the room plan
+- Short decaying noise burst added to every arrival to model a clap
+- Sabine reverberation time and critical distance computed from the geometry
+- Envelope curve extracted from the impulse response
+
+INTENDED INTERACTION MODEL:
+Clap. Resize the room, change the wall absorption, and clap again; the tail shortens or lengthens as the room does. The three presets give you a concert hall, a cellar and a cathedral.

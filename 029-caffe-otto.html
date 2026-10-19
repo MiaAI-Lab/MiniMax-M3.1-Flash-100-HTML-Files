@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAFFÈ OTTO — a small espresso bar</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#1b1512;--cream:#f0e6d8;--copper:#c07a44;--brass:#e0b072;--ink:#2a1f19;--dim:#8d7a6b;--green:#7dbf6a;}
+  body{background:var(--bg);color:var(--cream);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;
+    min-height:100vh;}
+  .steam{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;}
+  .wrap{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid rgba(240,230,216,.16);}
+  .logo{font-family:"Didot",Georgia,serif;font-size:1.5rem;letter-spacing:.06em;}
+  .logo small{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--dim);margin-top:6px;}
+  .open{display:flex;align-items:center;gap:9px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+  .open i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);
+    animation:bl 2.4s ease-in-out infinite;}
+  @keyframes bl{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  .hero{display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;padding:8vh 0 6vh;align-items:center;}
+  .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--brass);}
+  h1{font-family:"Didot",Georgia,serif;font-weight:400;font-size:clamp(2.6rem,6vw,4.6rem);line-height:1.04;margin:20px 0 22px;}
+  h1 em{font-style:italic;color:var(--brass);}
+  .lede{color:#b6a493;font-size:1.02rem;line-height:1.9;max-width:42ch;}
+  .cta{margin-top:32px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .brew{background:var(--brass);color:#2a1f19;border:none;padding:17px 30px;font:700 11.5px/1 inherit;
+    letter-spacing:.26em;text-transform:uppercase;cursor:pointer;transition:.3s;position:relative;}
+  .brew:hover{background:var(--cream);transform:translateY(-2px);}
+  .brew:disabled{opacity:.45;cursor:default;transform:none;}
+  .hint{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+
+  .machine{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;
+    background:linear-gradient(160deg,#2a211c,#1a1411);border:1px solid rgba(224,176,114,.22);border-radius:24px;padding:28px;}
+  .gauge{width:132px;height:132px;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 40% 32%,#f3ead9,#cfc0aa 60%,#a89684);
+    box-shadow:0 0 0 6px #241b16, 0 0 0 8px var(--copper), 0 22px 44px -22px #000;}
+  .gauge .ticks{position:absolute;inset:12px;border-radius:50%;
+    background:conic-gradient(from 210deg,var(--green) 0 42%,transparent 42% 100%);}
+  .gauge .ticks2{position:absolute;inset:12px;border-radius:50%;
+    background:conic-gradient(from 210deg,transparent 0 62%,#c04a2a 62% 84%,transparent 84%);}
+  .gauge .needle{position:absolute;left:50%;bottom:50%;width:3px;height:38%;margin-left:-1.5px;
+    background:#2a1f19;transform-origin:50% 100%;border-radius:2px;transition:transform .4s cubic-bezier(.3,1.4,.4,1);}
+  .gauge .hub2{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;
+    background:#2a1f19;}
+  .gauge .lbl{position:absolute;left:0;right:0;bottom:22%;text-align:center;font-size:8px;letter-spacing:.22em;
+    text-transform:uppercase;color:#6b5b4c;}
+  .gauge .val{position:absolute;left:0;right:0;top:58%;text-align:center;font-size:1.1rem;font-weight:700;color:#2a1f19;}
+
+  .cupzone{display:grid;gap:18px;}
+  .cuparea{position:relative;height:190px;display:grid;place-items:end center;}
+  .cup{position:relative;width:130px;height:96px;}
+  .cup .saucer{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:170px;height:16px;
+    border-radius:50%;background:linear-gradient(180deg,#e7dccb,#b3a48f);box-shadow:0 8px 18px -8px #000;}
+  .cup .body{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:112px;height:88px;
+    border-radius:6px 6px 34px 34px;background:linear-gradient(160deg,#fbf5ea,#d3c5b2);
+    box-shadow:inset -10px 0 18px rgba(0,0,0,.12), 0 16px 30px -16px #000;overflow:hidden;}
+  .cup .handle{position:absolute;right:-24px;bottom:22px;width:34px;height:38px;border:8px solid #efe6d8;
+    border-left:0;border-radius:0 30px 30px 0;}
+  .cup .crema{position:absolute;left:0;right:0;bottom:0;height:0%;
+    background:radial-gradient(ellipse at 40% 30%,#e8b26a,#a35a25 60%,#6f3a17);
+    transition:height .25s linear;box-shadow:inset 0 4px 8px rgba(0,0,0,.3);}
+  .cup .crema::after{content:"";position:absolute;inset:0;opacity:.45;
+    background:repeating-conic-gradient(from 0deg at 40% 30%,rgba(255,255,255,.18) 0 6deg,transparent 6deg 18deg);}
+  .readout{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .readout div{background:rgba(240,230,216,.05);border:1px solid rgba(240,230,216,.12);border-radius:12px;padding:12px;}
+  .readout u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font-size:1.05rem;margin-top:6px;color:var(--brass);}
+
+  .beans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6vh;}
+  .bean{border:1px solid rgba(240,230,216,.14);border-radius:18px;padding:22px;background:rgba(240,230,216,.03);}
+  .bean h3{font-family:"Didot",Georgia,serif;font-weight:400;font-size:1.15rem;margin-bottom:8px;}
+  .bean p{color:#a8968a;font-size:.9rem;line-height:1.8;}
+  .bean .n{font-size:10px;letter-spacing:.3em;color:var(--brass);margin-bottom:12px;display:block;}
+
+  .menu{margin-top:7vh;border-top:1px solid rgba(240,230,216,.16);}
+  .mrow{display:grid;grid-template-columns:1fr 1fr 70px;gap:18px;padding:18px 4px;border-bottom:1px solid rgba(240,230,216,.1);
+    font-size:.95rem;align-items:baseline;}
+  .mrow span{color:var(--dim);font-size:.86rem;}
+  .mrow b{text-align:right;color:var(--brass);font-weight:400;}
+  .mrow i{font-style:normal;color:var(--dim);font-size:11px;letter-spacing:.14em;}
+
+  footer{margin-top:50px;padding-top:22px;border-top:1px solid rgba(240,230,216,.16);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:960px){.hero{grid-template-columns:1fr;gap:40px;}.machine{grid-template-columns:1fr;justify-items:center;}}
+  @media(max-width:620px){.readout{grid-template-columns:1fr 1fr;}.beans{grid-template-columns:1fr;}
+    .mrow{grid-template-columns:1fr auto;}.mrow span{display:none;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<canvas class="steam" id="steam"></canvas>
+<div class="wrap">
+  <header>
+    <div class="logo">Caffè Otto<small>Since 1934 · Quartiere Ticinese</small></div>
+    <div class="open"><i></i>Open until six</div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="k">One machine · one grinder · no nonsense</div>
+      <h1>Eight grams in.<br>Twenty-six out.<br><em>Nothing in between.</em></h1>
+      <p class="lede">Otto is a lever machine with a single spring and a single purpose. Pull the shot, watch the gauge, and take it before the third drop.</p>
+      <div class="cta">
+        <button class="brew" id="brew">Pull a shot</button>
+        <span class="hint" id="hint">25 s · 9 bar · 26 g</span>
+      </div>
+    </div>
+
+    <div class="machine">
+      <div class="gauge" id="gauge">
+        <div class="ticks"></div><div class="ticks2"></div>
+        <div class="needle" id="needle"></div>
+        <div class="hub2"></div>
+        <div class="lbl">bar</div>
+        <div class="val" id="gval">0.0</div>
+      </div>
+      <div class="cupzone">
+        <div class="cuparea">
+          <div class="cup">
+            <div class="body"><div class="crema" id="crema"></div></div>
+            <div class="handle"></div>
+            <div class="saucer"></div>
+          </div>
+        </div>
+        <div class="readout">
+          <div><u>Time</u><s id="rTime">0.0 s</s></div>
+          <div><u>Pressure</u><s id="rBar">0.0 bar</s></div>
+          <div><u>Yield</u><s id="rYield">0 g</s></div>
+          <div><u>Crema</u><s id="rCrema">—</s></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="beans">
+    <article class="bean"><span class="n">01 / ORIGIN</span><h3>Ethiopia, Guji</h3><p>Washed heirloom grown at 2,100 m. Jasmine, white peach and a long finish that refuses to let go.</p></article>
+    <article class="bean"><span class="n">02 / ROAST</span><h3>Omni, 11 days</h3><p>Developed slowly enough that the fruit survives the heat. It tastes like the place it came from, which is the whole point.</p></article>
+    <article class="bean"><span class="n">03 / WATER</span><h3>Milano, 87 ppm</h3><p>Filtered to the hardness that flattens acidity without pulling calcium out of the cup.</p></article>
+  </section>
+
+  <section class="menu">
+    <div class="mrow"><div>Espresso</div><span>the only thing we do well</span><i>1,20</i><b>€2,40</b></div>
+    <div class="mrow"><div>Espresso, doppio</div><span>twice the water, twice the trouble</span><i>1,50</i><b>€3,20</b></div>
+    <div class="mrow"><div>Macchiato</div><span>a spoon of foam, no apology</span><i>0,20</i><b>€2,80</b></div>
+    <div class="mrow"><div>Cortado</div><span>equal parts, warm glass</span><i>0,40</i><b>€3,00</b></div>
+    <div classmrow=""><div>Filter</div><span>rotating single origin</span><i>0,10</i><b>€3,60</b></div>
+  </section>
+
+  <footer>
+    <span>Caffè Otto — Milano</span>
+    <span>Steam is drawn live in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('steam'), ctx=cvs.getContext('2d');
+  var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+  function resize(){W=window.innerWidth;H=window.innerHeight;cvs.width=W*DPR;cvs.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+  resize(); window.addEventListener('resize',resize);
+  var puffs=[];
+  function spawn(){
+    puffs.push({x:W*0.2+Math.random()*W*0.6,y:H+20,r:6+Math.random()*10,v:-0.25-Math.random()*0.3,
+      a:0.16+Math.random()*0.14,ph:Math.random()*6.28});
+  }
+  for(var i=0;i<26;i++) spawn();
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<puffs.length;i++){
+      var q=puffs[i];
+      q.y+=q.v; q.x+=Math.sin(t*0.0009+q.ph)*0.28; q.r+=0.08;
+      if(q.y<-60){ q.y=H+20; q.x=W*0.2+Math.random()*W*0.6; q.r=6+Math.random()*10; }
+      var g=ctx.createRadialGradient(q.x,q.y,0,q.x,q.y,q.r);
+      g.addColorStop(0,'rgba(240,230,216,'+q.a+')');
+      g.addColorStop(1,'rgba(240,230,216,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(q.x,q.y,q.r,0,6.283); ctx.fill();
+    }
+    if(Math.random()<0.35) spawn();
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // brew
+  var brewing=false, t0=0, raf=null;
+  var brewBtn=document.getElementById('brew'), needle=document.getElementById('needle');
+  var crema=document.getElementById('crema');
+  function setGauge(bar){
+    var deg=-120 + Math.min(bar,12)/12*240;
+    needle.style.transform='rotate('+deg+'deg)';
+    document.getElementById('gval').textContent=bar.toFixed(1);
+  }
+  function step(){
+    if(!brewing) return;
+    var el=(performance.now()-t0)/1000;
+    if(el>28){ el=28; }
+    var bar = el<1.5 ? el/1.5*9 : (el<20 ? 9 - (el-1.5)/18.5*3.4 : 5.6);
+    setGauge(Math.max(0,bar));
+    document.getElementById('rTime').textContent=el.toFixed(1)+' s';
+    document.getElementById('rBar').textContent=Math.max(0,bar).toFixed(1)+' bar';
+    var g=el*1.05;
+    document.getElementById('rYield').textContent=g.toFixed(0)+' g';
+    document.getElementById('rCrema').textContent = el<3?'—': (el<20? (el*3.4).toFixed(0)+'%' : 'tiger');
+    crema.style.height=Math.min(88,el*3.2)+'%';
+    if(el>=28){
+      brewing=false; brewBtn.disabled=false; brewBtn.textContent='Pull another';
+      document.getElementById('hint').textContent='26 g in 28 s — good';
+      document.getElementById('rCrema').textContent='tiger';
+      setGauge(0);
+      return;
+    }
+    raf=requestAnimationFrame(step);
+  }
+  brewBtn.addEventListener('click',function(){
+    if(brewing) return;
+    brewing=true; brewBtn.disabled=true; brewBtn.textContent='Pulling…';
+    document.getElementById('hint').textContent='Lever down. Let it run.';
+    crema.style.height='0%';
+    t0=performance.now();
+    raf=requestAnimationFrame(step);
+  });
+  setGauge(0);
+})();
+</script>
+</body>
+</html>

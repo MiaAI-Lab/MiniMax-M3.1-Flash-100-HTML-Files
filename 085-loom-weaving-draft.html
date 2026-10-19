@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOOM — a draft for a cloth</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#ece6d8;--paper:#f7f2e6;--ink:#25211a;--dim:#7c7464;--line:rgba(37,33,26,.3);
+    --warp:#2f4b6e;--weft:#b5762f;--red:#9c2b22;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:2px solid var(--ink);}
+  .brand{font-size:13px;letter-spacing:.4em;text-transform:uppercase;font-weight:700;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:7vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--red);}
+  h1{font-size:clamp(2.2rem,5.6vw,4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:800;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .draft{margin-top:4vh;display:grid;grid-template-columns:1fr auto;gap:0;border:1px solid var(--ink);
+    background:var(--paper);padding:20px;align-items:start;}
+  .drawwrap{position:relative;}
+  .drawwrap canvas{display:block;width:100%;height:auto;background:var(--paper);}
+  .side{display:flex;flex-direction:column;gap:12px;padding-left:16px;}
+  .lbl{font:400 9px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:5px;}
+  .grid{display:grid;background:var(--ink);gap:1px;border:1px solid var(--ink);}
+  .grid.t{grid-template-columns:repeat(24,1fr);width:288px;}
+  .grid.tie{grid-template-columns:repeat(4,1fr);width:48px;}
+  .grid.tr{grid-template-columns:repeat(4,1fr);width:48px;}
+  .cell{width:12px;height:12px;background:var(--paper);cursor:pointer;}
+  .cell.filled{background:var(--ink);}
+  .cell.hi{background:var(--red);}
+  .cell.weft{background:var(--weft);}
+  .cell.warp{background:var(--warp);}
+  .pair{display:flex;gap:12px;align-items:flex-start;}
+  .cap{font:400 10px/1.5 "Courier New",monospace;color:var(--dim);}
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;}
+  .readout div u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout div s{display:block;text-decoration:none;font:400 1.15rem/1.4 "Helvetica Neue",Arial,sans-serif;margin-top:5px;}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--ink);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;
+    transition:.2s;}
+  .btn:hover,.btn.on{background:var(--ink);color:var(--paper);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:600;}
+  footer{margin-top:44px;padding-top:18px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.draft{grid-template-columns:1fr;}.side{padding-left:0;padding-top:16px;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Loom</div>
+    <div class="meta">4 shafts · 4 treadles · 24 × 24</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Weaving</div>
+    <h1>A cloth is a<br>decision, repeated<br><b>two hundred times</b></h1>
+    <p>Weaving is a binary decision made over and over: at every crossing, is the warp thread on top or the weft? Nothing else happens. A four-shaft loom lets you make that decision in four different ways, and every pattern in the history of cloth — twill, satin, basket, overshot — is one of those four sequences played out.</p>
+  </section>
+
+  <section class="draft">
+    <div class="drawwrap"><canvas id="cv" width="576" height="576"></canvas></div>
+    <div class="side">
+      <div>
+        <div class="lbl">Threading · 24 warp</div>
+        <div class="grid t" id="thr"></div>
+      </div>
+      <div class="pair">
+        <div>
+          <div class="lbl">Tie-up</div>
+          <div class="grid tie" id="tie"></div>
+        </div>
+        <div>
+          <div class="lbl">Treadling · 24 picks</div>
+          <div class="grid tr" id="trd"></div>
+        </div>
+      </div>
+      <div class="cap">Click a square in the threading to move a warp thread to another shaft. Click a square in the tie-up to lift a shaft with a treadle. Click a square in the treadling to press a treadle for that pick.</div>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Weave</u><s id="r1">—</s></div>
+    <div><u>Warp floats</u><s id="r2">—</s></div>
+    <div><u>Weft floats</u><s id="r3">—</s></div>
+    <div><u>Ends per inch</u><s id="r4">12</s></div>
+    <div><u>Length</u><s id="r5">1.0 m</s></div>
+    <div><u>Picks woven</u><s id="r6">0</s></div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" id="plain">Plain weave</button>
+    <button class="btn" id="twill">2/2 twill</button>
+    <button class="btn" id="basket">Basket</button>
+    <button class="btn" id="satin">Satin</button>
+    <button class="btn" id="weave">Weave the cloth</button>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>Three grids,<br>one cloth</h2>
+      <p>The <b>threading</b> says which shaft each warp thread is heddled on. The <b>tie-up</b> says which shafts each treadle lifts. The <b>treadling</b> says which treadle is pressed for each pick of weft. The cloth that comes off the loom is what happens when those three grids are multiplied together — and it is drawn here exactly that way, one crossing at a time.</p>
+      <p>Change any one of the three and the whole cloth changes, which is why a weaver's draft is the design. The pattern exists on paper first, and the cloth is the consequence.</p>
+    </div>
+    <div>
+      <h2>Reading<br>the cloth</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">A float is a run of the same thread over the crossings. Long floats are soft and lustrous but weak and snaggy; short floats are tough and stable but dull. Almost every decision in weaving is a negotiation between those two, and the words in the trade — sateen, twill, rep, gauze — are mostly names for where on that scale a cloth has been put.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Plain weave, one over one under, is the oldest and the most stable, because every crossing binds the cloth in both directions. Twill floats the warp over two or three and makes a diagonal. Satin floats long and scattered, and is the one that lets the light lie flat.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Loom — a draft for a cloth</span>
+    <span>Drawdown computed from threading, tie-up and treadling</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var NW=24, NP=24, SHAFTS=4, TREADLES=4;
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var cell=576/NW;
+  var threading=[], tieup=[], treadling=[];
+  var pick=0, weaving=false, weaver=null;
+
+  function init(){
+    threading=new Array(NW); for(var i=0;i<NW;i++) threading[i]=i%SHAFTS;
+    tieup=[];
+    for(var r=0;r<TREADLES;r++){ tieup.push([]); for(var s=0;s<SHAFTS;s++) tieup[r].push(0); }
+    for(var t=0;t<TREADLES;t++){ tieup[t][t]=1; tieup[t][(t+1)%SHAFTS]=1; }
+    treadling=new Array(NP); for(var p=0;p<NP;p++) treadling[p]=p%TREADLES;
+  }
+  function buildThreading(){
+    var el=document.getElementById('thr'); el.innerHTML='';
+    // rows = shafts, columns = warp
+    for(var s=0;s<SHAFTS;s++){
+      for(var w=0;w<NW;w++){
+        (function(s,w){
+          var c=document.createElement('div');
+          c.className='cell'+(threading[w]===s?' filled':'');
+          c.addEventListener('click',function(){
+            threading[w]=s;
+            buildThreading(); draw();
+          });
+          el.appendChild(c);
+        })(s,w);
+      }
+    }
+  }
+  function buildTie(){
+    var el=document.getElementById('tie'); el.innerHTML='';
+    for(var r=0;r<TREADLES;r++){
+      for(var s=0;s<SHAFTS;s++){
+        (function(r,s){
+          var c=document.createElement('div');
+          c.className='cell'+(tieup[r][s]?' filled':'');
+          c.addEventListener('click',function(){
+            tieup[r][s]=tieup[r][s]?0:1;
+            buildTie(); draw();
+          });
+          el.appendChild(c);
+        })(r,s);
+      }
+    }
+  }
+  function buildTreadling(){
+    var el=document.getElementById('trd'); el.innerHTML='';
+    for(var p=0;p<NP;p++){
+      for(var t=0;t<TREADLES;t++){
+        (function(p,t){
+          var c=document.createElement('div');
+          c.className='cell'+(treadling[p]===t?' filled':'');
+          if(p===pick) c.classList.add('hi');
+          c.addEventListener('click',function(){
+            treadling[p]=t;
+            buildTreadling(); draw();
+          });
+          el.appendChild(c);
+        })(p,t);
+      }
+    }
+  }
+  function isWarpUp(w,p){
+    var s=threading[w];
+    var t=treadling[p];
+    return !!tieup[t][s];
+  }
+  function draw(){
+    ctx.clearRect(0,0,576,576);
+    ctx.fillStyle='#f7f2e6'; ctx.fillRect(0,0,576,576);
+    for(var p=0;p<NP;p++){
+      for(var w=0;w<NW;w++){
+        var up=isWarpUp(w,p);
+        ctx.fillStyle=up?'#2f4b6e':'#b5762f';
+        ctx.fillRect(w*cell,p*cell,cell,cell);
+        // thread shading
+        ctx.fillStyle='rgba(255,255,255,.12)';
+        if(up) ctx.fillRect(w*cell,p*cell,cell,cell*0.3);
+        else ctx.fillRect(w*cell,p*cell,cell*0.3,cell);
+      }
+    }
+    // current pick marker
+    if(pick<NP){
+      ctx.strokeStyle='rgba(156,43,34,.85)'; ctx.lineWidth=2;
+      ctx.strokeRect(1,pick*cell+1,574,cell-2);
+    }
+    // grid
+    ctx.strokeStyle='rgba(37,33,26,.12)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var w2=0;w2<=NW;w2++){ ctx.moveTo(w2*cell+.5,0); ctx.lineTo(w2*cell+.5,576); }
+    for(var p2=0;p2<=NP;p2++){ ctx.moveTo(0,p2*cell+.5); ctx.lineTo(576,p2*cell+.5); }
+    ctx.stroke();
+    // stats
+    var warpFloat=0,weftFloat=0,cur=0,maxW=0,maxF=0,curF=0;
+    for(var p3=0;p3<NP;p3++){
+      for(var w3=0;w3<NW;w3++){
+        if(isWarpUp(w3,p3)){ cur++; if(cur>maxW)maxW=cur; } else { if(cur>maxW)maxW=cur; cur=0; }
+      }
+    }
+    for(var w4=0;w4<NW;w4++){
+      cur=0;
+      for(var p4=0;p4<NP;p4++){
+        if(!isWarpUp(w4,p4)){ cur++; if(cur>maxF)maxF=cur; } else { if(cur>maxF)maxF=cur; cur=0; }
+      }
+    }
+    document.getElementById('r1').textContent=weaveName();
+    document.getElementById('r2').textContent=maxW;
+    document.getElementById('r3').textContent=maxF;
+    document.getElementById('r6').textContent=pick+' / '+NP;
+  }
+  function weaveName(){
+    var plain=true;
+    for(var w=0;w<NW;w++) for(var p=0;p<NP;p++){
+      if(isWarpUp(w,p)!==((w+p)%2===0)){ plain=false; break; }
+      if(!plain) break;
+    }
+    if(plain) return 'Plain weave';
+    var twill=true;
+    for(var w2=0;w2<NW;w2++) for(var p2=0;p2<NP;p2++){
+      if(isWarpUp(w2,p2)!==(((w2+p2)%4)<2)){ twill=false; break; }
+      if(!twill) break;
+    }
+    if(twill) return '2/2 twill';
+    return 'Free draft';
+  }
+  function setPattern(kind){
+    var w,p,s,t;
+    if(kind==='plain'){
+      for(w=0;w<NW;w++) threading[w]=w%2;
+      for(t=0;t<TREADLES;t++){ for(s=0;s<SHAFTS;s++) tieup[t][s]=0; tieup[t][t%2]=1; }
+      for(p=0;p<NP;p++) treadling[p]=p%2;
+    }else if(kind==='twill'){
+      for(w=0;w<NW;w++) threading[w]=w%4;
+      for(t=0;t<TREADLES;t++){ for(s=0;s<SHAFTS;s++) tieup[t][s]=0; tieup[t][t%4]=1; tieup[t][(t+1)%4]=1; }
+      for(p=0;p<NP;p++) treadling[p]=p%4;
+    }else if(kind==='basket'){
+      for(w=0;w<NW;w++) threading[w]=(Math.floor(w/2)+w%2)%4;
+      for(t=0;t<TREADLES;t++){ for(s=0;s<SHAFTS;s++) tieup[t][s]=0; tieup[t][t%2]=1; tieup[t][(t+2)%4]=1; }
+      for(p=0;p<NP;p++) treadling[p]=(Math.floor(p/2)+p%2)%4;
+    }else{
+      for(w=0;w<NW;w++) threading[w]=w%4;
+      for(t=0;t<TREADLES;t++){ for(s=0;s<SHAFTS;s++) tieup[t][s]=0; tieup[t][t%4]=1; tieup[t][(t+1)%4]=1; tieup[t][(t+2)%4]=1; tieup[t][(t+3)%4]=1; }
+      for(p=0;p<NP;p++) treadling[p]=(p*3)%4;
+    }
+    buildThreading(); buildTie(); buildTreadling(); draw();
+  }
+  document.getElementById('plain').addEventListener('click',function(){ setPattern('plain'); });
+  document.getElementById('twill').addEventListener('click',function(){ setPattern('twill'); });
+  document.getElementById('basket').addEventListener('click',function(){ setPattern('basket'); });
+  document.getElementById('satin').addEventListener('click',function(){ setPattern('satin'); });
+  document.getElementById('weave').addEventListener('click',function(){
+    if(weaving){ weaving=false; this.classList.remove('on'); this.textContent='Weave the cloth'; return; }
+    weaving=true; this.classList.add('on'); this.textContent='Stop';
+    pick=0; draw(); buildTreadling();
+    (function step(){
+      if(!weaving) return;
+      pick++;
+      draw(); buildTreadling();
+      if(pick>=NP){ weaving=false; document.getElementById('weave').classList.remove('on');
+        document.getElementById('weave').textContent='Weave the cloth'; return; }
+      weaver=setTimeout(step,60);
+    })();
+  });
+  init();
+  buildThreading(); buildTie(); buildTreadling(); draw();
+})();
+</script>
+</body>
+</html>

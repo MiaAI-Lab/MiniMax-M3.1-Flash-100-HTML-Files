@@ -1,0 +1,18 @@
+TITLE: MERIDIAN — a wall of clocks
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MERIDIAN — a wall of clocks". Art direction: precise, quiet, instrument-like. Palette: ground #0e1013, ink #e9e6df, dim #797670, hairline rgba(233,230,223,.13), gold #c9a227. Layout: a header with a live UTC readout in gold monospace and a wordmark whose logo mark is a ring with a sweeping hand; then a two-column intro (a kicker and a huge light-weight headline with one bold word on the left, a paragraph on the right); then a responsive wall of twenty-four city clocks, each card carrying the country code in the corner, the UTC offset in gold, the city name, a 96px analogue dial with twelve tick marks and three hands, and a digital readout; then three pill controls (Analogue / Digital only / Night); then a two-column note on time zones being political instruments; and a footer. The clock faces are built from CSS: a radial-gradient dial, absolutely positioned hour, minute and gold second hands with a transform-origin at the bottom centre, a gold centre pip, and twelve tick marks generated in JavaScript and rotated about the dial centre. Interaction: every hand is computed each second from the browser's UTC clock plus that city's offset — nothing is stored — so the wall is correct wherever it is opened; cities whose local hour is between 19:00 and 06:00 switch to a darker "night" treatment; the Digital control hides the dials and shows only the digital time, and Night darkens the page. Responsive: the wall reflows with auto-fill and the intro stacks under 860px.
+
+DESCRIPTION:
+Twenty-four cities, one instant. Nothing on this page is stored: every hand is recomputed each second from the browser's UTC clock plus a fixed offset, which means the wall is correct wherever you open it and the "night" treatment on a city is genuinely that city's night. The dials are CSS only — a radial-gradient face, twelve generated ticks, and three hands pivoting from their own bottom edges.
+
+MAJOR VISUAL TECHNIQUES:
+- CSS analogue dial with generated tick marks and pivot-origin hands
+- Per-city UTC offsets driving every hand, computed live
+- Automatic night styling based on each city's local hour
+- Live UTC master clock in gold monospace
+- Hairline grid of clock cards using a 1px background gap
+- Gold sweep animation on the wordmark dial
+
+INTENDED INTERACTION MODEL:
+Read the wall. Switch between analogue and digital, toggle night, and watch the world turn. Everything else is automatic.

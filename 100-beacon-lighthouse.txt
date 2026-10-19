@@ -1,0 +1,17 @@
+TITLE: BEACON — the light that keeps a coast honest
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "BEACON — the light that keeps a coast honest". Art direction: night coast, deep blue-black sea, one warm beam. Palette: ground #05080f, ink #e8ecf4, dim #77839a, hairline rgba(232,236,244,.13), beam #ffe3a8, sea #0d1b2c. Layout: a header with a tower logo mark carrying a lit lantern band and a monospaced specification line; then a hero with a warm kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding a 1200×600 canvas that draws a starry sky, a moon, the sea with moving wave lines, a headland silhouette, a striped lighthouse tower with a gallery and lantern room, and a beam that sweeps around the horizon and brightens as it passes a ship, plus an absolutely positioned monospace HUD; then a control band of three sliders (Rotation, Fog, Range) and two buttons (Send a ship, Sound the fog signal); then a six-item readout strip giving the light's character, the number of times the ship has been lit, the time to the next sweep, the height of the focal plane, the visibility in the present weather and the nominal range; then a two-column section pairing an essay on a light being a sentence with a note on what the beam does; and a footer. The geometry is real: the beam is a rotating wedge centred on the lamp, its reach and its spread both grow with the fog setting, and a ship is lit when the angular difference between the bearing to the ship and the current bearing of the beam falls inside the wedge — which is exactly how a mariner knows a light is for them. Interaction: the Rotation slider sets the sweep rate and therefore the character of the light, the Fog slider shortens the visible reach and thickens the cone, the Range slider sets the nominal distance, Send a ship puts a vessel on the water and resets the count, and the fog signal button toggles the sound signal that carries where the light does not. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A lighthouse doing the only thing a lighthouse does: turning, and being read. The beam sweeps the horizon, and a ship is lit when the bearing to the ship falls inside the wedge — which is the whole mechanism by which a mariner identifies a light in the dark. Turn the fog up and the cone thickens and shortens at once, and the character of the light changes with the rotation rate, because a light's signature is its rhythm.
+MAJOR VISUAL TECHNIQUES:
+- Rotating wedge beam centred on the lantern with a gradient falloff
+- Fog widening the cone and shortening the reach together
+- Ship lit when the bearing to it falls inside the beam wedge
+- Star field, moon glow and a horizon line over a gradient sea
+- Headland and striped tower drawn as silhouettes
+- Light character computed from the rotation rate
+
+INTENDED INTERACTION MODEL:
+Watch the light. Change the rotation rate, the fog and the range, send a ship out, and read the character of the light as the rhythm changes.

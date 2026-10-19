@@ -1,0 +1,20 @@
+TITLE: MOSAIC — a hundred patterns
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MOSAIC — a hundred patterns", an archive of textile and surface patterns. Art direction: a dark gallery wall of small pattern cards. Palette: ground #141210, ink #f0ebe1, dim #8d8378, hairline rgba(240,235,225,.14), and a museum gold #e8b13a. Layout: a header with a four-quadrant colour-block logo; then a two-column intro (a kicker and a huge light-weight headline with one bold word on the left, a paragraph on the right); then a responsive grid of twelve square pattern tiles, each a single element whose entire pattern is a multi-layer CSS background; then a large detail panel showing the selected pattern at 260px square beside its name, origin, description and three metadata fields (motif, palette size, period); then a two-column note arguing that a pattern is a grammar rather than a picture; and a footer. The twelve tiles are named after real traditions — Kilim band, Adinkra, Kuba cloth, Moroccan zellige, Navajo blanket, Amazigh eye, Bengal jamdani, Ikat, Tapa cloth, Sashiko, Bakuba and Kuba raffia — and each is built from CSS only: hard-stop repeating linear gradients at 45°, 88°, 92° and 115° for stepped bands, repeating conic gradients for fourfold and eightfold rotational symbols, a conic gradient with 12.5% stops for an eight-pointed star, a radial gradient inside a repeating conic for a concentric eye, two misaligned repeating gradients for an ikat's feathered edge, and crossing dashed line sets for sashiko. Interaction: hovering or clicking a tile updates the large detail panel with that pattern, its origin, a sentence about it and its metadata; tiles lift and enlarge on hover and reveal their name in a gradient caption. Responsive: the intro and the detail panel stack under 820px and the detail square becomes full width with a 1:1 aspect ratio.
+
+DESCRIPTION:
+Twelve patterns, each one nothing but a background. A kilim band is hard-stop repeating gradients; an eight-pointed zellige star is a single conic gradient with twelve-and-a-half-percent stops; ikat is two repeating gradients that have been deliberately misaligned by four degrees. Hovering a tile blows it up and explains what tradition it is borrowing from, and the big panel shows it at two hundred and sixty pixels, which is usually enough to see that the "Navajo lightning" is really just a stepped diagonal.
+
+MAJOR VISUAL TECHNIQUES:
+- Multi-layer CSS background patterns with no images, canvas or SVG
+- Hard-stop repeating linear gradients for kilim and Navajo-style stepped bands
+- Repeating conic gradients for fourfold and eightfold rotational motifs
+- Single conic gradient with 12.5% stops producing an eight-pointed star
+- Deliberately misaligned gradient pairs to fake an ikat's feathered edge
+- Crossed dashed line sets for sashiko running stitch
+- Tile hover scale with a gradient caption reveal
+- Large detail panel with live pattern swap
+
+INTENDED INTERACTION MODEL:
+Browse and inspect. Hover or click a tile to read its name, origin, period and a sentence about how the motif works. The grid reflows with auto-fill and every tile scales up slightly under the pointer.

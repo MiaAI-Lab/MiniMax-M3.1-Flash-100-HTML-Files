@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO — a room that answers</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0c10;--ink:#e6eaef;--dim:#79808c;--line:rgba(230,234,239,.13);--cyan:#5ad2e6;--amber:#f0a955;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border:1px solid var(--cyan);border-radius:50%;display:block;position:relative;}
+  .brand i:after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--cyan);opacity:.4;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--cyan);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--amber);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#0d1016;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;left:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    pointer-events:none;}
+  .hud b{color:var(--cyan);font-weight:400;}
+
+  .ir{margin-top:16px;border:1px solid var(--line);background:#0d1016;padding:12px;}
+  .ir canvas{width:100%;height:auto;display:block;}
+  .irhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;
+    font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--cyan);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--cyan);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--cyan);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(90,210,230,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.2rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--amber);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Echo</div>
+    <div class="meta">Shoebox · image sources · 343 m/s</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Room acoustics</div>
+    <h1>Every room is an<br>instrument you<br>play by <b>clapping</b></h1>
+    <p>A handclap in a hard room does not die away. It is reflected off every surface and comes back, and the sum of all those arrivals is the room's fingerprint. A cathedral gives you two seconds of it; a bedroom gives you a fifth of a second. The difference is how much energy the walls swallow.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="560"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ir">
+    <div class="irhead"><span>Impulse response</span><span id="irnote">direct sound + reflections</span></div>
+    <canvas id="ircv" width="1160" height="200"></canvas>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Room length <output id="oa">9.0 m</output></label>
+      <input type="range" id="rx" min="40" max="240" value="90">
+    </div>
+    <div class="fld">
+      <label>Room width <output id="ob">6.5 m</output></label>
+      <input type="range" id="ry" min="40" max="240" value="65">
+    </div>
+    <div class="fld">
+      <label>Wall absorption <output id="oc">0.18</output></label>
+      <input type="range" id="abs" min="2" max="80" value="18">
+    </div>
+    <div class="btns">
+      <button class="btn" id="clap">Clap</button>
+      <button class="btn" id="chalk">Concert hall</button>
+      <button class="btn" id="cellar">Cellar</button>
+      <button class="btn" id="cath">Cathedral</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Reverberation time</u><s id="s1">—</s></div>
+    <div><u>First echo</u><s id="s2">—</s></div>
+    <div><u>Direct sound</u><s id="s3">—</s></div>
+    <div><u>Reflections modelled</u><s id="s4">—</s></div>
+    <div><u>Critical distance</u><s id="s5">—</s></div>
+    <div><u>Room volume</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>How a room<br>is turned<br>into a<br>number</h2>
+      <p>The <b>image source method</b> replaces the reflections with pictures of the source. To find where a reflection comes from, mirror the room in the wall it bounced off and put a copy of the source in the mirror; the straight line to that copy is the path the sound took. Repeat for every wall and you get a lattice of images, and the whole reverberant field is the sum of the straight lines to all of them.</p>
+      <p>Each image carries a delay equal to its distance divided by the speed of sound, and an amplitude equal to the reflection coefficient raised to the number of reflections it has made, divided by the distance. The result is a list of arrivals — and that list is the impulse response you can hear.</p>
+    </div>
+    <div>
+      <h2>What you<br>actually<br>hear</h2>
+      <p>The clap on the page is a real sound, and it is convolved with the computed impulse response of the room you have built, so the audio and the drawing come from the same maths. Change the absorption and the tail gets shorter; change the size and the delays spread out.</p>
+      <p>The <b>reverberation time</b> is the time for the sound to fall by sixty decibels, and Sabine's formula says it is about 0.16 times the volume divided by the total absorption. That is why a big empty hall is a bad place to hear a violin and a small panelled room is a good one.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Echo — a room that answers</span>
+    <span>Image-source model · audio convolved live</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var Lx=9.0, Ly=6.5, Lz=3.0, absorp=0.18, sz=0.9;
+  var sx=0.3, sy=0.35, lx=0.72, ly=0.6;
+  var SR=22050, IRLEN=Math.round(SR*2.2);
+  var ir=null, images=[];
+  var waveT=0, running=false;
+  var audio=null, conv=null, dry=null;
+
+  function refl(){ return Math.sqrt(Math.max(0.02,1-absorp)); }
+  function buildIR(){
+    var r=refl();
+    ir=new Float32Array(IRLEN);
+    images=[];
+    var N=12;
+    for(var mx=-N;mx<=N;mx++){
+      for(var my=-N;my<=N;my++){
+        for(var mz=-N;mz<=N;mz++){
+          var ax=Math.abs(mx), ay=Math.abs(my), az=Math.abs(mz);
+          if(ax+ay+az>14) continue;
+          var x=2*mx*Lx + ((ax%2===0)? sx*Lx : Lx - sx*Lx);
+          var y=2*my*Ly + ((ay%2===0)? sy*Ly : Ly - sy*Ly);
+          var z=2*mz*Lz + ((az%2===0)? sz*0.5 : Lz - sz*0.5);
+          var d=Math.hypot(x-sx*Lx, y-sy*Ly, z-sz*0.5);
+          if(d<0.2) continue;
+          var amp=Math.pow(r,ax+ay+az)/d;
+          var t=d/343;
+          var idx=Math.round(t*SR);
+          if(idx<IRLEN && amp>0.0004){
+            ir[idx]+=amp;
+            images.push({x:x,y:y,z:z,d:d,t:t,amp:amp,n:ax+ay+az});
+          }
+        }
+      }
+    }
+    // add a short band-limited burst to each arrival so it sounds like a clap
+    var burst=new Float32Array(512);
+    for(var i=0;i<burst.length;i++) burst[i]=(Math.random()*2-1)*Math.exp(-i/70);
+    var out=new Float32Array(IRLEN);
+    for(var k=0;k<IRLEN;k++) if(ir[k]!==0) out[k]+=ir[k];
+    for(var m=0;m<images.length;m++){
+      var im=images[m];
+      var st=Math.round(im.t*SR);
+      for(var j=0;j<burst.length;j++){
+        if(st+j<IRLEN) out[st+j]+=im.amp*burst[j]*0.9;
+      }
+    }
+    // normalise
+    var mx=0; for(var q=0;q<IRLEN;q++) mx=Math.max(mx,Math.abs(out[q]));
+    if(mx>0) for(var q2=0;q2<IRLEN;q2++) out[q2]/=mx*0.6;
+    ir=out;
+    // audio
+    if(audio){
+      var buf=audio.createBuffer(1,IRLEN,SR);
+      buf.copyToChannel(ir,0);
+      conv.buffer=buf;
+    }
+  }
+  function ensureAudio(){
+    if(audio) return;
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    audio=new AC();
+    conv=audio.createConvolver(); conv.normalize=false;
+    dry=audio.createGain(); dry.gain.value=0.35;
+    conv.connect(audio.destination);
+    dry.connect(audio.destination);
+  }
+  function clap(){
+    ensureAudio();
+    if(!audio) return;
+    if(audio.state==='suspended') audio.resume();
+    var n=Math.round(SR*0.02);
+    var b=audio.createBuffer(1,n,SR);
+    var d=b.getChannelData(0);
+    for(var i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(SR*0.002));
+    var s=audio.createBufferSource(); s.buffer=b;
+    var hp=audio.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=700;
+    s.connect(hp); hp.connect(conv); hp.connect(dry);
+    s.start();
+    waveT=0; running=true;
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#101520'); g.addColorStop(1,'#0a0d12');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // room rect in plan
+    var pad=70;
+    var availW=W-pad*2, availH=H-pad*2;
+    var scale=Math.min(availW/Lx, availH/Ly);
+    var rw=Lx*scale, rh=Ly*scale;
+    var ox=(W-rw)/2, oy=(H-rh)/2;
+    // wavefronts from image sources
+    if(running){
+      var rad=waveT*343;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(ox,oy,rw,rh); ctx.clip();
+      for(var i=0;i<images.length;i++){
+        var im=images[i];
+        if(im.amp<0.02) continue;
+        var d=Math.hypot(im.x-sx*Lx, im.y-sy*Ly);
+        var tt=waveT-im.t;
+        if(tt<0) continue;
+        var r=tt*343;
+        if(r>scale*40) continue;
+        var a=Math.min(0.35,im.amp*scale*0.5);
+        if(a<0.004) continue;
+        ctx.beginPath(); ctx.arc(ox+im.x*scale, oy+im.y*scale, r, 0, 6.283);
+        ctx.strokeStyle='rgba(90,210,230,'+a.toFixed(3)+')';
+        ctx.lineWidth=1.6; ctx.stroke();
+      }
+      ctx.restore();
+      waveT+=1/60;
+      if(waveT>1.6) running=false;
+    }
+    // room
+    ctx.strokeStyle='rgba(230,234,239,.5)'; ctx.lineWidth=2;
+    ctx.strokeRect(ox,oy,rw,rh);
+    ctx.fillStyle='rgba(230,234,239,.05)'; ctx.fillRect(ox,oy,rw,rh);
+    // source and listener
+    var sxp=ox+sx*Lx*scale, syp=oy+sy*Ly*scale;
+    var lxp=ox+lx*Lx*scale, lyp=oy+ly*Ly*scale;
+    ctx.beginPath(); ctx.arc(sxp,syp,9,0,6.283); ctx.fillStyle='#f0a955'; ctx.fill();
+    ctx.beginPath(); ctx.arc(lxp,lyp,8,0,6.283); ctx.fillStyle='none'; ctx.strokeStyle='#5ad2e6'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='rgba(240,169,85,.9)'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('SOURCE', sxp+14, syp+4);
+    ctx.fillStyle='rgba(90,210,230,.9)';
+    ctx.fillText('LISTENER', lxp+14, lyp+4);
+    // direct path
+    ctx.setLineDash([4,5]); ctx.strokeStyle='rgba(230,234,239,.25)';
+    ctx.beginPath(); ctx.moveTo(sxp,syp); ctx.lineTo(lxp,lyp); ctx.stroke();
+    ctx.setLineDash([]);
+    // labels
+    ctx.fillStyle='rgba(230,234,239,.45)'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('PLAN · '+Lx.toFixed(1)+' m × '+Ly.toFixed(1)+' m × '+Lz.toFixed(1)+' m', ox, oy-18);
+    ctx.fillText('ABSORPTION '+absorp.toFixed(2)+'   REFLECTION '+refl().toFixed(3), ox, oy+rh+26);
+    // hud
+    document.getElementById('hud').innerHTML='IMAGES <b>'+images.length+'</b><br>'+
+      'TIME <b>'+waveT.toFixed(2)+' s</b><br>PRESS CLAP';
+  }
+  function drawIR(){
+    var c=document.getElementById('ircv'), x=c.getContext('2d');
+    var w=c.width,h=c.height;
+    x.clearRect(0,0,w,h);
+    x.fillStyle='#0d1016'; x.fillRect(0,0,w,h);
+    if(!ir) return;
+    // envelope
+    x.strokeStyle='rgba(230,234,239,.18)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(0,h/2); x.lineTo(w,h/2); x.stroke();
+    x.strokeStyle='rgba(90,210,230,.9)'; x.lineWidth=1;
+    x.beginPath();
+    for(var i=0;i<ir.length;i++){
+      var px=i/ir.length*w, py=h/2 - ir[i]*h*0.45;
+      if(i===0) x.moveTo(px,py); else x.lineTo(px,py);
+    }
+    x.stroke();
+    // envelope curve
+    x.strokeStyle='rgba(240,169,85,.6)'; x.lineWidth=1.4;
+    x.beginPath();
+    var win=Math.round(SR*0.02), env=[];
+    for(var i2=0;i2<ir.length;i2+=win){
+      var m=0; for(var j=0;j<win&&i2+j<ir.length;j++) m=Math.max(m,Math.abs(ir[i2+j]));
+      env.push(m);
+    }
+    for(var k=0;k<env.length;k++){
+      var ex=k/env.length*w, ey=h/2-env[k]*h*0.45;
+      if(k===0) x.moveTo(ex,ey); else x.lineTo(ex,ey);
+    }
+    x.stroke();
+    // time ruler
+    x.fillStyle='rgba(230,234,239,.4)'; x.font='10px "Courier New",monospace';
+    for(var s=0;s<=2;s++) x.fillText(s+'s', s/2.2*w+4, h-8);
+  }
+  function updateReadouts(){
+    var r=refl();
+    var V=Lx*Ly*Lz;
+    var A=absorp*2*(Lx*Ly+Lx*Lz+Ly*Lz);
+    var RT=0.161*V/Math.max(0.5,A);
+    var direct=Math.hypot(lx*Lx-sx*Lx, ly*Ly-sy*Ly, 0.8);
+    var first=direct*2/343;
+    // critical distance
+    var Q=1/(Math.max(0.05,absorp));
+    var crit=0.057*Math.sqrt(V/Q);
+    document.getElementById('s1').textContent=RT.toFixed(2)+' s';
+    document.getElementById('s2').textContent=(first*1000).toFixed(0)+' ms';
+    document.getElementById('s3').textContent=(direct/343*1000).toFixed(0)+' ms';
+    document.getElementById('s4').textContent=images.length;
+    document.getElementById('s5').textContent=crit.toFixed(1)+' m';
+    document.getElementById('s6').textContent=V.toFixed(1)+' m³';
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  function rebuild(){ buildIR(); drawIR(); updateReadouts(); }
+  document.getElementById('rx').addEventListener('input',function(){
+    Lx=parseInt(this.value,10)/10;
+    document.getElementById('oa').textContent=Lx.toFixed(1)+' m'; rebuild();
+  });
+  document.getElementById('ry').addEventListener('input',function(){
+    Ly=parseInt(this.value,10)/10;
+    document.getElementById('ob').textContent=Ly.toFixed(1)+' m'; rebuild();
+  });
+  document.getElementById('abs').addEventListener('input',function(){
+    absorp=parseInt(this.value,10)/100;
+    document.getElementById('oc').textContent=absorp.toFixed(2); rebuild();
+  });
+  document.getElementById('clap').addEventListener('click',clap);
+  document.getElementById('chalk').addEventListener('click',function(){
+    Lx=18; Ly=13; absorp=0.08;
+    document.getElementById('rx').value=180; document.getElementById('ry').value=130;
+    document.getElementById('abs').value=8;
+    document.getElementById('oa').textContent=Lx.toFixed(1)+' m';
+    document.getElementById('ob').textContent=Ly.toFixed(1)+' m';
+    document.getElementById('oc').textContent=absorp.toFixed(2);
+    rebuild(); clap();
+  });
+  document.getElementById('cellar').addEventListener('click',function(){
+    Lx=4.2; Ly=3.4; absorp=0.12;
+    document.getElementById('rx').value=42; document.getElementById('ry').value=34;
+    document.getElementById('abs').value=12;
+    document.getElementById('oa').textContent=Lx.toFixed(1)+' m';
+    document.getElementById('ob').textContent=Ly.toFixed(1)+' m';
+    document.getElementById('oc').textContent=absorp.toFixed(2);
+    rebuild(); clap();
+  });
+  document.getElementById('cath').addEventListener('click',function(){
+    Lx=45; Ly=30; Lz=22; absorp=0.04;
+    document.getElementById('rx').value=240; document.getElementById('ry').value=240;
+    document.getElementById('abs').value=4;
+    document.getElementById('oa').textContent=Lx.toFixed(1)+' m';
+    document.getElementById('ob').textContent=Ly.toFixed(1)+' m';
+    document.getElementById('oc').textContent=absorp.toFixed(2);
+    rebuild(); clap();
+  });
+  rebuild();
+})();
+</script>
+</body>
+</html>

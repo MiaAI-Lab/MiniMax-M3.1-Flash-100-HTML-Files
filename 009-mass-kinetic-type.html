@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASS — A kinetic type laboratory</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bone:#efece3;--ink:#111110;--grey:#8b887e;--red:#ff3b1f;--blue:#1b4dff;--line:rgba(17,17,16,.16);}
+  body{background:var(--bone);color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  ::selection{background:var(--red);color:#fff;}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:24px 5vw;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(239,236,227,.86);backdrop-filter:blur(12px);z-index:40;}
+  header .m{font-size:12px;letter-spacing:.44em;text-transform:uppercase;font-weight:700;}
+  header .m i{font-style:normal;color:var(--red);}
+  header nav{display:flex;gap:22px;flex-wrap:wrap;}
+  header nav a{color:var(--grey);text-decoration:none;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+    transition:.3s;}
+  header nav a:hover{color:var(--ink);}
+
+  .hero{padding:7vh 5vw 5vh;position:relative;}
+  .hero .k{font-size:10.5px;letter-spacing:.44em;text-transform:uppercase;color:var(--grey);}
+  .stage{position:relative;margin:26px 0 10px;overflow:hidden;}
+  .big{font-size:clamp(4rem,20vw,18rem);line-height:.82;letter-spacing:-.045em;display:block;white-space:nowrap;
+    transition:font-weight .25s,letter-spacing .3s,-webkit-text-stroke-width .25s;}
+  .big span{display:inline-block;transition:transform .35s cubic-bezier(.2,.9,.2,1);}
+  .big span:hover{transform:translateY(-.06em) skewX(-8deg);color:var(--red);}
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:4vh;padding-top:26px;border-top:1px solid var(--line);}
+  .tool label{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--grey);margin-bottom:12px;}
+  .tool label b{color:var(--ink);font-weight:700;letter-spacing:.04em;font-size:13px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--ink);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--red);
+    cursor:ew-resize;border:3px solid var(--bone);box-shadow:0 0 0 1px var(--red);}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--red);border:3px solid var(--bone);cursor:ew-resize;}
+
+  .specimen{padding:8vh 5vw;border-top:1px solid var(--line);}
+  .specimen .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:30px;}
+  .specimen p{font-size:clamp(1.5rem,3.4vw,2.7rem);line-height:1.22;max-width:22ch;transition:font-weight .2s,letter-spacing .2s,line-height .2s;}
+
+  .field{padding:8vh 5vw;border-top:1px solid var(--line);position:relative;overflow:hidden;}
+  .field .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--grey);margin-bottom:22px;}
+  .kinetic{font-size:clamp(2.6rem,11vw,9rem);line-height:1;letter-spacing:-.04em;display:flex;flex-wrap:wrap;gap:0 .06em;}
+  .kinetic span{display:inline-block;transition:transform .4s cubic-bezier(.2,.9,.2,1),color .4s;will-change:transform;}
+  .kinetic span.hot{color:var(--blue);}
+
+  .ladder{padding:8vh 5vw;border-top:1px solid var(--line);}
+  .ladder .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--grey);margin-bottom:30px;}
+  .rows{display:grid;gap:2px;}
+  .lrow{display:grid;grid-template-columns:110px 1fr;gap:20px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line);
+    transition:background .3s,padding .3s;cursor:default;}
+  .lrow:hover{background:var(--ink);color:var(--bone);padding-left:16px;}
+  .lrow u{text-decoration:none;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--grey);}
+  .lrow:hover u{color:var(--red);}
+  .lrow b{font-weight:400;font-size:clamp(1.3rem,3.4vw,2.6rem);letter-spacing:-.02em;}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);}
+  .split > div{padding:8vh 5vw;}
+  .split > div:first-child{border-right:1px solid var(--line);background:var(--ink);color:var(--bone);}
+  .split .k{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:24px;}
+  .split .k:first-child{color:var(--red);}
+  .split .k:last-child{color:var(--grey);}
+  .split h3{font-size:clamp(1.5rem,3.4vw,2.6rem);font-weight:400;line-height:1.1;letter-spacing:-.02em;margin-bottom:18px;}
+  .split p{color:var(--grey);line-height:1.9;font-size:.95rem;}
+  .split > div:first-child p{color:rgba(239,236,227,.6);}
+  .rot{writing-mode:vertical-rl;font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--grey);}
+
+  footer{padding:7vh 5vw;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--grey);}
+
+  @media(max-width:820px){.tools{grid-template-columns:1fr;gap:20px;}.split{grid-template-columns:1fr;}
+    .split > div:first-child{border-right:none;border-bottom:1px solid var(--line);}.lrow{grid-template-columns:86px 1fr;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="m">MASS<i>•</i>Type Lab</div>
+  <nav><a href="#specimen">Specimen</a><a href="#field">Field</a><a href="#ladder">Ladder</a></nav>
+</header>
+
+<section class="hero">
+  <div class="k">Experiment 01 — Variable weight without a variable font</div>
+  <div class="stage"><span class="big" id="big"><span>M</span><span>A</span><span>S</span><span>S</span></span></div>
+  <div class="tools">
+    <div class="tool">
+      <label>Weight <b id="wOut">700</b></label>
+      <input type="range" id="w" min="100" max="900" value="700">
+    </div>
+    <div class="tool">
+      <label>Tracking <b id="tOut">-0.045em</b></label>
+      <input type="range" id="t" min="-60" max="40" value="-45">
+    </div>
+    <div class="tool">
+      <label>Leading <b id="lOut">0.82</b></label>
+      <input type="range" id="l" min="60" max="150" value="82">
+    </div>
+  </div>
+</section>
+
+<section class="specimen" id="specimen">
+  <div class="k">Experiment 02 — Set the paragraph</div>
+  <p id="para">Typography is the craft of endowing human language with a durable visual form, and the typographer is therefore a practitioner of a language that has to survive the reader.</p>
+</section>
+
+<section class="field" id="field">
+  <div class="k">Experiment 03 — Move the pointer through the word</div>
+  <div class="kinetic" id="kin">
+    <span>M</span><span>O</span><span>M</span><span>E</span><span>N</span><span>T</span>
+    <span>U</span><span>M</span><span>&nbsp;</span><span>G</span><span>R</span><span>A</span><span>V</span><span>I</span><span>T</span><span>Y</span>
+  </div>
+</section>
+
+<section class="ladder" id="ladder">
+  <div class="k">Experiment 04 — The weight ladder</div>
+  <div class="rows">
+    <div class="lrow"><u>Thin</u><b style="font-weight:100">Handgloves</b></div>
+    <div class="lrow"><u>Light</u><b style="font-weight:300">Handgloves</b></div>
+    <div class="lrow"><u>Regular</u><b style="font-weight:400">Handgloves</b></div>
+    <div class="lrow"><u>Medium</u><b style="font-weight:500">Handgloves</b></div>
+    <div class="lrow"><u>Bold</u><b style="font-weight:700">Handgloves</b></div>
+    <div class="lrow"><u>Black</u><b style="font-weight:900">Handgloves</b></div>
+  </div>
+</section>
+
+<section class="split">
+  <div>
+    <div class="k">On variable fonts</div>
+    <h3>One file, infinite weights</h3>
+    <p>A variable font stores a continuous axis of design in a single file: the outlines for every weight are interpolated at render time, so a single family can answer 100 and 900 with the same bone structure rather than two unrelated drawings.</p>
+    <p style="margin-top:1.2em">This page has no variable font. Its weight slider fakes the axis by pairing font-weight with a synthetic stroke width — a reminder that the illusion is convincing long before the technology is available.</p>
+  </div>
+  <div>
+    <div class="k">On the axis</div>
+    <h3>Everything else is a negotiation</h3>
+    <p>Optical size, width, grade, slant: each axis is a promise about context. The axes interact — a wider face needs a looser tracking, a heavier grade needs more leading — and the craft lies in the negotiation between them.</p>
+    <p style="margin-top:1.2em">The three controls at the top of this page are a small model of that negotiation: weight, tracking and leading, each of which changes the meaning of the others.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Mass Type Lab — Experiments in the browser</span>
+  <span>Set in Helvetica Neue</span>
+</footer>
+
+<script>
+(function(){
+  var big=document.getElementById('big'), para=document.getElementById('para');
+  function apply(){
+    var w=+document.getElementById('w').value;
+    var t=+document.getElementById('t').value;
+    var l=+document.getElementById('l').value;
+    var track=(t/1000).toFixed(3)+'em';
+    var lead=(l/100).toFixed(2);
+    document.getElementById('wOut').textContent=w;
+    document.getElementById('tOut').textContent=track;
+    document.getElementById('lOut').textContent=lead;
+    // fake a continuous weight axis: real font-weight + synthetic stroke that thickens
+    // as the requested weight rises beyond what the static face can deliver.
+    var stroke=Math.max(0,(w-400)/500*2.2);
+    var fw=Math.min(900,Math.max(100,w));
+    big.style.fontWeight=fw;
+    big.style.letterSpacing=track;
+    big.style.lineHeight=lead;
+    big.style.webkitTextStrokeWidth=stroke.toFixed(2)+'px';
+    big.style.webkitTextStrokeColor=stroke>0.05?'currentColor':'transparent';
+    // the paragraph follows weight + leading but keeps its own tracking
+    para.style.fontWeight=fw;
+    para.style.lineHeight=(1.05+ (l-82)/300).toFixed(2);
+    para.style.letterSpacing=(t/1000*0.35).toFixed(3)+'em';
+    para.style.webkitTextStrokeWidth=Math.max(0,(w-700)/200*0.8).toFixed(2)+'px';
+    para.style.webkitTextStrokeColor=para.style.webkitTextStrokeWidth!=='0px'?'currentColor':'transparent';
+  }
+  ['w','t','l'].forEach(function(id){document.getElementById(id).addEventListener('input',apply);});
+  apply();
+
+  // kinetic field: letters near the pointer grow and turn blue
+  var kin=document.getElementById('kin'), spans=kin.querySelectorAll('span');
+  kin.addEventListener('pointermove',function(e){
+    var r=kin.getBoundingClientRect();
+    var mx=e.clientX-r.left, my=e.clientY-r.top;
+    spans.forEach(function(s){
+      var b=s.getBoundingClientRect();
+      var cx=b.left-r.left+b.width/2, cy=b.top-r.top+b.height/2;
+      var d=Math.sqrt((mx-cx)*(mx-cx)+(my-cy)*(my-cy));
+      var f=Math.max(0,1-d/170);
+      s.style.transform='scale('+(1+f*0.22).toFixed(3)+')';
+      s.style.color = f>0.12 ? 'var(--blue)' : '';
+      s.style.opacity = (0.42+f*0.58).toFixed(2);
+    });
+  });
+  kin.addEventListener('pointerleave',function(){
+    spans.forEach(function(s){s.style.transform='scale(1)';s.style.color='';s.style.opacity='1';});
+  });
+})();
+</script>
+</body>
+</html>

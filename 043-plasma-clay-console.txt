@@ -1,0 +1,19 @@
+TITLE: PLASMA CLAY — a soft operations console
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PLASMA CLAY — a soft operations console", a dashboard built in the claymorphism style. Art direction: moulded, colourful, toy-like plastic — deliberately different from flat neumorphism. Palette: one shared pale surface #eef0f6, ink #3a3f55, dim #8a90a6, and five plastic accents: pink #ff8fab, violet #7c6cf5, sky #5ac8fa, butter #f9c74f, mint #43c59e; a warm grey shadow rgba(146,154,180,.45) and a near-white highlight rgba(255,255,255,.95). Every element shares the same background colour, and every edge is made from the same paired shadows — a warm one below-right and a cool one above-left — which is what makes it read as one continuous slab of moulded material rather than as separate cards. Layout: a header with a rotated gradient blob logo (an offset square with a circular highlight) and an inset pill; then a twelve-column grid where a large throughput panel (span 4) holds a big figure, a rotating conic-gradient orb sitting in an inset well, a sources panel (span 4) with five inset progress wells, a week panel (span 4) with seven inset day tiles, a wide team panel (span 8) with three coloured statistic tiles and four task rows, and a notes panel (span 4) that is itself inset ("hollow") to show the concave variant. Interaction: the throughput figure and the orb percentage drift on a timer; the three statistic tiles lift on hover; clicking a task row flips its status pill to "done" and recolours it mint; the source bars and week tiles are generated from JavaScript data. Responsive: every panel becomes full width under 900px and the statistic tiles become one column.
+
+DESCRIPTION:
+A console made of clay. The entire page is one pale surface, and all of its depth — the raised panels, the pressed wells, the concave note panel, the little statistic tiles — comes from the same two shadows: a warm grey below-right and a near-white above-left. The accents are plastic-bright and slightly candy-coloured, and because nothing has a fill of its own, changing the accent changes the material rather than the paint.
+
+MAJOR VISUAL TECHNIQUES:
+- Claymorphism: paired warm/cool box-shadows on a single shared background colour
+- Concave variant using the same shadow pair inverted (inset) for wells and the notes panel
+- Rotating conic-gradient orb sitting inside an inset circular well
+- Inset pill and inset progress wells with coloured fill bars
+- Gradient blob logo with an offset square and an inner circular highlight
+- Plastic statistic tiles with inset icon wells
+- Twelve-column grid that collapses to a single column
+
+INTENDED INTERACTION MODEL:
+Light and immediate. The live figures drift on their own; the tiles lift on hover; clicking a task marks it done and recolours its pill. There are no forms and no settings — just a soft console that updates itself.

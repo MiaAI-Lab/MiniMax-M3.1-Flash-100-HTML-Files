@@ -1,0 +1,20 @@
+TITLE: SPECTRUM — an ambient player
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "SPECTRUM — an ambient player", a music visualiser that never makes a sound. Art direction: soft neon on near-black. Palette: ground #08090f, ink #eef0f8, dim #828aa8, hairline rgba(238,240,248,.12), with four signal colours: pink #ff4d8d, blue #4d7dff, teal #4de0c8, gold #ffd166, violet #b46bff. A fixed halo layer of two large radial gradients sits behind everything. Layout: a header with a four-bar equaliser logo that animates and a "synthesised signal" note; a large bordered stage containing a 1200×620 canvas with an overlay bar (track title, artist, elapsed / total); a transport bar below with a play/pause button whose glyph morphs from a triangle to a pause symbol, the current track name, and a clickable seek bar; then a two-column grid of six track cards, each with a mood label, title, artist, seed and duration, the selected one outlined in pink; then a two-column note on how the spectrum is synthesised; and a footer. Interaction: pressing play starts the visualiser — sixty-four radial bars grow and fall, each with a hue ramp and a mirrored reflection, over a soft glowing core and a bottom spectrum strip; the elapsed time advances and the seek bar fills; clicking the seek bar scrubs; clicking a track card changes the track, the title, the artist, the elapsed time and — crucially — regenerates the entire band shape from that track's seed, so each track really does look and move differently. Responsive: the track grid becomes one column under 900px and the note stacks.
+
+DESCRIPTION:
+A visualiser that admits it is faking. There is no microphone, no audio file and no permission prompt — sixty-four bands are synthesised from layered sines and smoothed into the shape of slow ambient music, with a seeded profile per track so switching tracks changes the entire waveform rather than just the label. The rendering is the good part: radial bars with a hue ramp, a mirrored reflection beneath the ellipse, a glowing core, and a flat spectrum strip along the bottom.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas radial spectrum of 64 bars with per-bar linear gradients and round caps
+- Mirrored bar reflections at 22% alpha beneath the core ellipse
+- Layered sine synthesis with a seeded band profile regenerated per track
+- Smoothed level envelope (exponential approach) on every band
+- Concentric hairline rings behind the core as a scale reference
+- Play/pause glyph morph via clip-path on a pseudo-element
+- Fixed dual radial-gradient halo behind the content
+- Clickable seek bar that scrubs the elapsed time
+
+INTENDED INTERACTION MODEL:
+Press play, choose a track, scrub. The play button starts and stops the animation; the track cards change the seed and therefore the whole visual signature; the seek bar jumps the elapsed time. Nothing asks for permission and nothing plays.

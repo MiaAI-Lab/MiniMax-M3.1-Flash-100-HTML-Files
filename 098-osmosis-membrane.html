@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSMOSIS — a membrane and its argument</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#08100f;--ink:#e4efec;--dim:#748b88;--line:rgba(228,239,236,.13);--solute:#f0c05a;--water:#4fb8c8;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--solute);}
+  .brand i:after{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:var(--water);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--solute);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--solute);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 250px;gap:26px;align-items:start;
+    border:1px solid var(--line);background:#050a0a;padding:24px;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--solute);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--solute);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--solute);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--solute);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--solute);color:var(--solute);background:rgba(240,192,90,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Osmosis</div>
+    <div class="meta">Permeable membrane · 310 K · Fick's law</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Cell biology</div>
+    <h1>Water goes<br>where the salt<br>is. <b>Always.</b></h1>
+    <p>Osmosis is the reason a raisin plumps and a lettuce leaf wilts. Two solutions of different concentration are separated by a membrane that lets water through but not the solute, and water moves down its own concentration gradient until the pressure it builds up stops it. You can do it in a beaker, in a cell, or in a potato.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="800" height="620"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Left side</h2>
+        <div class="row"><span>Solute</span><b id="s1">—</b></div>
+        <div class="row"><span>Concentration</span><b id="s2">—</b></div>
+        <div class="row"><span>Water</span><b id="s3">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Right side</h2>
+        <div class="row"><span>Solute</span><b id="s4">—</b></div>
+        <div class="row"><span>Concentration</span><b id="s5">—</b></div>
+        <div class="row"><span>Water</span><b id="s6">—</b></div>
+        <div class="row"><span>Osmotic Δ</span><b id="s7">—</b></div>
+        <div class="row"><span>Equilibrium</span><b id="s8">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Solute size <output id="oa">3 px</output></label>
+      <input type="range" id="size" min="2" max="12" value="3">
+    </div>
+    <div class="fld">
+      <label>Pore size <output id="ob">4 px</output></label>
+      <input type="range" id="pore" min="2" max="14" value="4">
+    </div>
+    <div class="fld">
+      <label>Initial difference <output id="oc">0.60</output></label>
+      <input type="range" id="diff" min="10" max="90" value="60">
+    </div>
+    <div class="btns">
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="pump">Add a pump</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Two<br>different<br>rules</h2>
+      <p>The <b>solute</b> — the salt — moves by diffusion, driven by the random thermal motion of the molecules, and it goes from the concentrated side to the dilute side until the concentrations match. That is ordinary diffusion, and it needs no energy at all.</p>
+      <p>The <b>water</b> moves by osmosis, and the direction is the opposite one: it goes towards the concentrated side, because the solute there occupies space and lowers the water's chemical potential. Water keeps moving until the pressure it has built up on the concentrated side exactly balances the difference, and then everything stops.</p>
+    </div>
+    <div>
+      <h2>The<br>numbers</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The equilibrium is a balance of pressures, and it can be written down: the osmotic pressure difference is π = RTΔc, and at body temperature a one-molar difference in an ideal solution gives about twenty-five atmospheres. That is why a cell membrane has to be built so carefully, and why the kidneys spend a great deal of their effort moving salt against a gradient.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Here the solute is too big to cross the pores and the water is not, so only the water moves, and the left compartment swells until the pressures balance. Turn the pore size up and the solute starts to leak through, and the whole argument collapses into ordinary diffusion.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Osmosis — a membrane and its argument</span>
+    <span>Solutes and water simulated separately</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var MEMX=W/2, MEMW=14;
+  var solutes=[], waters=[];
+  var size=3, pore=4, diff=0.60, pump=false;
+  var R=8.314, T=310;
+  var VW=(W-40)/2;
+
+  function reset(){
+    solutes=[]; waters=[];
+    var nS=180, nW=320;
+    for(var i=0;i<nS;i++){
+      var left=i< nS*diff;
+      solutes.push({x:left?Math.random()*VW+20:Math.random()*VW+MEMX+MEMW/2+2,
+                    y:Math.random()*(H-40)+20, vx:(Math.random()-.5)*1.4, vy:(Math.random()-.5)*1.4});
+    }
+    for(var j=0;j<nW;j++){
+      waters.push({x:Math.random()*W+20,y:Math.random()*(H-40)+20,vx:(Math.random()-.5)*2.2,vy:(Math.random()-.5)*2.2});
+    }
+  }
+  function stats(){
+    var ls=0,rs=0,lw=0,rw=0;
+    solutes.forEach(function(s){ if(s.x<MEMX) ls++; else rs++; });
+    waters.forEach(function(w){ if(w.x<MEMX) lw++; else rw++; });
+    return {ls:ls,rs:rs,lw:lw,rw:rw};
+  }
+  function step(){
+    var i;
+    for(i=0;i<solutes.length;i++){
+      var s=solutes[i];
+      s.x+=s.vx; s.y+=s.vy;
+      if(s.x<20){s.x=20;s.vx*=-1;}
+      if(s.x>W-20){s.x=W-20;s.vx*=-1;}
+      if(s.y<20){s.y=20;s.vy*=-1;}
+      if(s.y>H-20){s.y=H-20;s.vy*=-1;}
+      // membrane crossing blocked if solute too big
+      if(s.x<MEMX && s.x+s.vx>MEMX){ s.x=MEMX-s.vx; s.vx*=-1; }
+      if(s.x>MEMX && s.x+s.vx<MEMX+MEMW){ s.x=MEMX+MEMW-s.vx; s.vx*=-1; }
+    }
+    for(i=0;i<waters.length;i++){
+      var w=waters[i];
+      w.x+=w.vx; w.y+=w.vy;
+      if(w.x<20){w.x=20;w.vx*=-1;}
+      if(w.x>W-20){w.x=W-20;w.vx*=-1;}
+      if(w.y<20){w.y=20;w.vy*=-1;}
+      if(w.y>H-20){w.y=H-20;w.vy*=-1;}
+      if(w.x<MEMX && w.x+w.vx>MEMX){ w.x=MEMX; w.vx=Math.abs(w.vx); }
+      if(w.x>MEMX && w.x+w.vx<MEMX+MEMW){ w.x=MEMX+MEMW; w.vx=-Math.abs(w.vx); }
+    }
+    // osmosis: water is drawn towards the more concentrated side
+    var st=stats();
+    var cL=st.ls/(VW*VW), cR=st.rs/(VW*VW);
+    var bias=(cL-cR)*0.9;
+    for(i=0;i<waters.length;i++){
+      var ww=waters[i];
+      ww.vx += bias*0.02*(ww.vx>0?1:-1);
+      ww.vx*=0.995;
+      if(Math.abs(ww.vx)<0.4) ww.vx += (ww.vx>=0?0.4:-0.4);
+    }
+    if(pump){
+      // a pump moves solute from right to left against the gradient
+      for(i=solutes.length-1;i>=0;i--){
+        var sp=solutes[i];
+        if(sp.x>MEMX+MEMW && Math.random()<0.004){
+          sp.x=MEMX+MEMW;
+        }else if(sp.x>MEMX+MEMW && sp.x+sp.vx<MEMX+MEMW && Math.random()<0.2){
+          sp.x=MEMX+MEMW+1; sp.vx=-Math.abs(sp.vx);
+        }
+      }
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#050a0a'; ctx.fillRect(0,0,W,H);
+    // compartments
+    ctx.fillStyle='rgba(79,184,200,.05)';
+    ctx.fillRect(20,20,VW,H-40);
+    ctx.fillRect(MEMX+MEMW/2,20,VW,H-40);
+    // membrane
+    var mg=ctx.createLinearGradient(MEMX-MEMW/2,0,MEMX+MEMW/2,0);
+    mg.addColorStop(0,'rgba(180,200,200,.12)'); mg.addColorStop(.5,'rgba(220,240,240,.42)');
+    mg.addColorStop(1,'rgba(180,200,200,.12)');
+    ctx.fillStyle=mg;
+    ctx.fillRect(MEMX-MEMW/2,20,MEMW,H-40);
+    // pores
+    if(pore>=size){
+      ctx.fillStyle='rgba(5,10,10,.85)';
+      for(var y=30;y<H-20;y+=14){
+        ctx.fillRect(MEMX-MEMW/2,y,MEMW,6);
+      }
+    }
+    // water
+    for(var i=0;i<waters.length;i++){
+      var w=waters[i];
+      ctx.fillStyle='rgba(79,184,200,.32)';
+      ctx.fillRect(w.x-1.4,w.y-1.4,2.8,2.8);
+    }
+    // solute
+    for(var j=0;j<solutes.length;j++){
+      var s=solutes[j];
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,size,0,6.283);
+      ctx.fillStyle='rgba(240,192,90,.9)'; ctx.fill();
+    }
+    // labels
+    ctx.fillStyle='rgba(228,239,236,.5)'; ctx.font='12px "Courier New",monospace';
+    ctx.fillText('COMPARTMENT A', 24, 38);
+    ctx.fillText('COMPARTMENT B', MEMX+MEMW/2+24, 38);
+    if(pore<size){
+      ctx.fillStyle='rgba(240,192,90,.8)';
+      ctx.fillText('SOLUTE CANNOT PASS', MEMX-90, H-8);
+    }else{
+      ctx.fillStyle='rgba(79,184,200,.8)';
+      ctx.fillText('SOLUTE AND WATER PASS', MEMX-90, H-8);
+    }
+    var st=stats();
+    var volA=VW*VW, volB=VW*VW;
+    document.getElementById('s1').textContent=st.ls;
+    document.getElementById('s2').textContent=(st.ls/volA*1e6).toFixed(1)+' /cm³';
+    document.getElementById('s3').textContent=st.lw;
+    document.getElementById('s4').textContent=st.rs;
+    document.getElementById('s5').textContent=(st.rs/volB*1e6).toFixed(1)+' /cm³';
+    document.getElementById('s6').textContent=st.rw;
+    var cL=st.ls/volA, cR=st.rs/volB;
+    document.getElementById('s7').textContent=(R*T*(cL-cR)*1e6/1e5).toFixed(2)+' bar';
+    var diff2=Math.abs(cL-cR);
+    document.getElementById('s8').textContent= diff2<0.002?'reached':'pending';
+  }
+  function loop(){ step(); draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+  document.getElementById('size').addEventListener('input',function(){
+    size=parseInt(this.value,10);
+    document.getElementById('oa').textContent=size+' px';
+  });
+  document.getElementById('pore').addEventListener('input',function(){
+    pore=parseInt(this.value,10);
+    document.getElementById('ob').textContent=pore+' px';
+  });
+  document.getElementById('diff').addEventListener('input',function(){
+    diff=parseInt(this.value,10)/100;
+    document.getElementById('oc').textContent=diff.toFixed(2);
+    reset();
+  });
+  document.getElementById('reset').addEventListener('click',reset);
+  document.getElementById('pump').addEventListener('click',function(){
+    pump=!pump; this.classList.toggle('on',pump);
+    this.textContent=pump?'Pump on':'Add a pump';
+  });
+  reset();
+})();
+</script>
+</body>
+</html>

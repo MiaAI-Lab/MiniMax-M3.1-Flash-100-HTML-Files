@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOURGLASS — sand, and the patience to watch it</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#171310;--ink:#f0e7d8;--dim:#8d7f6e;--line:rgba(240,231,216,.14);--sand:#e2b866;--glass:#cfe3ea;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:16px;height:24px;display:block;position:relative;}
+  .brand i:before,.brand i:after{content:"";position:absolute;left:0;right:0;height:9px;
+    border:1px solid var(--glass);}
+  .brand i:before{top:0;border-radius:8px 8px 0 0;}
+  .brand i:after{bottom:0;border-radius:0 0 8px 8px;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--sand);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--sand);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 250px;gap:26px;align-items:start;
+    border:1px solid var(--line);background:#100d0b;padding:24px;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--sand);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--sand);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--sand);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--sand);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--sand);color:var(--sand);background:rgba(226,184,102,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Hourglass</div>
+    <div class="meta">Sand · glass · 60 s nominal</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Time</div>
+    <h1>Nothing here is<br>accurate, and<br>that is <b>why</b> it<br>was invented</h1>
+    <p>An hourglass is a terrible clock. The flow rate of sand through a narrow neck changes with humidity, with the shape of the grains, and with how full the lower bulb is, because the pile changes the pressure at the aperture. Sailors used them anyway, because what they needed was not accuracy but a guarantee: that the sand would run out, and that you could turn it over and watch it do so again.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="700" height="700"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Upper bulb</h2>
+        <div class="row"><span>Sand remaining</span><b id="s1">—</b></div>
+        <div class="row"><span>Level</span><b id="s2">—</b></div>
+        <div class="row"><span>Flow rate</span><b id="s3">—</b></div>
+        <div class="row"><span>Neck width</span><b id="s4">—</b></div>
+        <div class="row"><span>Grain size</span><b id="s5">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Lower bulb</h2>
+        <div class="row"><span>Sand arrived</span><b id="s6">—</b></div>
+        <div class="row"><span>Pile height</span><b id="s7">—</b></div>
+        <div class="row"><span>Angle of repose</span><b id="s8">—</b></div>
+        <div class="row"><span>Time elapsed</span><b id="s9">—</b></div>
+        <div class="row"><span>Est. remaining</span><b id="s10">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Neck width <output id="oa">14 px</output></label>
+      <input type="range" id="neck" min="4" max="40" value="14">
+    </div>
+    <div class="fld">
+      <label>Grain size <output id="ob">2.0 px</output></label>
+      <input type="range" id="grain" min="8" max="50" value="20">
+    </div>
+    <div class="btns">
+      <button class="btn" id="flip">Turn over</button>
+      <button class="btn" id="refill">Refill</button>
+      <button class="btn" id="pour">Pour slowly</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>What the<br>sand is<br>actually<br>doing</h2>
+      <p>Inside the neck the grains are in free fall, and the flow rate is set by the aperture and by the pressure difference across it — which is why the flow is not constant as the upper chamber empties, and why the last grains run slowly and unevenly.</p>
+      <p>In the lower bulb the grains arrive and pile up. Sand has an <b>angle of repose</b> of about thirty-four degrees, and the pile will not hold a steeper slope than that: grains on the surface keep rolling downhill until the slope relaxes. So the heap is a cone with a flat top, and it grows by eating its own sides.</p>
+    </div>
+    <div>
+      <h2>The<br>measurement</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The pile here is a height field: a row of columns across the floor of the bulb, each holding some quantity of sand. When a grain lands it adds to its column, and then the whole row relaxes — any pair of neighbouring columns that differ by more than the angle of repose allows passes sand downhill until it does not. That is the whole of the physics of a heap, and it is why the heap has a cone shape and not a bump.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Turn the glass over and the pile is mirrored to the top, the floor is cleared, and the whole business starts again — with the heap in the upper bulb settling into the shape it had in the lower one, which is a pleasing little inaccuracy that every hourglass has always had.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Hourglass — sand, and the patience to watch it</span>
+    <span>Heap simulated as a relaxing height field</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var NC=64;                       // columns in the lower bulb
+  var heap=new Float32Array(NC);   // height of sand in each column
+  var upper=1.0;                   // fraction of sand in the upper bulb
+  var neck=14, grain=2.0, slow=false;
+  var elapsed=0, arrived=0;
+  var CX=W/2, TOP=70, BOT=H-70, WIDTH=240, NECKY=(TOP+BOT)/2;
+
+  function bulbPath(upperBulb){
+    // returns a path for one bulb outline
+    ctx.beginPath();
+    if(upperBulb){
+      ctx.moveTo(CX-WIDTH/2, TOP);
+      ctx.quadraticCurveTo(CX-WIDTH/2, TOP+H*0.26, CX-neck/2, NECKY);
+      ctx.lineTo(CX+neck/2, NECKY);
+      ctx.quadraticCurveTo(CX+WIDTH/2, TOP+H*0.26, CX+WIDTH/2, TOP);
+      ctx.closePath();
+    }else{
+      ctx.moveTo(CX-neck/2, NECKY);
+      ctx.quadraticCurveTo(CX-WIDTH/2, BOT-H*0.26, CX-WIDTH/2, BOT);
+      ctx.lineTo(CX+WIDTH/2, BOT);
+      ctx.quadraticCurveTo(CX+WIDTH/2, BOT-H*0.26, CX+neck/2, NECKY);
+      ctx.closePath();
+    }
+  }
+  function relax(){
+    var tan=Math.tan(34*Math.PI/180);
+    var dx=WIDTH/NC;
+    for(var pass=0;pass<3;pass++){
+      for(var i=0;i<NC-1;i++){
+        var diff=heap[i]-heap[i+1];
+        var maxD=tan*dx;
+        if(Math.abs(diff)>maxD){
+          var move=(Math.abs(diff)-maxD)*0.5*Math.sign(diff);
+          heap[i]-=move; heap[i+1]+=move;
+        }
+      }
+    }
+  }
+  function addGrain(){
+    var col=Math.floor(Math.random()*NC);
+    heap[col]+=grain*0.5;
+    relax();
+  }
+  function flip(){
+    // mirror the heap into the upper bulb, clear the floor
+    upper=Math.min(1,upper+arrived/arrived*0); // upper fraction recomputed below
+    var total=0; for(var i=0;i<NC;i++) total+=heap[i];
+    var mirrored=new Float32Array(NC);
+    for(var j=0;j<NC;j++) mirrored[j]=heap[NC-1-j];
+    heap=mirrored;
+    upper=1;
+    // the mirrored heap now represents the upper mass; move it to a "top pile" array
+    topPile=heap;
+    heap=new Float32Array(NC);
+    arrived=0; elapsed=0;
+  }
+  var topPile=new Float32Array(NC);
+  function fill(){
+    heap=new Float32Array(NC);
+    topPile=new Float32Array(NC);
+    for(var i=0;i<NC;i++) topPile[i]=Math.max(0, 60-Math.abs(i-NC/2)*2.2);
+    upper=1; arrived=0; elapsed=0;
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // wooden frame
+    ctx.fillStyle='#241a13';
+    ctx.fillRect(0,0,26,H); ctx.fillRect(W-26,0,26,H);
+    ctx.fillRect(0,0,W,26); ctx.fillRect(0,H-26,W,26);
+    // glass
+    ctx.save();
+    bulbPath(true);
+    var g1=ctx.createLinearGradient(CX-WIDTH/2,0,CX+WIDTH/2,0);
+    g1.addColorStop(0,'rgba(207,227,234,.16)');
+    g1.addColorStop(.45,'rgba(207,227,234,.05)');
+    g1.addColorStop(1,'rgba(207,227,234,.18)');
+    ctx.fillStyle=g1; ctx.fill();
+    ctx.restore();
+    ctx.save();
+    bulbPath(false);
+    ctx.fillStyle=g1; ctx.fill();
+    ctx.restore();
+    // upper sand
+    ctx.save();
+    bulbPath(true);
+    ctx.clip();
+    var totalTop=0; for(var i=0;i<NC;i++) totalTop+=topPile[i];
+
+    // draw the top pile mirrored in the upper bulb
+    for(var c=0;c<NC;c++){
+      var x=CX-WIDTH/2+(c+0.5)*(WIDTH/NC);
+      var hpx=topPile[c]*1.4;
+      if(hpx<=0) continue;
+      ctx.fillStyle='#e2b866';
+      ctx.fillRect(x, TOP+10, WIDTH/NC+0.5, hpx);
+    }
+    ctx.restore();
+    // stream
+    if(upper>0.001 && arrived<1e9){
+      ctx.fillStyle='rgba(226,184,102,.85)';
+      var sw=Math.max(2,neck*0.42);
+      ctx.fillRect(CX-sw/2, NECKY, sw, BOT-NECKY-10);
+    }
+    // lower heap
+    ctx.save();
+    bulbPath(false);
+    ctx.clip();
+    for(var c2=0;c2<NC;c2++){
+      var x2=CX-WIDTH/2+(c2+0.5)*(WIDTH/NC);
+      var hh=heap[c2]*1.4;
+      if(hh<=0) continue;
+      ctx.fillStyle='#e2b866';
+      ctx.fillRect(x2, BOT-hh, WIDTH/NC+0.5, hh);
+    }
+    ctx.restore();
+    // outlines
+    ctx.strokeStyle='rgba(207,227,234,.45)'; ctx.lineWidth=2;
+    bulbPath(true); ctx.stroke();
+    bulbPath(false); ctx.stroke();
+    ctx.strokeStyle='rgba(207,227,234,.25)'; ctx.lineWidth=1.4;
+    ctx.beginPath();
+    ctx.moveTo(CX-neck/2,NECKY-6); ctx.lineTo(CX-neck/2,NECKY+6);
+    ctx.moveTo(CX+neck/2,NECKY-6); ctx.lineTo(CX+neck/2,NECKY+6);
+    ctx.stroke();
+    // falling grains
+    for(var p=0;p<60;p++){
+      var yy=NECKY+((elapsed*180+p*11)%(BOT-NECKY));
+      var xx=CX+Math.sin(p*2.3+elapsed*3)*neck*0.2;
+      ctx.fillStyle='rgba(226,184,102,.55)';
+      ctx.fillRect(xx,yy,1.8,1.8);
+    }
+  }
+  function update(){
+    var total=0,maxH=0;
+    for(var i=0;i<NC;i++){ total+=heap[i]; if(heap[i]>maxH)maxH=heap[i]; }
+    var topTotal=0, maxTop=1;
+    for(var j=0;j<NC;j++){ topTotal+=topPile[j]; if(topPile[j]>maxTop) maxTop=topPile[j]; }
+    var flow=slow? 1.4 : neck*neck*0.055;
+    document.getElementById('s1').textContent=(topTotal*1.4).toFixed(0)+' units';
+    document.getElementById('s2').textContent=(topTotal/(maxTop*NC)*100).toFixed(0)+' %';
+    document.getElementById('s3').textContent=flow.toFixed(1)+' /s';
+    document.getElementById('s4').textContent=neck+' px';
+    document.getElementById('s5').textContent=grain.toFixed(1)+' px';
+    document.getElementById('s6').textContent=(total*1.4).toFixed(0)+' units';
+    document.getElementById('s7').textContent=(maxH*1.4).toFixed(0)+' px';
+    document.getElementById('s8').textContent='34°';
+    document.getElementById('s9').textContent=elapsed.toFixed(1)+' s';
+    document.getElementById('s10').textContent= flow>0?(topTotal*1.4/flow).toFixed(0)+' s':'—';
+  }
+  function loop(){
+    var dt=1/60;
+    elapsed+=dt;
+    var flow=slow? 1.4 : neck*neck*0.055;
+    var totalTop=0;
+    for(var j=0;j<NC;j++) totalTop+=topPile[j];
+    var take=Math.min(totalTop, flow*dt);
+    if(take>0){
+      // remove proportionally from the top pile
+      for(var i=0;i<NC;i++){
+        var frac=topPile[i]/totalTop;
+        topPile[i]-=take*frac;
+      }
+      var grains=Math.max(1,Math.round(take/(grain*0.5)));
+      for(var g=0;g<grains;g++) addGrain();
+    }
+    draw(); update();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById('neck').addEventListener('input',function(){
+    neck=parseInt(this.value,10);
+    document.getElementById('oa').textContent=neck+' px';
+  });
+  document.getElementById('grain').addEventListener('input',function(){
+    grain=parseInt(this.value,10)/10;
+    document.getElementById('ob').textContent=grain.toFixed(1)+' px';
+  });
+  document.getElementById('flip').addEventListener('click',function(){ flip(); });
+  document.getElementById('refill').addEventListener('click',function(){ fill(); });
+  document.getElementById('pour').addEventListener('click',function(){
+    slow=!slow; this.classList.toggle('on',slow);
+    this.textContent=slow?'Pour fast':'Pour slowly';
+  });
+  fill();
+})();
+</script>
+</body>
+</html>

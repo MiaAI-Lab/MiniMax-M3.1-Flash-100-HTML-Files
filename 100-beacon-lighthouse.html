@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEACON — the light that keeps a coast honest</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#05080f;--ink:#e8ecf4;--dim:#77839a;--line:rgba(232,236,244,.13);--beam:#ffe3a8;--sea:#0d1b2c;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:18px;height:24px;display:block;position:relative;
+    background:linear-gradient(180deg,#3a4354 0 8px,#e8ecf4 8px 11px,#3a4354 11px 100%);}
+  .brand i:after{content:"";position:absolute;left:-5px;right:-5px;top:4px;height:7px;background:var(--beam);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--beam);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--beam);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#03060b;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--beam);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--beam);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--beam);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--beam);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--beam);color:var(--beam);background:rgba(255,227,168,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.15rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--beam);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Beacon</div>
+    <div class="meta">Fl(2) W 20 s · 27 m focal plane · 14 nautical miles</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Navigation</div>
+    <h1>A light on a<br>coast is a<br>promise about<br>the <b>dark</b></h1>
+    <p>Every light on a coast carries a signature: how many flashes, in what group, and how long between them. A mariner who cannot see the land can still identify the light by its rhythm, and the rhythm is published in a book — which means the coastline is, in a sense, a piece of music that ships can read.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="600"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Rotation <output id="oa">6.0 rpm</output></label>
+      <input type="range" id="rpm" min="10" max="200" value="60">
+    </div>
+    <div class="fld">
+      <label>Fog <output id="ob">clear</output></label>
+      <input type="range" id="fog" min="0" max="100" value="0">
+    </div>
+    <div class="fld">
+      <label>Range <output id="oc">14 nm</output></label>
+      <input type="range" id="rng" min="3" max="30" value="14">
+    </div>
+    <div class="btns">
+      <button class="btn" id="ship">Send a ship</button>
+      <button class="btn" id="call">Sound the fog signal</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Character</u><s id="s1">—</s></div>
+    <div><u>Times lit</u><s id="s2">—</s></div>
+    <div><u>Next sweep</u><s id="s3">—</s></div>
+    <div><u>Focal plane</u><s id="s4">—</s></div>
+    <div><u>Visibility</u><s id="s5">—</s></div>
+    <div><u>Nominal range</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>A light is<br>a<br>sentence</h2>
+      <p>The character of a light is written in a very compressed code. <b>Fl(2)</b> means a group of two flashes, <b>W</b> means the group repeats every twenty seconds, and everything else — the range, the colour of the light, the height of the focal plane — is in the same table. A mariner's light list is one of the densest pieces of information in the whole of navigation.</p>
+      <p>And there is nothing romantic about it. A lighthouse exists because a rock at night is invisible and a wreck is expensive, and the argument for building one was always made in pounds.</p>
+    </div>
+    <div>
+      <h2>What the<br>beam does</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">A first-order Fresnel lens does not make a thin sheet of light. It concentrates the light from a lamp into a narrow horizontal fan — bright in one plane, dim in the other — so that a mariner sees a flash when the beam sweeps across him and almost nothing the rest of the time.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">The flash is the whole point. A steady light tells you there is a light; a flash tells you <b>which</b> light, and how far away, from the time between the flashes. Fog thickens the beam into a visible cone and shortens its reach at the same time, and the two effects are the reason fog signals were invented: sound carries where light does not.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Beacon — the light that keeps a coast honest</span>
+    <span>Beam swept in real time · ships identified by flash</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var HORIZON=H*0.62;
+  var TOWER={x:W*0.24, base:HORIZON+8, h:210};
+  var angle=0, rpm=6, fog=0, rangeNm=14;
+  var ships=[], litCount=0, lastLit=-99, t=0, flashT=0, sounding=false;
+
+  function newShip(){
+    ships.push({x:W*0.55+Math.random()*W*0.42, y:HORIZON-6-Math.random()*18,
+                w:26+Math.random()*16, lit:0, drift:0.08+Math.random()*0.1});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // sky
+    var g=ctx.createLinearGradient(0,0,0,HORIZON);
+    g.addColorStop(0,'#04070e'); g.addColorStop(0.6,'#0a1526'); g.addColorStop(1,'#1b2c40');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,HORIZON);
+    // stars
+    for(var s=0;s<90;s++){
+      var sx=(s*137)%W, sy=(s*79)%(HORIZON*0.75);
+      var a=0.15+((s*13)%70)/100;
+      ctx.fillStyle='rgba(220,232,255,'+a.toFixed(2)+')';
+      ctx.fillRect(sx,sy,1.5,1.5);
+    }
+    // moon
+    ctx.beginPath(); ctx.arc(W*0.78,HORIZON*0.28,26,0,6.283);
+    var mg=ctx.createRadialGradient(W*0.78,HORIZON*0.28,4,W*0.78,HORIZON*0.28,30);
+    mg.addColorStop(0,'rgba(230,238,250,.95)'); mg.addColorStop(1,'rgba(230,238,250,0)');
+    ctx.fillStyle=mg; ctx.fill();
+    ctx.beginPath(); ctx.arc(W*0.78,HORIZON*0.28,17,0,6.283);
+    ctx.fillStyle='#e6ecf4'; ctx.fill();
+    // sea
+    var sg=ctx.createLinearGradient(0,HORIZON,0,H);
+    sg.addColorStop(0,'#0e2036'); sg.addColorStop(1,'#050a12');
+    ctx.fillStyle=sg; ctx.fillRect(0,HORIZON,W,H-HORIZON);
+    // waves
+    ctx.strokeStyle='rgba(150,180,210,.10)'; ctx.lineWidth=1;
+    for(var w=0;w<28;w++){
+      var wy=HORIZON+6+w*7;
+      ctx.beginPath();
+      for(var x=0;x<W;x+=18){
+        var yy=wy+Math.sin((x+w*20+t*40)*0.02)*2.2;
+        if(x===0)ctx.moveTo(x,yy); else ctx.lineTo(x,yy);
+      }
+      ctx.stroke();
+    }
+    // beam
+    var lx=TOWER.x, ly=TOWER.base-TOWER.h-26;
+    var beamLen=520+fog*0.6;
+    ctx.save();
+    ctx.translate(lx,ly);
+    ctx.rotate(angle);
+    var bg2=ctx.createLinearGradient(0,0,beamLen,0);
+    bg2.addColorStop(0,'rgba(255,227,168,'+(0.30-fog*0.0012).toFixed(3)+')');
+    bg2.addColorStop(0.5,'rgba(255,227,168,'+(0.12-fog*0.0005).toFixed(3)+')');
+    bg2.addColorStop(1,'rgba(255,227,168,0)');
+    ctx.fillStyle=bg2;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(beamLen,-52-fog*0.25);
+    ctx.lineTo(beamLen,52+fog*0.25);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    // headland
+    ctx.fillStyle='#0a0c10';
+    ctx.beginPath();
+    ctx.moveTo(0,HORIZON+6);
+    ctx.lineTo(0,HORIZON-16);
+    ctx.quadraticCurveTo(W*0.06,HORIZON-40,W*0.13,HORIZON-6);
+    ctx.quadraticCurveTo(W*0.17,HORIZON+4,W*0.20,HORIZON+10);
+    ctx.lineTo(0,HORIZON+10);
+    ctx.closePath(); ctx.fill();
+    // tower
+    ctx.fillStyle='#1b1e25';
+    ctx.beginPath();
+    ctx.moveTo(TOWER.x-20,TOWER.base);
+    ctx.lineTo(TOWER.x-11,TOWER.base-TOWER.h);
+    ctx.lineTo(TOWER.x+11,TOWER.base-TOWER.h);
+    ctx.lineTo(TOWER.x+20,TOWER.base);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#c9ccd2';
+    ctx.fillRect(TOWER.x-16,TOWER.base-TOWER.h*0.55,32,12);
+    ctx.fillRect(TOWER.x-16,TOWER.base-TOWER.h*0.2,32,12);
+    // gallery and lantern
+    ctx.fillStyle='#232830';
+    ctx.fillRect(TOWER.x-16,TOWER.base-TOWER.h-10,32,10);
+    ctx.fillStyle='rgba(255,227,168,.35)';
+    ctx.fillRect(TOWER.x-9,TOWER.base-TOWER.h-32,18,22);
+    // the lamp
+    var lampA=0.35+0.65*Math.abs(Math.cos(angle));
+    ctx.beginPath(); ctx.arc(lx,ly,7+Math.abs(Math.cos(angle))*8,0,6.283);
+    var lg2=ctx.createRadialGradient(lx,ly,1,lx,ly,26);
+    lg2.addColorStop(0,'rgba(255,240,200,'+(0.55*lampA+0.2).toFixed(2)+')');
+    lg2.addColorStop(1,'rgba(255,227,168,0)');
+    ctx.fillStyle=lg2; ctx.beginPath(); ctx.arc(lx,ly,26,0,6.283); ctx.fill();
+    ctx.beginPath(); ctx.arc(lx,ly,5,0,6.283); ctx.fillStyle='#fff6dc'; ctx.fill();
+    // ships
+    ships.forEach(function(sh){
+      sh.lit=Math.max(0,sh.lit-0.02);
+      var dx=sh.x-lx, dy=sh.y-ly;
+      var ang=Math.atan2(dy,dx);
+      var d=Math.hypot(dx,dy);
+      var diff=Math.abs(((ang-angle+Math.PI*3)%(Math.PI*2))-Math.PI);
+      if(diff<0.055 && d<beamLen){ sh.lit=1; }
+      ctx.save();
+      ctx.translate(sh.x,sh.y);
+      ctx.fillStyle='rgba(10,14,20,.95)';
+      ctx.beginPath();
+      ctx.moveTo(-sh.w/2,0); ctx.lineTo(sh.w/2,0);
+      ctx.lineTo(sh.w/3,-9); ctx.lineTo(-sh.w/3,-9);
+      ctx.closePath(); ctx.fill();
+      ctx.fillRect(-1,-22,2,14);
+      if(sh.lit>0.02){
+        ctx.fillStyle='rgba(255,240,200,'+(sh.lit*0.9).toFixed(2)+')';
+        ctx.beginPath(); ctx.arc(0,-24,3,0,6.283); ctx.fill();
+        ctx.fillStyle='rgba(255,227,168,'+(sh.lit*0.14).toFixed(2)+')';
+        ctx.fillRect(-sh.w/2,-9,sh.w,9);
+      }
+      ctx.restore();
+    });
+    // readouts
+    var period=60/rpm;
+    var nextIn=(period-(angle%(Math.PI*2))/(Math.PI*2)*period);
+    document.getElementById('s1').textContent='Fl(2) W '+(period*2).toFixed(0)+'s';
+    document.getElementById('s2').textContent=litCount;
+    document.getElementById('s3').textContent=nextIn.toFixed(1)+' s';
+    document.getElementById('s4').textContent='27 m';
+    var vis=rangeNm*(1-fog/160);
+    document.getElementById('s5').textContent=vis.toFixed(1)+' nm';
+    document.getElementById('s6').textContent=rangeNm+' nm';
+    document.getElementById('hud').innerHTML='BEARING <b>'+((angle*180/Math.PI+360)%360).toFixed(0)+'°</b><br>'+
+      'SHIPS <b>'+ships.length+'</b><br>FLASH <b>'+(flashT>0?'yes':'—')+'</b>';
+  }
+  function loop(){
+    t+=1/60;
+    angle+=(rpm/60)*2*Math.PI/60;
+    if(angle>Math.PI*2) angle-=Math.PI*2;
+    flashT-=1/60;
+    // count a flash when the beam crosses the ship bearing
+    ships.forEach(function(sh){
+      var dx=sh.x-TOWER.x, dy=sh.y-(TOWER.base-TOWER.h-26);
+      var a=Math.atan2(dy,dx);
+      var d=Math.hypot(dx,dy);
+      if(d<560){
+        var diff=Math.abs(((a-angle+Math.PI*3)%(Math.PI*2))-Math.PI);
+        if(diff<0.03){ flashT=0.5; }
+      }
+      sh.x+=sh.drift;
+      if(sh.x>W+80) ships.splice(ships.indexOf(sh),1);
+    });
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('rpm').addEventListener('input',function(){
+    rpm=parseInt(this.value,10)/10;
+    document.getElementById('oa').textContent=rpm.toFixed(1)+' rpm';
+  });
+  document.getElementById('fog').addEventListener('input',function(){
+    fog=parseInt(this.value,10);
+    document.getElementById('ob').textContent = fog<5?'clear':(fog<35?'haze':(fog<70?'fog':'dense fog'));
+  });
+  document.getElementById('rng').addEventListener('input',function(){
+    rangeNm=parseInt(this.value,10);
+    document.getElementById('oc').textContent=rangeNm+' nm';
+  });
+  document.getElementById('ship').addEventListener('click',function(){
+    newShip();
+    litCount=0;
+  });
+  document.getElementById('call').addEventListener('click',function(){
+    sounding=!sounding; this.classList.toggle('on',sounding);
+    this.textContent=sounding?'Fog signal on':'Sound the fog signal';
+  });
+  newShip();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+TITLE: ORBIT — A gravity sandbox
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) called "ORBIT — A gravity sandbox". Art direction: a dark scientific instrument — near-black ground #05060d, cool grey text #e9edf7, dim label grey #6f7893, and three signal colours: gold core #ffcf6b, cyan trace #6fe3ff, violet for captured bodies #b08cff. Layout: a two-column full-height shell — the left is a full-bleed canvas stage with a floating HUD (letterspaced title, an instruction line, and a live body-count / kinetic-energy readout on the right) plus a three-item colour legend at the bottom-left; the right is a 300px control column separated by a hairline, holding a short essay, three labelled range sliders (central mass, orbit damping 0.980–1.000, particle speed), three outline buttons (Reset field, Release burst, Trails toggle), a three-way pointer-mode selector (Pull / Push / Orbit) with coloured dots, an equation note, and a footer credit. The canvas runs a real 1,000-body Newtonian simulation: each body is attracted to a central mass by an inverse-square force, the core drifts slightly in reaction, bodies are respawned when they collide with the core or expire, a pointer force is applied in the selected mode (radial pull, radial push, or tangential orbit), damping is applied per step, and the render uses an additive 'lighter' composite with a translucent fade for trails (or a solid clear when trails are off) plus a radial-gradient glow for the core. Responsive: the control column drops below the stage under 900px and the pointer selector becomes three columns then one.
+
+DESCRIPTION:
+A one-rule physics toy that looks like a piece of laboratory equipment. A thousand bodies fall toward a single gold mass, occasionally escape, and are quietly recycled back into the field when they expire. Because the force is genuinely inverse-square, the crowded core behaves differently from the sparse outskirts, and raising the damping slider visibly freezes the system into a lattice. The pointer acts as a second attractor you can flip between pulling, pushing and swirling.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas 2D inverse-square gravity solver with a reactive central core
+- Additive 'lighter' compositing for the particle field with a translucent fade producing trails
+- Radial-gradient core glow plus a white hot centre
+- Body respawn/recycling with a violet 'recently captured' flash state
+- Pointer force with three modes: radial pull, radial push, tangential orbit
+- Floating HUD over a full-bleed canvas, hairline-divided control rail
+- Custom-styled range sliders with a glowing cyan thumb
+
+INTENDED INTERACTION MODEL:
+The sandbox is the interaction. Drag the pointer over the field to attract, repel or swirl the bodies depending on the selected mode; press and hold to keep the field engaged. Sliders change mass, damping and simulation speed live. Buttons reset the field, fire a 160-body burst, and toggle trails. A HUD readout reports the live body count and total kinetic energy.

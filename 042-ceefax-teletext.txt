@@ -1,0 +1,19 @@
+TITLE: CEEFAX — page 231
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that is a British teletext service called "CEEFAX", showing page 231. Art direction: a 1980s television set showing blue teletext. Palette: page blue #0011aa, cyan #00ffff, yellow #ffff00, magenta #ff00ff, green #00ff00, red #ff5555, white #ffffff, with a near-black set housing #0b0d12 and chrome grey #1b1f27. Layout: a television set frame (rounded, with a heavy outer bezel and a deep shadow) containing a bezel strip with the service name, the current page number and a row of four channel buttons (231 / 100 / 196 / 888); below the screen, a 40×24 character page rendered in monospace on the blue background, with a CRT scanline overlay and a blinking block cursor; under the set, a remote control rendered as a grid of eight large keys (Up, Down, Red, Green, Cyan, Yellow, Index, Random page); and a footer. The page content is defined as a JavaScript data structure of rows, each row carrying a colour class (white, yellow, magenta, green, cyan, red) and an array of characters, and the renderer emits one fixed-width span per character so the text aligns exactly like a real 40-column teletext page. Four full pages are authored: 231 harbour and branch-line news with a headline rule, weather and ferry times; 100 the contents index; 196 a council traffic notice; 888 the colour test page. Interaction: the channel buttons and the remote keys both work — Up and Down jump between the news and index pages, Index goes to the contents, Random page picks any authored page, and the four colour keys recolour the yellow, magenta, green, cyan and red elements of the current page while leaving white text alone. Responsive: the screen type shrinks to 12px and the remote becomes a two-column grid under 600px.
+
+DESCRIPTION:
+Teletext, rebuilt as HTML rather than decoded from a teletext signal. The characters are laid out one span each in a fixed-width monospace grid, so the column alignment is exact, and the colour model follows the real service: white for body copy, yellow for headlines, magenta for results, green for in-progress, cyan for links, red for warnings. Four pages are authored in full — news, an index, a council notice and the colour test card — and the remote control actually works, including the colour keys.
+
+MAJOR VISUAL TECHNIQUES:
+- One span per character in a fixed 1ch grid for exact teletext column alignment
+- Colour-class rows driving a teletext palette (white / yellow / magenta / green / cyan / red)
+- CRT scanline overlay in a repeating-linear-gradient and a blinking block cursor
+- Television bezel built with a heavy ring and deep drop shadow
+- Remote control as a grid of large tactile keys
+- Rule rows rendered as a full-width hairline
+- Fixed channel strip with an active page button
+
+INTENDED INTERACTION MODEL:
+Use the remote. Channel buttons and the remote keys drive the same page state; Index opens the contents, Random picks a page, Up and Down move between news and index, and the four colour keys recolour the page in place. Nothing is decorative-only.

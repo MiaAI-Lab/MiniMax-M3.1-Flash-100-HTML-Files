@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERIDIAN — a wall of clocks</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0e1013;--ink:#e9e6df;--dim:#797670;--line:rgba(233,230,223,.13);--gold:#c9a227;--blue:#5a8fd0;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:24px;height:24px;border-radius:50%;border:1px solid var(--gold);position:relative;display:block;}
+  .brand i::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:8px;background:var(--gold);
+    transform-origin:50% 100%;transform:translate(-50%,-100%);animation:sweep 12s linear infinite;}
+  @keyframes sweep{to{transform:translate(-50%,-100%) rotate(360deg);}}
+  .utc{font-family:"Courier New",monospace;font-size:1.1rem;color:var(--gold);letter-spacing:.06em;}
+
+  .intro{padding:7vh 0 3vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:end;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.2rem,5.4vw,4rem);font-weight:200;line-height:1.02;letter-spacing:-.035em;margin:16px 0 0;}
+  h1 b{font-weight:700;}
+  .intro p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:46ch;}
+
+  .wall{margin-top:5vh;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .clk{background:var(--bg);padding:22px 20px;transition:background .3s;position:relative;overflow:hidden;}
+  .clk:hover{background:#15181c;}
+  .clk .city{font-size:1.05rem;font-weight:500;letter-spacing:.01em;}
+  .clk .zone{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:4px;}
+  .clk .face{width:96px;height:96px;margin:16px auto 12px;border-radius:50%;position:relative;
+    border:1px solid rgba(233,230,223,.22);background:radial-gradient(circle at 50% 40%,#181b20,#0c0e11);}
+  .clk .face .h{position:absolute;left:50%;bottom:50%;width:2px;height:26%;margin-left:-1px;background:var(--ink);
+    transform-origin:50% 100%;border-radius:2px;}
+  .clk .face .m{position:absolute;left:50%;bottom:50%;width:1.5px;height:36%;margin-left:-.75px;background:var(--ink);
+    transform-origin:50% 100%;border-radius:2px;}
+  .clk .face .s{position:absolute;left:50%;bottom:50%;width:1px;height:40%;margin-left:-.5px;background:var(--gold);
+    transform-origin:50% 100%;}
+  .clk .face .p{position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;
+    background:var(--gold);}
+  .clk .face .tick{position:absolute;left:50%;top:4px;width:1px;height:5px;background:rgba(233,230,223,.3);
+    transform-origin:50% 44px;}
+  .clk .t{text-align:center;font-family:"Courier New",monospace;font-size:1.3rem;letter-spacing:.04em;}
+  .clk .off{position:absolute;left:12px;top:12px;font-size:9.5px;letter-spacing:.18em;color:var(--dim);}
+  .clk .diff{position:absolute;right:12px;top:12px;font-size:9.5px;letter-spacing:.14em;color:var(--gold);}
+  .clk.night{background:#0a0c10;}
+  .clk.night .face{background:radial-gradient(circle at 50% 40%,#0f1218,#050608);}
+
+  .controls{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 18px;border-radius:99px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.25s;}
+  .btn:hover,.btn.on{border-color:var(--gold);color:var(--gold);background:rgba(201,162,39,.08);}
+
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:860px){.intro{grid-template-columns:1fr;gap:24px;}.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Meridian</div>
+    <div class="utc" id="utc">--:--:-- UTC</div>
+  </header>
+
+  <section class="intro">
+    <div>
+      <div class="k">A wall of clocks</div>
+      <h1>Everyone is<br>on the same<br><b>meridian</b></h1>
+    </div>
+    <p>Twenty-four cities, each showing its own local time, all derived from the same instant. The trick is that nothing here is stored — every hand is computed from the browser's clock and the city's offset, so the wall stays correct wherever you open it.</p>
+  </section>
+
+  <section class="wall" id="wall"></section>
+
+  <div class="controls">
+    <button class="btn on" id="analog">Analogue</button>
+    <button class="btn" id="digital">Digital only</button>
+    <button class="btn" id="night">Night</button>
+  </div>
+
+  <section class="note">
+    <div><h2>There is no<br>such place as<br>local time</h2></div>
+    <div>
+      <p>Every clock on this wall is wrong, and the one in the top right is no more wrong than the one below it. A time zone is a political instrument — an agreement about what hour it is when the sun is where it is — and the moment the agreement changes, somebody's midnight becomes somebody's 11 p.m.</p>
+      <p>The city that changes most often is the one furthest east. When the prime meridian jumps a day, Kiribati is briefly a whole calendar year ahead of anyone else, which is why the line eventually had to be moved.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Meridian — a wall of clocks</span>
+    <span>One instant, twenty-four readings</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var CITIES=[
+    ['Auckland','NZ',13],['Sydney','AU',11],['Tokyo','JP',9],['Seoul','KR',9],
+    ['Shanghai','CN',8],['Singapore','SG',8],['Dubai','AE',4],['Moscow','RU',3],
+    ['Istanbul','TR',3],['Berlin','DE',2],['Paris','FR',2],['Madrid','ES',2],
+    ['London','GB',1],['Accra','GH',0],['Reykjavík','IS',0],['São Paulo','BR',-3],
+    ['New York','US',-4],['Bogotá','CO',-5],['Mexico City','MX',-6],['Chicago','US',-5],
+    ['Denver','US',-6],['Los Angeles','US',-7],['Anchorage','US',-8],['Honolulu','US',-10]
+  ];
+  var wall=document.getElementById('wall');
+  var analogue=true, night=false;
+
+  CITIES.forEach(function(c){
+    var d=document.createElement('div');
+    d.className='clk';
+    d.dataset.off=c[2];
+    var ticks='';
+    for(var t=0;t<12;t++) ticks+='<span class="tick" style="transform:rotate('+(t*30)+'deg)"></span>';
+    d.innerHTML='<span class="off">'+c[1]+'</span><span class="diff" id="d'+CITIES.indexOf(c)+'"></span>'+
+      '<div class="city">'+c[0]+'</div>'+
+      '<div class="face">'+ticks+'<span class="h"></span><span class="m"></span><span class="s"></span><span class="p"></span></div>'+
+      '<div class="t">--:--</div>';
+    wall.appendChild(d);
+  });
+
+  function pad(n){ return n<10?'0'+n:''+n; }
+  function update(){
+    var now=new Date();
+    var utcH=now.getUTCHours(), utcM=now.getUTCMinutes(), utcS=now.getUTCSeconds();
+    document.getElementById('utc').textContent=pad(utcH)+':'+pad(utcM)+':'+pad(utcS)+' UTC';
+    CITIES.forEach(function(c,i){
+      var el=wall.children[i];
+      var off=+el.dataset.off;
+      var h=(utcH+off+24)%24, m=utcM, s=utcS;
+      var t=el.querySelector('.t');
+      if(analogue) t.textContent='';
+      else t.textContent=pad(h)+':'+pad(m);
+      var hh=el.querySelector('.h'), mm=el.querySelector('.m'), ss=el.querySelector('.s');
+      hh.style.transform='rotate('+((h%12)+m/60)*30+'deg)';
+      mm.style.transform='rotate('+(m+s/60)*6+'deg)';
+      ss.style.transform='rotate('+s*6+'deg)';
+      var diff=document.getElementById('d'+i);
+      diff.textContent = off===0?'UTC' : (off>0?'+'+off:String(off));
+      var isNight = h<6 || h>=19;
+      el.classList.toggle('night', isNight);
+    });
+  }
+  update(); setInterval(update,1000);
+
+  document.getElementById('analog').addEventListener('click',function(){
+    analogue=true; this.classList.add('on');
+    document.getElementById('digital').classList.remove('on');
+    wall.querySelectorAll('.face').forEach(function(f){ f.style.display=''; });
+    update();
+  });
+  document.getElementById('digital').addEventListener('click',function(){
+    analogue=false; this.classList.add('on');
+    document.getElementById('analog').classList.remove('on');
+    wall.querySelectorAll('.face').forEach(function(f){ f.style.display='none'; });
+    update();
+  });
+  document.getElementById('night').addEventListener('click',function(){
+    night=!night; document.body.style.background=night?'#07080a':'#0e1013';
+    this.classList.toggle('on',night);
+  });
+})();
+</script>
+</body>
+</html>

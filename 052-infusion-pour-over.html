@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INFUSION — a pour-over, timed</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#f4f0e8;--ink:#1e1c18;--dim:#8a857a;--line:rgba(30,28,24,.16);--brew:#6b4326;--steam:#c9bfae;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:26px;border:2px solid var(--ink);border-top:none;border-radius:0 0 10px 10px;display:block;
+    position:relative;}
+  .brand i::after{content:"";position:absolute;left:50%;top:-6px;width:2px;height:8px;background:var(--ink);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:5vw;padding:6vh 0;align-items:center;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--brew);}
+  h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .lede{color:var(--dim);font-size:1rem;line-height:1.9;max-width:44ch;}
+  .steps{margin-top:30px;display:grid;gap:10px;}
+  .step{display:grid;grid-template-columns:30px 1fr auto;gap:14px;align-items:center;padding:12px 14px;
+    border:1px solid var(--line);border-radius:12px;transition:.35s;background:#faf7f1;}
+  .step.done{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .step.now{border-color:var(--brew);box-shadow:0 0 0 2px rgba(107,67,38,.15);}
+  .step u{text-decoration:none;font-size:11px;letter-spacing:.1em;color:var(--dim);}
+  .step.done u{color:#b6ada0;}
+  .step b{font-weight:600;font-size:.94rem;}
+  .step span{font-size:11px;letter-spacing:.14em;color:var(--dim);}
+  .step.done span{color:var(--brew);}
+
+  .rig{position:relative;display:grid;place-items:center;}
+  .ring{position:relative;width:min(78vw,330px);aspect-ratio:1;border-radius:50%;
+    background:conic-gradient(var(--brew) 0deg, var(--brew) var(--p,0deg), rgba(30,28,24,.08) var(--p,0deg));
+    display:grid;place-items:center;}
+  .ring .hole{width:76%;height:76%;border-radius:50%;background:var(--bg);
+    box-shadow:inset 0 6px 16px rgba(30,28,24,.14);display:grid;place-items:center;text-align:center;padding:16px;}
+  .ring .time{font-size:2.6rem;font-weight:200;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+  .ring .lbl{font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-top:6px;}
+  .dripper{position:absolute;bottom:6%;width:52%;}
+  .cone{width:100%;aspect-ratio:1.5;background:linear-gradient(160deg,#f7f3ec,#ddd5c8);
+    clip-path:polygon(14% 0,86% 0,56% 100%,44% 100%);box-shadow:0 20px 34px -20px rgba(30,28,24,.6);position:relative;}
+  .cone::after{content:"";position:absolute;left:50%;bottom:-4px;width:16%;height:8px;transform:translateX(-50%);
+    background:var(--brew);border-radius:0 0 6px 6px;opacity:.85;}
+  .bed{position:absolute;left:22%;right:22%;top:26%;height:12%;background:#6b4a31;border-radius:3px;}
+  .stream{position:absolute;left:50%;top:20%;width:3px;height:26%;margin-left:-1.5px;
+    background:linear-gradient(180deg,rgba(107,67,38,0),rgba(107,67,38,.8));transform-origin:top;}
+  .stream.on{animation:pour .9s ease-in-out infinite;}
+  @keyframes pour{0%,100%{transform:scaleY(.25) scaleX(.7);opacity:.5;}50%{transform:scaleY(1) scaleX(1);opacity:1;}}
+  .btn{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;}
+  .b{border:2px solid var(--ink);background:transparent;color:var(--ink);padding:14px 26px;cursor:pointer;
+    font:700 10.5px/1 inherit;letter-spacing:.26em;text-transform:uppercase;transition:.22s;
+    box-shadow:4px 4px 0 rgba(30,28,24,.18);}
+  .b:hover{background:var(--ink);color:var(--bg);box-shadow:1px 1px 0 rgba(30,28,24,.18);transform:translate(3px,3px);}
+  .b.solid{background:var(--ink);color:var(--bg);}
+  .b.solid:hover{background:var(--brew);border-color:var(--brew);}
+
+  .data{margin-top:6vh;border-top:1px solid var(--line);padding-top:26px;display:grid;
+    grid-template-columns:repeat(4,1fr);gap:22px;}
+  .data u{display:block;text-decoration:none;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);}
+  .data s{display:block;text-decoration:none;font-size:1.6rem;font-weight:200;margin:8px 0 6px;}
+  .data p{font-size:.84rem;color:var(--dim);line-height:1.75;}
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px;}.data{grid-template-columns:1fr 1fr;}
+    .note{grid-template-columns:1fr;}}
+  @media(max-width:520px){.data{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Infusion</div>
+    <div class="meta">Hario V60 · 22 g · 350 g</div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="k">Recipe · 1:16 · 3:00</div>
+      <h1>Pour-over,<br><b>timed to the second</b></h1>
+      <p class="lede">The whole argument of a pour-over is that it is repeatable. Same water, same grind, same three pours at the same seconds, and you will get the same cup in a different kitchen.</p>
+      <div class="steps" id="steps"></div>
+      <div class="btn">
+        <button class="b solid" id="start">Start the timer</button>
+        <button class="b" id="reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="rig">
+      <div class="ring" id="ring">
+        <div class="hole">
+          <div>
+            <div class="time" id="clock">0:00</div>
+            <div class="lbl" id="phase">Ready</div>
+          </div>
+        </div>
+      </div>
+      <div class="dripper">
+        <div class="cone"><div class="bed"></div></div>
+        <div class="stream" id="stream"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="data">
+    <div><u>Bloom</u><s>50 g</s><p>50 g of water, poured in 5 seconds, then wait. The coffee degasses and the bed swells.</p></div>
+    <div><u>Pour one</u><s>0:10–0:35</s><p>150 g, poured slowly from the centre, in a spiral, staying off the paper.</p></div>
+    <div><u>Pour two</u><s>0:35–1:10</s><p>Another 150 g. The bed should be flat and the level should be dropping steadily.</p></div>
+    <div><u>Drawdown</u><s>2:10–3:00</s><p>The last 50 g. If the bed is still swimming at 2:30, the grind was too fine.</p></div>
+  </section>
+
+  <section class="note">
+    <div><h2>The timer is<br>the recipe</h2></div>
+    <div>
+      <p>Almost every brewing guide is written in ranges — "around 30 seconds", "wait until it drops halfway". Ranges are kind and useless. A pour-over is a sequence of events that happen at particular seconds, and the only way to hit them twice is to stop guessing.</p>
+      <p>So this page is a stopwatch with the recipe built into it. Press start and the phases advance on their own; the stream stops and starts, the step list ticks over, and the ring fills. If the water in your kitchen behaves like the water in the ring, you have made the same cup twice.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Infusion — a pour-over, timed</span>
+    <span>Timer runs for 3:00</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var TOTAL=180;
+  var PHASES=[
+    {t:0,   n:'Bloom',    d:'50 g in 5 s',   until:10},
+    {t:10,  n:'Pour one', d:'150 g, spiral', until:35},
+    {t:35,  n:'Pour two', d:'150 g, spiral', until:70},
+    {t:70,  n:'Wait',     d:'Let it fall',    until:130},
+    {t:130, n:'Drawdown', d:'Last 50 g',     until:180}
+  ];
+  var steps=document.getElementById('steps');
+  PHASES.forEach(function(p,i){
+    var d=document.createElement('div');
+    d.className='step'; d.dataset.i=i;
+    d.innerHTML='<u>'+String(i+1).padStart(2,'0')+'</u><b>'+p.n+'</b><span>'+p.d+'</span>';
+    steps.appendChild(d);
+  });
+
+  var clock=document.getElementById('clock'), phaseEl=document.getElementById('phase');
+  var ring=document.getElementById('ring'), stream=document.getElementById('stream');
+  var t=0, running=false, timer=null;
+
+  function fmt(s){ var m=Math.floor(s/60), ss=Math.floor(s%60); return m+':'+(ss<10?'0':'')+ss; }
+  function current(){
+    for(var i=PHASES.length-1;i>=0;i--) if(t>=PHASES[i].t) return i;
+    return 0;
+  }
+  function render(){
+    clock.textContent=fmt(t);
+    var i=current();
+    phaseEl.textContent = t>=TOTAL? 'Finished' : PHASES[i].n;
+    ring.style.setProperty('--p',(t/TOTAL*360).toFixed(1)+'deg');
+    stream.classList.toggle('on', running && (i===1||i===2||i===4));
+    document.querySelectorAll('.step').forEach(function(s,si){
+      s.classList.toggle('done', si<i || (si===i && t>=PHASES[si].until));
+      s.classList.toggle('now', si===i && t<PHASES[si].until);
+    });
+  }
+  function tick(){
+    t+=0.1;
+    if(t>=TOTAL){
+      t=TOTAL; stop(); phaseEl.textContent='Finished';
+    }
+    render();
+  }
+  function start(){
+    if(running) return;
+    if(t>=TOTAL) t=0;
+    running=true;
+    document.getElementById('start').textContent='Pouring…';
+    timer=setInterval(tick,100);
+  }
+  function stop(){
+    running=false; clearInterval(timer);
+    document.getElementById('start').textContent= t>=TOTAL?'Brew again':'Resume';
+  }
+  document.getElementById('start').addEventListener('click',function(){
+    if(running){ stop(); this.textContent='Resume'; }
+    else { start(); }
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    stop(); t=0; document.getElementById('start').textContent='Start the timer'; render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

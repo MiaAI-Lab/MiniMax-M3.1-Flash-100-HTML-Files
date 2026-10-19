@@ -1,0 +1,18 @@
+TITLE: PRECESSION — the heavy top
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PRECESSION — the heavy top". Art direction: laboratory instrument, dark steel and brass, projected in perspective. Palette: ground #0e1114, ink #e8e9ec, dim #7d838c, hairline rgba(232,233,236,.13), brass #d0a24c, steel #8fa3b8. Layout: a header with a T-shaped logo mark and a monospaced model line; then a hero with a brass kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding a 1200×640 canvas and an absolutely positioned monospace HUD in the top right; then a control band of three sliders (Spin, Tilt, Disc mass) and three buttons (Reset / Nutation / Trace on); then a two-column section pairing an essay on the equation with a motion table giving the precession rate, the precession period, the nutation angle, the spin rate, the vertical angular momentum, the energy, the gravitational torque and the axial moment of inertia; and a footer. The mechanics are the real ones for a heavy symmetric top: with the transverse moment A and the axial moment C of the disc, the two conserved quantities p_phi and p_psi give the closed-form precession rate phi-dot = (p_phi - p_psi cos theta) / (A sin squared theta), the spin rate psi-dot = p_psi / C - phi-dot cos theta, and the nutation acceleration from the energy equation; the three Euler angles are then integrated with fourth-order Runge-Kutta. The disc is drawn in perspective by projecting a circle in the plane perpendicular to the symmetry axis through a weak-perspective camera, with a brass marker showing the spin angle and a gimbal ring around it, and the trace of the axis tip is drawn behind. Interaction: the sliders change the spin, the tilt and the mass and the top is re-initialised with the correct conserved momenta; Nutation gives the top an initial tilt velocity so it starts nutating; Trace toggles the tip trace. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A heavy symmetric top, integrated properly. The precession rate comes out of the closed-form solution for a top with two conserved momenta, so the famous result falls out of the mathematics rather than being asserted: the faster you spin it, the slower it precesses. The disc is drawn in weak perspective from its true orientation, with the brass marker riding round it at the spin rate and the trace of the axis tip sweeping a circle behind.
+
+MAJOR VISUAL TECHNIQUES:
+- Heavy symmetric top solved from the two conserved angular momenta
+- Fourth-order Runge-Kutta on the three Euler angles
+- Weak-perspective projection of a circle perpendicular to the symmetry axis
+- Orthonormal basis built from the axis vector for the disc plane
+- Gimbal ring and pivot drawn in the same projection
+- Trace of the axis tip accumulated across frames
+
+INTENDED INTERACTION MODEL:
+Spin it. Change the spin rate, the tilt and the mass and watch the precession change, knock the top into nutation, and toggle the trace of its axis.

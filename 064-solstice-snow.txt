@@ -1,0 +1,18 @@
+TITLE: SOLSTICE — the longest night
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "SOLSTICE — the longest night". Art direction: cold, still, nocturnal. Palette: ground #0a1020, ink #e8eef8, dim #7e8aa5, hairline rgba(232,238,248,.13), frost #bcd6ee, gold #f2c96b. Layout: a full-bleed fixed night gradient behind everything, a fixed full-screen canvas drawing falling snow, and a content column on top of it; a header with a snowflake mark clipped from a polygon and a date line; then a hero with a kicker, a huge light-weight headline across three lines with one bold word, and a paragraph; then three translucent stat cards (daylight 7h 42m, night 16h 18m, 21 December) with blurred backgrounds; then a bordered panel holding an inline SVG chart of the sun's declination across the year, with a gold line, a translucent fill, dashed reference rules and solstice markers; then three pill controls (Play the year / Hold / Blizzard); then a two-column note explaining the solstice as a geometry problem; and a footer. Interaction: the declination chart is regenerated every frame from a sine function of the day of year, with a gold marker and a halo tracking the current day; Play and Hold start and stop that animation; Blizzard multiplies the snow's fall speed and lateral drift and relabels the button. Responsive: the stat cards and the note stack under 860px, and the chart scales with its viewBox.
+
+DESCRIPTION:
+The longest night, rendered as falling snow over a fixed night sky. The chart in the middle is the sun's declination through the year — regenerated every frame, with a gold marker sliding along it — and the interesting shape is the flatness at the solstices, which is precisely why the days seem to stand still in early December and then suddenly start lengthening. The Blizzard button turns the snow from a drift into a storm.
+
+MAJOR VISUAL TECHNIQUES:
+- Fixed full-screen canvas snow with per-flake phase, drift and recycling
+- Layered fixed night gradient behind the content
+- Live declination curve regenerated per frame with a halo marker
+- Translucent glass stat cards using backdrop-filter
+- Polygon-clipped snowflake logo
+- Dashed reference rules and labelled solstice markers in SVG
+
+INTENDED INTERACTION MODEL:
+Watch the year turn, hold it still, or bring the storm in. Everything else on the page is a consequence of the sun's position.

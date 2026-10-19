@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LATHER — the colour of a thin film</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#07080c;--ink:#eef0f6;--dim:#7b8090;--line:rgba(238,240,246,.13);--sheen:#9ad7ff;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;border-radius:50%;display:block;position:relative;
+    box-shadow:inset 0 0 0 1px rgba(154,215,255,.6);}
+  .brand i:after{content:"";position:absolute;left:5px;top:4px;width:6px;height:6px;border-radius:50%;
+    background:rgba(255,255,255,.8);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--sheen);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#05060a;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;cursor:pointer;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--sheen);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--sheen);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--sheen);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--sheen);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--sheen);color:var(--sheen);background:rgba(154,215,255,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.2rem/1.4 "Courier New",monospace;margin-top:6px;color:var(--sheen);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Lather</div>
+    <div class="meta">n = 1.33 · thin film · 380–700 nm</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Interference</div>
+    <h1>A soap bubble is<br>a <b>rainbow</b> with<br>no colour in it</h1>
+    <p>There is no pigment in a soap bubble. The colours come from light bouncing off the outside of the film and off the inside, and interfering with itself on the way out. Where the two waves agree, that colour is doubled; where they cancel, it is missing. Change the thickness of the film and the colour changes — which is why the top of a bubble is a different colour from the bottom.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="640"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Film thickness <output id="oa">420 nm</output></label>
+      <input type="range" id="th" min="80" max="1400" value="420">
+    </div>
+    <div class="fld">
+      <label>Film lifetime <output id="ob">18 s</output></label>
+      <input type="range" id="life" min="4" max="60" value="18">
+    </div>
+    <div class="btns">
+      <button class="btn" id="blow">Blow</button>
+      <button class="btn" id="pop">Pop all</button>
+      <button class="btn" id="still">Still</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Film thickness</u><s id="s1">—</s></div>
+    <div><u>Dominant reflection</u><s id="s2">—</s></div>
+    <div><u>Bubbles alive</u><s id="s3">—</s></div>
+    <div><u>Mean radius</u><s id="s4">—</s></div>
+    <div><u>Soap made</u><s id="s5">—</s></div>
+    <div><u>Oldest bubble</u><s id="s6">—</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why there<br>are two<br>colours</h2>
+      <p>A soap film is not a slab of uniform thickness. Gravity pulls the liquid down, so the film is <b>thin at the top</b> — where it has drained away and is about a tenth of a wavelength — and <b>thick at the bottom</b>, where it is several wavelengths. The two regions reflect different wavelengths, so the top of a bubble and the bottom of the same bubble are different colours.</p>
+      <p>Watch a bubble and the bands drift downwards, because the thick band is always chasing the thin one as the film drains. What you see is a colour gradient travelling down the surface of a sphere.</p>
+    </div>
+    <div>
+      <h2>The<br>arithmetic</h2>
+      <p>Light reflected off the top of the film has bounced off a boundary going from less dense to more dense, and picked up a half-wavelength shift. Light reflected off the bottom has bounced off a denser-to-less-dense boundary and picked up none. So the two rays start out half a wavelength out of step, and the condition for them to reinforce is that the extra distance travelled through the film — twice the thickness — should be a whole number of wavelengths.</p>
+      <p>Set the thickness to two hundred nanometres and the film is a mirror for green; set it to three hundred and it is a mirror for violet and red at once, and the bubble looks yellow. The colours are arithmetic, not decoration.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Lather — the colour of a thin film</span>
+    <span>Interference computed per wavelength</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var thickness=420, lifetime=18, still=false;
+  var bubbles=[], soapAge=0;
+
+  // colour response weights
+  function resp(l,peak,spread){
+    var d=(l-peak)/spread;
+    return Math.max(0,1-d*d);
+  }
+  function filmColour(d){
+    // d in nanometres; n = 1.33; one phase inversion at the top surface
+    var n=1.33, r=0,g=0,b=0, norm=0;
+    for(var l=390;l<=700;l+=10){
+      var phi=4*Math.PI*n*d/l + Math.PI;   // phase difference of the two reflected rays
+      var I=0.5*(1-Math.cos(phi));
+      r+=I*resp(l,600,110);
+      g+=I*resp(l,545,95);
+      b+=I*resp(l,460,80);
+      norm+=resp(l,600,110)+resp(l,545,95)+resp(l,460,80);
+    }
+    r=Math.pow(Math.min(1,r/(norm*0.5)),0.85);
+    g=Math.pow(Math.min(1,g/(norm*0.5)),0.85);
+    b=Math.pow(Math.min(1,b/(norm*0.5)),0.85);
+    return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
+  }
+  function dominant(d){
+    var best=0,bestI=-1;
+    for(var l=390;l<=700;l+=5){
+      var phi=4*Math.PI*1.33*d/l+Math.PI;
+      var I=0.5*(1-Math.cos(phi));
+      if(I>bestI){bestI=I;best=l;}
+    }
+    return best;
+  }
+  function blow(n){
+    for(var i=0;i<(n||14);i++){
+      bubbles.push({
+        x:W*0.5+(Math.random()-0.5)*180,
+        y:H*0.92+Math.random()*40,
+        r:6+Math.random()*10,
+        vx:(Math.random()-0.5)*0.5,
+        vy:-(0.6+Math.random()*0.6),
+        age:0
+      });
+    }
+  }
+  function popAt(x,y){
+    for(var i=bubbles.length-1;i>=0;i--){
+      var b=bubbles[i];
+      if(Math.hypot(b.x-x,b.y-y)<b.r*1.1) bubbles.splice(i,1);
+    }
+  }
+  function drawBubble(b){
+    var r=b.r;
+    if(r<2) return;
+    var bands=Math.max(6,Math.min(42,Math.round(r/2.4)));
+    var topTh=thickness*0.34;
+    var botTh=thickness*(1.25+0.5*Math.min(1,b.age/lifetime));
+    ctx.save();
+    ctx.beginPath(); ctx.arc(b.x,b.y,r,0,6.283); ctx.clip();
+    for(var i=0;i<bands;i++){
+      var f=i/(bands-1);
+      // thickness is smallest at the top of the bubble
+      var tt=topTh+(botTh-topTh)*f;
+      var c=filmColour(tt);
+      ctx.fillStyle='rgb('+c[0]+','+c[1]+','+c[2]+')';
+      ctx.fillRect(b.x-r, b.y-r+ (2*r)*i/bands, 2*r, (2*r)/bands+1);
+    }
+    // shading
+    var sg=ctx.createRadialGradient(b.x-r*0.35,b.y-r*0.4,r*0.05,b.x,b.y,r*1.25);
+    sg.addColorStop(0,'rgba(255,255,255,.34)');
+    sg.addColorStop(0.45,'rgba(255,255,255,0)');
+    sg.addColorStop(1,'rgba(0,0,0,.32)');
+    ctx.fillStyle=sg; ctx.fillRect(b.x-r,b.y-r,2*r,2*r);
+    ctx.restore();
+    // rim
+    ctx.beginPath(); ctx.arc(b.x,b.y,r,0,6.283);
+    ctx.strokeStyle='rgba(255,255,255,.30)'; ctx.lineWidth=1.2; ctx.stroke();
+    // specular
+    ctx.beginPath();
+    ctx.ellipse(b.x-r*0.34,b.y-r*0.42,r*0.26,r*0.16,-0.6,0,6.283);
+    ctx.fillStyle='rgba(255,255,255,.72)'; ctx.fill();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W*0.5,H*0.25,40,W*0.5,H*0.6,H);
+    g.addColorStop(0,'#0d1018'); g.addColorStop(1,'#040508');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // faint bubbles
+    for(var i=bubbles.length-1;i>=0;i--){
+      var b=bubbles[i];
+      if(!still){
+        b.age+=1/60;
+        b.vy-=0.004;
+        b.x+=b.vx; b.y+=b.vy;
+        b.r+=0.16;
+        if(b.age>lifetime || b.y<-b.r || b.r>H) bubbles.splice(i,1);
+      }
+      drawBubble(b);
+    }
+    // hud
+    var meanR=0;
+    bubbles.forEach(function(b){meanR+=b.r;});
+    if(bubbles.length) meanR/=bubbles.length;
+    document.getElementById('hud').innerHTML='BUBBLES <b>'+bubbles.length+'</b><br>'+
+      'FILM <b>'+thickness+' nm</b><br>DOMINANT <b>'+dominant(thickness)+' nm</b>';
+    document.getElementById('s1').textContent=thickness+' nm';
+    document.getElementById('s2').textContent=dominant(thickness)+' nm';
+    document.getElementById('s3').textContent=bubbles.length;
+    document.getElementById('s4').textContent=meanR.toFixed(1)+' px';
+    document.getElementById('s5').textContent=soapAge.toFixed(1)+' s';
+    var oldest=0;
+    bubbles.forEach(function(b){ if(b.age>oldest) oldest=b.age; });
+    document.getElementById('s6').textContent=oldest.toFixed(1)+' s';
+  }
+  function loop(){
+    if(!still) soapAge+=1/60;
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  cv.addEventListener('click',function(e){
+    var r=cv.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
+    popAt(x,y);
+  });
+  document.getElementById('blow').addEventListener('click',function(){ blow(16); });
+  document.getElementById('pop').addEventListener('click',function(){ bubbles=[]; });
+  document.getElementById('still').addEventListener('click',function(){
+    still=!still; this.classList.toggle('on',still); this.textContent=still?'Move':'Still';
+  });
+  document.getElementById('th').addEventListener('input',function(){
+    thickness=parseInt(this.value,10);
+    document.getElementById('oa').textContent=thickness+' nm';
+  });
+  document.getElementById('life').addEventListener('input',function(){
+    lifetime=parseInt(this.value,10);
+    document.getElementById('ob').textContent=lifetime+' s';
+  });
+  blow(20);
+})();
+</script>
+</body>
+</html>

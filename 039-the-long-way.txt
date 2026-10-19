@@ -1,0 +1,19 @@
+TITLE: THE LONG WAY — a journey in six chapters
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "THE LONG WAY — a journey in six chapters", a scroll-driven travel essay. Art direction: cinematic, restrained, film-still. Palette: ground #0f1113, ink #ece9e2, dim #8e8a82, deep grey #6f6b64, amber #e8a33d, teal #4fa89a, hairline rgba(236,233,226,.14). Layout: a fixed 60px left rail carrying a vertical wordmark, six chapter dots (the active one grows and glows amber) and a live distance readout; the content column is offset by the rail. Six full-height chapters alternate text-left / illustration-right; each has a kicker, a very large light-weight headline with one bold word, a paragraph, and a caption line with a hairline rule; each illustration is a hand-authored inline SVG landscape — a harbour at dawn with hills and a lit window, a salt pan under a low sun, a snow pass, a dark forest with a single reflector post, a sunset headland with a striped sea, and a night harbour with a teal shoreline line. A soft fog layer drifts over each illustration. After the chapters, a centred closing section with the total distance broken into five mode chips, then a footer. Interaction: scrolling reveals each chapter's text and illustration with a staggered fade-and-rise (an IntersectionObserver adds a class); the rail's active dot and the distance readout update to match the chapter in view; a continuous fog layer drifts across every illustration. Responsive: under 880px the chapters stack with the text first, the rail is hidden and the content returns to the left margin.
+
+DESCRIPTION:
+A travel essay in six chapters that behaves like a film. Each scroll position brings up a landscape illustration drawn in flat SVG — a harbour before dawn, two hundred kilometres of salt pan, a snow pass, four hundred kilometres of forest, the sea arriving all at once, and the same harbour at night — with text that fades in beside it on a stagger. The rail on the left keeps count, marking which chapter you are in and how many kilometres from the start you have gone.
+
+MAJOR VISUAL TECHNIQUES:
+- IntersectionObserver chapter reveals with staggered transition delays
+- Fixed progress rail with active-dot state and live distance readout
+- Six hand-authored inline SVG landscapes, each with its own gradient and flat shapes
+- Drifting fog layer per illustration using a radial gradient and a slow keyframe
+- Alternating two-column chapter layout with CSS order switching
+- Light-weight 200 display type with a single bold word per headline
+- Hairline rules and letterspaced caption lines as a print-like anchor
+
+INTENDED INTERACTION MODEL:
+Scroll, and the story reveals itself. Nothing is clicked. The only feedback is the rail: the dot for the current chapter lights up and the distance counter updates. The fog drifts on its own over every illustration.

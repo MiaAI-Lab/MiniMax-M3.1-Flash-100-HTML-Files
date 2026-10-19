@@ -1,0 +1,17 @@
+TITLE: LATTICE — the packing of atoms
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LATTICE — the packing of atoms". Art direction: crystallography, dark laboratory, blue and bronze atoms, brass cell edges. Palette: ground #0a0d10, ink #e6ecf0, dim #7a848d, hairline rgba(230,236,240,.13), atom blue #7fb4e8, atom bronze #e8a45c, cell gold #c9a227. Layout: a header with a four-circle logo mark and a monospaced specification line; then a hero with a gold kicker, a huge light-weight headline with one bold word, and a paragraph; then a stage panel — a bordered box split into an 800×620 canvas on the left and a 250px column of two instrument boxes on the right (Structure: type, atoms per cell, coordination number, packing fraction, atomic radius and lattice constant; Example: element, system and the year the arrangement was established); then a row of five buttons (Simple cubic / Body centred / Face centred / Hexagonal close packed / Diamond cubic); then a two-column section pairing an essay on packing and the holes with a note on why it matters; and a footer. The unit cell is built for real: the eight corners of a cube, the body centre for the body-centred lattice, the six face centres for the face-centred lattice, the four tetrahedral sites at the quarter positions for the diamond lattice, and a two-layer hexagonal arrangement for the close-packed case, all projected through a yaw and pitch rotation and drawn back to front with the atoms as radial-gradient spheres. Interaction: dragging the canvas rotates the cell; the five buttons change the structure and the readouts. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+The packing of atoms, drawn as real unit cells and rotated under the pointer. Switch between simple cubic, body centred, face centred, hexagonal close packed and diamond, and watch the coordination number and the packing fraction change with the geometry — because they are not decoration on the picture, they are consequences of where the spheres sit.
+MAJOR VISUAL TECHNIQUES:
+- Unit cell built from corners, body centre, face centres and tetrahedral sites
+- Yaw and pitch rotation with a painter's-algorithm depth sort
+- Atoms drawn as radial-gradient spheres with a rim light
+- Unit cell edges drawn as brass lines through the projected corners
+- Packing fraction and coordination number per structure
+- Hexagonal close-packed arrangement as a separate two-layer build
+
+INTENDED INTERACTION MODEL:
+Turn the cell. Drag to rotate it and switch between the five structures, reading the coordination number and the packing fraction as they change.

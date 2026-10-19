@@ -1,0 +1,20 @@
+TITLE: 侘 — 寂の庭 / A garden of imperfection
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that is a quiet Japanese wabi-sabi essay called "寂の庭 — A garden of imperfection". Art direction: washi paper and sumi ink. Palette: washi #efe9dd, sumi #1c1a17, faded grey #8c8478, seal vermilion #a4392c, moss #6d7a55. Type: a mincho/serif stack (Hiragino Mincho ProN, Yu Mincho, Noto Serif JP, Songti SC, Georgia) with generous 2.2 line-height, plus a huge ghosted kanji 寂 fixed in the bottom-right at 4.5% opacity. Texture: two fixed layers of inline SVG feTurbulence data URIs — a coarse fractal-noise 'paper' layer in multiply blend and a fine horizontal-fibre turbulence layer — giving the page a real washi surface. Layout: a two-column page (a sticky left rail and a 620px content column). The rail carries a vertical writing-mode title 侘び with a small WABI · SABI label and a rotated vermilion seal square. The content column opens with a lead paragraph whose key phrase is marked by a subtle ink-wash highlight, then an inline SVG ensō — a single open brush circle that is animated as if drawn in one breath on load — then a section on 三つの石 with three principle cards (常有, 不完, 間) each with a radial-gradient stone swatch, then a raked-gravel band (repeating horizontal lines) with three organic border-radius stones sitting in it, then a section on 朴, a pull-quote with a vermilion left rule, two columns explaining wabi and sabi, a hairline rule and a closing paragraph. Motion is minimal: the ensō draws itself, the gravel is re-raked around the stones on a slow interval, and stones lift a few pixels on hover. Responsive: the vertical rail becomes a horizontal row under 860px and the cards stack.
+
+DESCRIPTION:
+A meditation on imperfection rendered with the materials it describes. The page surface is literally fibrous — two layers of generated turbulence, one coarse and one stretched into paper fibres — and the one piece of drawing on it, the ensō, is animated from nothing to a full circle in a single sweep, the way it would be brushed. Everything else is stillness: type, white space, and three stones.
+
+MAJOR VISUAL TECHNIQUES:
+- Two-layer inline SVG feTurbulence paper texture (fractal noise + stretched directional noise) in multiply blend
+- writing-mode vertical-rl typography with text-orientation: upright
+- SVG ensō animated via stroke-dashoffset on getTotalLength()
+- Rotated vermilion seal (hanko) block with a soft drop shadow
+- Raked gravel built from repeating-linear-gradient with stones re-raked by a dynamic spread-radius box-shadow
+- Organic stone silhouettes using asymmetric border-radius with percentage x/y values
+- Ink-wash style text highlight built from a linear-gradient background stop
+- Huge ghosted kanji as a fixed background element at low opacity
+
+INTENDED INTERACTION MODEL:
+Almost entirely contemplative. The ensō draws itself once on load; the gravel around the stones is periodically re-raked (a soft light halo around each stone changes width and position); stones respond to hover with a small lift. There is no navigation, no form and no scrolling animation.

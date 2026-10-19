@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RASTER — International Typographic Style</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#f4f3ef;--ink:#111;--red:#e2231a;--grey:#9a9a94;--line:rgba(17,17,17,.16);}
+  body{background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .bar{height:8px;background:var(--ink);}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 4vw;}
+  .mark{font-size:11px;letter-spacing:.4em;text-transform:uppercase;font-weight:700;}
+  .mark span{color:var(--red);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#777;}
+
+  .stage{display:grid;grid-template-columns:1fr 300px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);}
+  .poster{position:relative;aspect-ratio:3/4;max-height:88vh;margin:0 auto;width:100%;overflow:hidden;background:var(--paper);}
+  .poster .gridlines{position:absolute;inset:0;opacity:.5;}
+  .poster .gridlines div{position:absolute;top:0;bottom:0;width:1px;background:rgba(17,17,17,.12);}
+  .poster .gridlines div.h{position:static;width:auto;height:1px;left:0;right:0;background:rgba(17,17,17,.12);}
+  .ptext{position:absolute;}
+  .ptext .t1{font-size:clamp(2.6rem,8.4vw,7rem);line-height:.86;font-weight:700;letter-spacing:-.045em;text-transform:uppercase;}
+  .ptext .t2{font-size:clamp(.7rem,1.5vw,1.05rem);letter-spacing:.34em;text-transform:uppercase;font-weight:500;}
+  .ptext .t3{font-size:clamp(.6rem,1.1vw,.8rem);letter-spacing:.16em;text-transform:uppercase;}
+  .ptext .t4{font-size:clamp(.9rem,1.9vw,1.4rem);line-height:1.3;font-weight:700;letter-spacing:-.01em;}
+  .disc{position:absolute;border-radius:50%;background:var(--red);}
+  .sqr{position:absolute;background:var(--ink);}
+  .tri{position:absolute;background:var(--red);clip-path:polygon(50% 0,100% 100%,0 100%);}
+  .bar2{position:absolute;background:var(--ink);}
+
+  .panel{border-left:2px solid var(--ink);padding:24px;display:flex;flex-direction:column;gap:20px;background:#edebe5;}
+  .panel h2{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#777;font-weight:500;}
+  .ctl label{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:#777;margin-bottom:8px;}
+  .ctl label b{color:var(--ink);font-weight:500;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--ink);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+    background:var(--red);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-radius:50%;background:var(--red);cursor:pointer;}
+  .pbtn{border:2px solid var(--ink);background:transparent;padding:12px 14px;cursor:pointer;font:700 10.5px/1 inherit;
+    letter-spacing:.22em;text-transform:uppercase;transition:.2s;display:flex;justify-content:space-between;}
+  .pbtn:hover{background:var(--ink);color:var(--paper);}
+  .pbtn.alt:hover{background:var(--red);border-color:var(--red);color:#fff;}
+  .swatches{display:flex;gap:8px;}
+  .sw{width:32px;height:32px;border:2px solid var(--ink);cursor:pointer;}
+  .sw.on{outline:3px solid var(--red);outline-offset:2px;}
+  .legend{border-top:1px solid var(--line);padding-top:14px;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:#777;line-height:2;}
+
+  .grid12{display:grid;grid-template-columns:repeat(12,1fr);border-bottom:2px solid var(--ink);}
+  .grid12 div{padding:26px 18px;border-right:1px solid var(--line);}
+  .grid12 div:last-child{border-right:none;}
+  .grid12 h3{font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+  .grid12 p{font-size:.86rem;line-height:1.75;color:#555;}
+  .grid12 .num{font-size:2.2rem;font-weight:700;line-height:1;margin-bottom:10px;}
+  .grid12 div:nth-child(4) .num{color:var(--red);}
+
+  .explain{padding:9vh 4vw;display:grid;grid-template-columns:.8fr 1.2fr;gap:5vw;align-items:center;}
+  .explain h2{font-size:clamp(1.8rem,4.4vw,3.2rem);line-height:.95;letter-spacing:-.03em;text-transform:uppercase;font-weight:700;}
+  .explain p{font-size:1rem;line-height:1.9;color:#4a4a46;max-width:52ch;}
+  .explain p+p{margin-top:1.2em;}
+  footer{padding:24px 4vw;border-top:2px solid var(--ink);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#777;}
+
+  @media(max-width:940px){.stage{grid-template-columns:1fr;}.panel{border-left:none;border-top:2px solid var(--ink);}
+    .grid12{grid-template-columns:repeat(3,1fr);}.explain{grid-template-columns:1fr;}}
+  @media(max-width:620px){.grid12{grid-template-columns:1fr;}.grid12 div{border-right:none;border-bottom:1px solid var(--line);}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="bar"></div>
+<header>
+  <div class="mark">Raster<span>·</span>International Style</div>
+  <div class="meta">Grid: 12 columns · Type: Akzidenz-like</div>
+</header>
+
+<div class="stage">
+  <div class="poster" id="poster">
+    <div class="gridlines" id="gl"></div>
+  </div>
+
+  <aside class="panel">
+    <h2>Composition</h2>
+    <div class="ctl">
+      <label>Headline <b id="vTitle">Musica</b></label>
+      <input type="range" id="title" min="0" max="5" value="0">
+    </div>
+    <div class="ctl">
+      <label>Headline size <b id="vSize">100%</b></label>
+      <input type="range" id="size" min="50" max="150" value="100">
+    </div>
+    <div class="ctl">
+      <label>Disc diameter <b id="vDisc">42%</b></label>
+      <input type="range" id="disc" min="20" max="70" value="42">
+    </div>
+    <div class="ctl">
+      <label>Accent colour</label>
+      <div class="swatches" id="sws">
+        <div class="sw on" data-c="#e2231a" style="background:#e2231a"></div>
+        <div class="sw" data-c="#111111" style="background:#111"></div>
+        <div class="sw" data-c="#1a4fd6" style="background:#1a4fd6"></div>
+        <div class="sw" data-c="#f2b705" style="background:#f2b705"></div>
+      </div>
+    </div>
+    <div class="ctl">
+      <label>Show grid</label>
+      <div class="swatches">
+        <div class="sw on" id="gridSw" data-c="#111" style="background:#ddd"></div>
+      </div>
+    </div>
+    <div>
+      <div class="pbtn" id="new"><span>New composition</span><span>↻</span></div>
+    </div>
+    <div class="legend">
+      Rules: asymmetric grid · flush left<br>
+      One accent · no gradients<br>
+      Type does the work
+    </div>
+  </aside>
+</div>
+<div class="bar"></div>
+
+<section class="grid12">
+  <div><div class="num">01</div><h3>Grid</h3><p>Twelve columns, one gutter, everything flush to a baseline. The grid is invisible in the finished poster and unavoidable while making it.</p></div>
+  <div><div class="num">02</div><h3>Sans</h3><p>A single grotesque, used at two or three sizes, never more. If a word needs a second typeface, the word is wrong.</p></div>
+  <div><div class="num">03</div><h3>Accent</h3><p>One colour, used once, on the largest shape. Red on white is the most efficient signal ever designed.</p></div>
+  <div><div class="num">04</div><h3>Asymmetry</h3><p>Nothing is centred except the thing that matters. Centred everything is the same as centred nothing.</p></div>
+</section>
+
+<section class="explain">
+  <div>
+    <h2>Objectivity<br>is a style</h2>
+  </div>
+  <div>
+    <p>Between 1920 and 1932 a group of Swiss designers decided that ornament was a way of avoiding the question of what something was for. Their answer: a poster should be legible from a moving tram, and it should not flatter the person reading it.</p>
+    <p>The method survived because it is genuinely useful, not because it was fashionable. A grid is a way of making decisions faster, and a single accent colour is a way of making one decision count. The rest is typography, and typography is the whole job.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Raster — a poster generator in the International Style</span>
+  <span>All compositions generated in the browser</span>
+</footer>
+
+<script>
+(function(){
+  var poster=document.getElementById('poster'), gl=document.getElementById('gl');
+  var TITLES=[['Musica','Concerto for strings','8 March 21:00','Tonhalle Zürich'],
+              ['Graphik','Ausstellung der Neuen Sachlichkeit','Mai — September','Kunsthaus'],
+              ['Luzern','Festivalsommer 1954','Juli 2026','Kursaal'],
+              ['Ordo','Eine neue Typographie','Nr. 12','Basel'],
+              ['Bauhaus','Ausstellung 1919','Juni — September','Weimar'],
+              ['Helvetica','Neue Schrift für die Schweiz','1957','Zürich']];
+  var ti=0, sizeK=1, discK=42, accent='#e2231a', showGrid=true;
+
+  // grid lines
+  var lines='';
+  for(var i=1;i<12;i++) lines+='<div style="left:'+(i/12*100)+'%"></div>';
+  for(var j=1;j<10;j++) lines+='<div class="h" style="top:'+(j/10*100)+'%"></div>';
+  gl.innerHTML=lines;
+
+  function build(){
+    var t=TITLES[ti%TITLES.length];
+    poster.querySelectorAll('.ptext,.disc,.sqr,.tri,.bar2').forEach(function(e){e.remove();});
+
+    var head=document.createElement('div');
+    head.className='ptext';
+    head.style.left='7%'; head.style.top='9%';
+    head.innerHTML='<div class="t1">'+t[0]+'</div>';
+    poster.appendChild(head);
+    head.querySelector('.t1').style.fontSize='calc(clamp(2.6rem,8.4vw,7rem) * '+sizeK+')';
+
+    var sub=document.createElement('div');
+    sub.className='ptext';
+    sub.style.left='7%'; sub.style.top='9%';
+    sub.style.marginTop='calc(clamp(2.6rem,8.4vw,7rem) * '+sizeK+' * 0.95)';
+    sub.innerHTML='<div class="t2">'+t[1]+'</div>';
+    poster.appendChild(sub);
+
+    var d=document.createElement('div');
+    d.className='disc';
+    var sz=discK/100*100;
+    d.style.width=sz+'%'; d.style.aspectRatio='1';
+    d.style.right='8%'; d.style.top='38%';
+    d.style.background=accent;
+    poster.appendChild(d);
+
+    var q=document.createElement('div');
+    q.className='sqr';
+    q.style.width='17%'; q.style.aspectRatio='1';
+    q.style.left='7%'; q.style.bottom='10%';
+    q.style.background='#111';
+    poster.appendChild(q);
+
+    var tr=document.createElement('div');
+    tr.className='tri';
+    tr.style.width='19%'; tr.style.aspectRatio='1';
+    tr.style.left='29%'; tr.style.bottom='10%';
+    tr.style.background=accent;
+    poster.appendChild(tr);
+
+    var b=document.createElement('div');
+    b.className='bar2';
+    b.style.left='7%'; b.style.right='7%'; b.style.bottom='26%';
+    b.style.height='3px';
+    poster.appendChild(b);
+
+    var info=document.createElement('div');
+    info.className='ptext';
+    info.style.right='8%'; info.style.bottom='10%'; info.style.textAlign='right';
+    info.innerHTML='<div class="t3">'+t[2]+'</div><div class="t4" style="margin-top:6px">'+t[3]+'</div>';
+    poster.appendChild(info);
+
+    document.getElementById('vTitle').textContent=t[0];
+  }
+
+  function bind(id,out,fn,fmt){
+    var el=document.getElementById(id), o=document.getElementById(out);
+    el.addEventListener('input',function(){var v=+el.value;fn(v);o.textContent=fmt(v);build();});
+  }
+  bind('title','vTitle',function(v){ti=v;},function(v){return TITLES[v][0];});
+  bind('size','vSize',function(v){sizeK=v/100;},function(v){return v+'%';});
+  bind('disc','vDisc',function(v){discK=v;},function(v){return v+'%';});
+
+  document.getElementById('sws').addEventListener('click',function(e){
+    var s=e.target.closest('.sw'); if(!s) return;
+    this.querySelectorAll('.sw').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on'); accent=s.dataset.c; build();
+  });
+  var gs=document.getElementById('gridSw');
+  gs.addEventListener('click',function(){
+    showGrid=!showGrid; this.classList.toggle('on',showGrid);
+    gl.style.display=showGrid?'':'none';
+  });
+  document.getElementById('new').addEventListener('click',function(){
+    ti=(ti+1)%TITLES.length;
+    document.getElementById('title').value=ti;
+    document.getElementById('vTitle').textContent=TITLES[ti][0];
+    build();
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>

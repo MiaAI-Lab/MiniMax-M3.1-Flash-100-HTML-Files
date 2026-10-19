@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Glass — Aether Institute</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#05060f;
+    --ink:#eaf0ff;
+    --dim:#8a93b8;
+    --glass:rgba(255,255,255,.06);
+    --stroke:rgba(255,255,255,.14);
+    --c1:#5ef2d0;
+    --c2:#7b6bff;
+    --c3:#ff5fa2;
+  }
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+  }
+  /* ---------- aurora field ---------- */
+  .sky{position:fixed;inset:-20%;z-index:0;filter:blur(70px);opacity:.75;}
+  .blob{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform;}
+  .b1{width:52vw;height:52vw;left:-6%;top:2%;background:radial-gradient(circle at 30% 30%,var(--c1),transparent 62%);animation:drift1 26s ease-in-out infinite;}
+  .b2{width:46vw;height:46vw;right:-4%;top:8%;background:radial-gradient(circle at 60% 40%,var(--c2),transparent 62%);animation:drift2 31s ease-in-out infinite;}
+  .b3{width:40vw;height:40vw;left:32%;bottom:-8%;background:radial-gradient(circle at 50% 50%,var(--c3),transparent 60%);animation:drift3 24s ease-in-out infinite;}
+  .b4{width:30vw;height:30vw;left:18%;top:44%;background:radial-gradient(circle at 50% 50%,#4fd8ff,transparent 60%);animation:drift2 36s ease-in-out infinite reverse;}
+  @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(14vw,8vh,0) scale(1.18);}}
+  @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1.1);}50%{transform:translate3d(-12vw,12vh,0) scale(.88);}}
+  @keyframes drift3{0%,100%{transform:translate3d(0,0,0) scale(.95);}50%{transform:translate3d(8vw,-14vh,0) scale(1.25);}}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+    mix-blend-mode:overlay;}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 10%,transparent 40%,rgba(3,4,12,.85) 100%);}
+
+  /* ---------- layout ---------- */
+  .wrap{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:22px 24px 90px;}
+  header{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .mark{display:flex;align-items:center;gap:12px;letter-spacing:.32em;font-size:12px;text-transform:uppercase;}
+  .mark .dot{width:11px;height:11px;border-radius:50%;background:var(--c1);box-shadow:0 0 16px var(--c1);animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.55;}}
+  nav{display:flex;gap:8px;flex-wrap:wrap;}
+  nav a{
+    color:var(--dim);text-decoration:none;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+    padding:8px 14px;border-radius:999px;border:1px solid transparent;transition:.35s;}
+  nav a:hover{color:var(--ink);border-color:var(--stroke);background:var(--glass);}
+
+  .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;margin-top:72px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--c1);
+    border:1px solid rgba(94,242,208,.3);border-radius:999px;padding:7px 16px;background:rgba(94,242,208,.07);}
+  h1{
+    font-size:clamp(2.9rem,7.2vw,5.6rem);line-height:.92;letter-spacing:-.035em;margin:26px 0 22px;font-weight:200;
+    background:linear-gradient(105deg,#fff 8%,var(--c1) 42%,var(--c2) 72%,var(--c3) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h1 b{font-weight:700;}
+  .lede{color:var(--dim);font-size:1.06rem;line-height:1.75;max-width:48ch;}
+  .lede em{color:var(--ink);font-style:normal;}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px;}
+  .btn{position:relative;overflow:hidden;border:1px solid var(--stroke);background:var(--glass);color:var(--ink);
+    padding:14px 30px;border-radius:999px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;
+    backdrop-filter:blur(14px);transition:.4s cubic-bezier(.2,.8,.2,1);font-family:inherit;}
+  .btn:hover{transform:translateY(-3px);border-color:rgba(94,242,208,.6);box-shadow:0 16px 44px -16px var(--c1);}
+  .btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transition:.7s;}
+  .btn:hover::after{left:130%;}
+  .btn.solid{background:linear-gradient(120deg,var(--c1),var(--c2));color:#05060f;border-color:transparent;font-weight:600;}
+
+  /* glass panel */
+  .panel{
+    position:relative;border-radius:28px;border:1px solid var(--stroke);
+    background:linear-gradient(150deg,rgba(255,255,255,.11),rgba(255,255,255,.02));
+    backdrop-filter:blur(26px) saturate(150%);
+    padding:26px;box-shadow:0 40px 90px -40px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.22);}
+  .panel::before{content:"";position:absolute;inset:0;border-radius:28px;padding:1px;
+    background:linear-gradient(160deg,rgba(255,255,255,.45),transparent 42%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+  .readout{display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;}
+  .orb{position:relative;width:100%;aspect-ratio:1;border-radius:50%;margin:6px auto 18px;
+    background:conic-gradient(from 0deg,var(--c2),var(--c1),var(--c3),var(--c2));
+    filter:blur(0px);animation:spin 14s linear infinite;box-shadow:0 0 70px -12px rgba(123,107,255,.8);}
+  .orb::after{content:"";position:absolute;inset:16%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#0b0d1c,#05060f 70%);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.9);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;}
+  .stat u{display:block;text-decoration:none;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+  .stat s{display:block;text-decoration:none;font-size:1.5rem;font-weight:300;color:var(--c1);letter-spacing:-.02em;}
+
+  .ticker{margin-top:74px;border-top:1px solid rgba(255,255,255,.09);border-bottom:1px solid rgba(255,255,255,.09);
+    overflow:hidden;padding:16px 0;position:relative;}
+  .ticker ul{display:flex;gap:44px;list-style:none;animation:slide 26s linear infinite;width:max-content;}
+  .ticker li{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
+  .ticker li b{color:var(--ink);font-weight:400;}
+  @keyframes slide{to{transform:translateX(-50%);}}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;margin-top:64px;}
+  .card{border-radius:22px;border:1px solid var(--stroke);background:rgba(255,255,255,.045);
+    backdrop-filter:blur(16px);padding:24px 22px;position:relative;overflow:hidden;
+    transition:transform .5s cubic-bezier(.2,.8,.2,1),background .5s,border-color .5s;}
+  .card:hover{transform:translateY(-8px);background:rgba(255,255,255,.08);border-color:rgba(94,242,208,.45);}
+  .card h3{font-size:1.15rem;font-weight:500;letter-spacing:-.01em;margin-bottom:9px;}
+  .card p{font-size:.9rem;color:var(--dim);line-height:1.65;}
+  .card .num{font-size:11px;letter-spacing:.3em;color:var(--c1);margin-bottom:16px;display:block;}
+  .card::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-60px;top:-60px;
+    background:radial-gradient(circle,rgba(123,107,255,.4),transparent 70%);opacity:0;transition:.6s;}
+  .card:hover::after{opacity:1;}
+
+  footer{margin-top:80px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    color:#5c6486;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;padding-top:26px;border-top:1px solid rgba(255,255,255,.07);}
+
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:44px;margin-top:52px;}}
+  @media(max-width:520px){.wrap{padding:18px 16px 70px;}h1{letter-spacing:-.03em;}.orb{width:78%;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="sky"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+<div class="grain"></div><div class="vignette"></div>
+
+<div class="wrap">
+  <header>
+    <div class="mark"><span class="dot"></span>Aether Institute</div>
+    <nav>
+      <a href="#manifesto">Manifesto</a>
+      <a href="#fields">Fields</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Vol. 07 — Atmospheric Research</span>
+      <h1>We study the <b>light</b> that bends around a world.</h1>
+      <p class="lede">Aether is an independent observatory for atmospheric optics. Our team maps aurora, halo, and afterglow across <em>fourteen high-altitude stations</em> — publishing raw spectra in the open.</p>
+      <div class="cta">
+        <button class="btn solid">Enter the archive</button>
+        <button class="btn" id="live">Live spectrum</button>
+      </div>
+    </div>
+
+    <div class="panel" id="tilt">
+      <div class="readout"><span>Station Kiruna</span><span id="clock">--:--:--</span></div>
+      <div class="orb" id="orb"></div>
+      <div class="stats">
+        <div class="stat"><u>KP index</u><s id="kp">4.2</s></div>
+        <div class="stat"><u>Solar wind</u><s>612</s></div>
+        <div class="stat"><u>Visibility</u><s>Excellent</s></div>
+        <div class="stat"><u>Cloud base</u><s>3.1 km</s></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" id="manifesto">
+    <ul>
+      <li><b>1911</b> — First fixed spectrum camera</li>
+      <li><b>1978</b> — Discrete auroral arc catalogue</li>
+      <li><b>1994</b> — All-sky photometry array</li>
+      <li><b>2011</b> — Open spectral repository</li>
+      <li><b>2011</b> — First fixed spectrum camera</li>
+      <li><b>1978</b> — Discrete auroral arc catalogue</li>
+      <li><b>1994</b> — All-sky photometry array</li>
+      <li><b>2011</b> — Open spectral repository</li>
+    </ul>
+  </div>
+
+  <section class="grid" id="fields">
+    <article class="card"><span class="num">01 / AURORA</span><h3>Curtain morphology</h3><p>Ray structure, fold frequency and colour ratios measured at 10-second cadence across the whole oval.</p></article>
+    <article class="card"><span class="num">02 / HALO</span><h3>Ice crystal optics</h3><p>22° and 46° halos modelled against measured scattering cross-sections in diamond dust.</p></article>
+    <article class="card"><span class="num">03 / GLORY</span><h3>Antihelion</h3><p>The ghostly rings of the antisolar point, captured only on high mountain ridgelines.</p></article>
+    <article class="card"><span class="num">04 / AIRGLOW</span><h3>Night emission</h3><p>OH and O₂ band emission at 630 nm, tracked to separate meteorology from solar forcing.</p></article>
+  </section>
+
+  <footer id="contact">
+    <span>© 2026 Aether Institute — Open data, CC-BY</span>
+    <span>Kiruna · Svalbard · Húsavík · La Palma</span>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    // live clock
+    var c=document.getElementById('clock');
+    function tick(){
+      var d=new Date();
+      c.textContent=[d.getUTCHours(),d.getUTCMinutes(),d.getUTCSeconds()]
+        .map(function(n){return String(n).padStart(2,'0');}).join(':');
+    }
+    tick(); setInterval(tick,1000);
+
+    // KP index drift
+    var kp=document.getElementById('kp'), v=4.2;
+    setInterval(function(){
+      v=Math.max(1.2,Math.min(9, v+(Math.random()-.5)*.35));
+      kp.textContent=v.toFixed(1);
+    },1600);
+
+    // tilt the glass panel toward the pointer
+    var panel=document.getElementById('tilt');
+    window.addEventListener('pointermove',function(e){
+      var r=panel.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width-.5, py=(e.clientY-r.top)/r.height-.5;
+      panel.style.transform='perspective(1100px) rotateY('+(px*9)+'deg) rotateX('+(-py*9)+'deg)';
+    });
+    panel.addEventListener('pointerleave',function(){panel.style.transform='';});
+
+    // live spectrum: shift the orb hue
+    var orb=document.getElementById('orb'), hue=0;
+    document.getElementById('live').addEventListener('click',function(){
+      hue=(hue+47)%360;
+      orb.style.background='conic-gradient(from '+hue+'deg,#7b6bff,#5ef2d0,#ff5fa2,#7b6bff)';
+      this.textContent='Resample spectrum';
+    });
+  })();
+</script>
+</body>
+</html>

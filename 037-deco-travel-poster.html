@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'ORÉL — an art deco travel poster</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0d0b0a;--paper:#efe3c8;--gold:#c9a04a;--deep:#1d2b3a;--red:#a83a2a;--ink:#191410;}
+  body{background:var(--bg);color:#e9dfcb;font-family:"Didot","Bodoni MT",Georgia,serif;overflow-x:hidden;}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:26px 0;
+    border-bottom:1px solid rgba(233,223,203,.18);}
+  .mark{font-size:12px;letter-spacing:.46em;text-transform:uppercase;}
+  .mark span{color:var(--gold);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#8b8171;}
+
+  .hero{display:grid;grid-template-columns:.85fr 1.15fr;gap:4vw;padding:8vh 0 6vh;align-items:center;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);}
+  h1{font-size:clamp(2.6rem,6.4vw,5rem);font-weight:400;line-height:.98;letter-spacing:.01em;margin:20px 0 22px;}
+  h1 em{font-style:italic;color:var(--gold);}
+  .lede{color:#a49a88;font-size:1.02rem;line-height:1.95;max-width:42ch;}
+  .cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--gold);color:var(--gold);background:transparent;padding:14px 28px;cursor:pointer;
+    font:400 10.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase;transition:.35s;}
+  .btn:hover{background:var(--gold);color:#141110;}
+
+  .poster{position:relative;aspect-ratio:3/4;max-height:88vh;margin:0 auto;width:100%;overflow:hidden;
+    background:linear-gradient(180deg,#f3e8d0 0%,#e6d4b0 58%,#d9bf93 100%);box-shadow:0 40px 80px -40px #000;}
+  .poster svg{position:absolute;inset:0;width:100%;height:100%;}
+  .ptitle{position:absolute;left:0;right:0;top:7%;text-align:center;}
+  .ptitle .a{font-size:clamp(.8rem,1.7vw,1.1rem);letter-spacing:.5em;text-transform:uppercase;color:var(--ink);}
+  .ptitle .b{font-size:clamp(2.4rem,7vw,5.4rem);line-height:.9;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--deep);margin-top:6px;}
+  .ptitle .c{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:14px;
+    font:400 .62rem/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:var(--ink);}
+  .ptitle .c i{display:block;width:70px;height:1px;background:var(--ink);}
+  .pfoot{position:absolute;left:0;right:0;bottom:5%;text-align:center;}
+  .pfoot .d{font-size:clamp(.7rem,1.4vw,.95rem);letter-spacing:.3em;text-transform:uppercase;color:var(--ink);}
+  .pfoot .e{margin-top:8px;font-size:clamp(.55rem,1vw,.72rem);letter-spacing:.22em;text-transform:uppercase;color:#6d5c45;}
+  .sun{position:absolute;left:50%;top:30%;width:56%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;
+    background:radial-gradient(circle at 50% 45%,#f6d98a,#dfa63f 62%,#c2852c);
+    box-shadow:0 0 60px rgba(201,160,74,.5);}
+  .rays{position:absolute;left:50%;top:30%;width:110%;aspect-ratio:1;transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg,rgba(201,160,74,.28) 0 4deg,transparent 4deg 12deg);
+    border-radius:50%;}
+  .ship{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);width:62%;}
+  .sea{position:absolute;left:0;right:0;bottom:0;height:30%;
+    background:repeating-linear-gradient(180deg,rgba(29,43,58,.9) 0 3px,rgba(45,63,80,.9) 3px 6px);
+    border-top:2px solid var(--gold);}
+
+  .deco{display:grid;grid-template-columns:repeat(4,1fr);margin-top:5vh;border-top:1px solid rgba(233,223,203,.18);}
+  .deco div{padding:26px 20px;border-right:1px solid rgba(233,223,203,.14);}
+  .deco div:last-child{border-right:none;}
+  .deco h3{font-size:1rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;color:var(--gold);}
+  .deco p{color:#9d9382;font-size:.87rem;line-height:1.8;}
+  .deco .n{font-size:2rem;line-height:1;margin-bottom:10px;color:var(--gold);}
+
+  .essay{margin-top:7vh;display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;}
+  .essay h2{font-size:clamp(1.7rem,3.8vw,2.8rem);font-weight:400;line-height:1.12;}
+  .essay p{color:#a49a88;font-size:.98rem;line-height:1.95;}
+  .essay p+p{margin-top:1.1em;}
+  footer{margin-top:50px;padding-top:20px;border-top:1px solid rgba(233,223,203,.18);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#8b8171;}
+
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:36px;}.deco{grid-template-columns:repeat(2,1fr);}
+    .deco div:nth-child(2){border-right:none;}.deco div:nth-child(-n+2){border-bottom:1px solid rgba(233,223,203,.14);}
+    .essay{grid-template-columns:1fr;}}
+  @media(max-width:560px){.deco{grid-template-columns:1fr;}.deco div{border-right:none;border-bottom:1px solid rgba(233,223,203,.14);}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">L'Orél <span>·</span> Compagnie Générale</div>
+    <div class="meta">Printed Paris · 1928 · Lithographie</div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="k">Compagnie Générale — Voyage № 14</div>
+      <h1>Le Monde<br>vu de la <em>mer</em></h1>
+      <p class="lede">In 1928 a transatlantic crossing took eleven days and cost a fortune, and the poster that sold it promised something better than the destination: a state of mind, in the sun, at a slight distance from everything.</p>
+      <div class="cta">
+        <button class="btn">Book the crossing</button>
+        <button class="btn">See the fleet</button>
+      </div>
+    </div>
+
+    <div class="poster">
+      <div class="rays"></div>
+      <div class="sun"></div>
+      <svg viewBox="0 0 600 800" preserveAspectRatio="none" aria-hidden="true">
+        <g stroke="#c9a04a" stroke-width="2" fill="none" opacity=".85">
+          <path d="M60 600 L540 600"/><path d="M60 616 L540 616"/>
+        </g>
+        <g fill="#1d2b3a">
+          <path d="M120 560 L300 560 L280 470 L320 470 L330 560 L470 560 L470 600 L110 600 Z"/>
+          <path d="M300 470 L300 420 L318 420 L318 470 Z"/>
+          <path d="M250 470 L250 430 L266 430 L266 470 Z"/>
+        </g>
+        <g fill="#efe3c8" opacity=".9">
+          <rect x="150" y="520" width="12" height="12"/><rect x="180" y="520" width="12" height="12"/>
+          <rect x="210" y="520" width="12" height="12"/><rect x="240" y="520" width="12" height="12"/>
+          <rect x="350" y="520" width="12" height="12"/><rect x="380" y="520" width="12" height="12"/>
+          <rect x="410" y="520" width="12" height="12"/>
+        </g>
+        <g fill="#a83a2a">
+          <rect x="290" y="440" width="38" height="14"/>
+        </g>
+      </svg>
+      <div class="sea"></div>
+      <div class="ptitle">
+        <div class="a">Compagnie Générale</div>
+        <div class="b">L'Orél</div>
+        <div class="c"><i></i>Le Monde vu de la mer<i></i></div>
+      </div>
+      <div class="pfoot">
+        <div class="d">Côte d'Ivoire · Marseille</div>
+        <div class="e">11 jours · 3<sup>rd</sup> classe · 480 francs</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deco">
+    <div><div class="n">01</div><h3>The sun</h3><p>A disc, a ray pattern and two colours. Deco posters did not paint light; they diagrammed it.</p></div>
+    <div><div class="n">02</div><h3>The ship</h3><p>Always in profile, always small, always heading somewhere. The vessel is the reason, not the subject.</p></div>
+    <div><div class="n">03</div><h3>The rule</h3><p>One gold line divides sea from sky and nothing crosses it. Deco believed in borders.</p></div>
+    <div><div class="n">04</div><h3>The type</h3><p>Wide capitals, tight leading, an enormous title and a great deal of air underneath it.</p></div>
+  </section>
+
+  <section class="essay">
+    <div><h2>The poster was<br>the departure<br>gate</h2></div>
+    <div>
+      <p>Before air travel, a crossing was an event, and the poster was the thing you looked at while you queued. Art deco was the first graphic language built for mass reproduction and for a public that had just learned to read quickly.</p>
+      <p>Its rules were strict enough to be taught and loose enough to allow a genius. Geometric, symmetrical, gold on a flat field — and yet every one of these posters was a painting of somewhere you had probably never been, made by an artist who mostly had not either.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>L'Orél — Compagnie Générale</span>
+    <span>Art deco travel poster, 1928</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // a slow shimmer across the sun rays, and a gentle bob for the ship
+  var poster=document.querySelector('.poster');
+  var sun=document.querySelector('.sun'), rays=document.querySelector('.rays');
+  var t=0;
+  function loop(){
+    t+=1;
+    var s=1+Math.sin(t*0.012)*0.02;
+    sun.style.transform='translateX(-50%) scale('+s.toFixed(3)+')';
+    rays.style.transform='translate(-50%,-50%) rotate('+(t*0.04)+'deg)';
+    poster.style.setProperty('--shimmer',(Math.sin(t*0.03)*0.5+0.5).toFixed(3));
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

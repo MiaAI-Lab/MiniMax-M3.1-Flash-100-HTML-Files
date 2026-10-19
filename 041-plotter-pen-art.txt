@@ -1,0 +1,20 @@
+TITLE: PLOTTER — a pen on paper
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PLOTTER — a pen on paper". Art direction: a pen plotter's output on a desk. Palette: desk #ddd9d0, paper #f7f4ec, ink #14120e, pen black #1b1b1b, red accent #c0392b, dim #8b8578. Layout: a header with a wide-tracked wordmark and a machine specification line; a "board" panel holding a 1100×760 canvas of paper with a drawn plate, plus a caption bar underneath reporting the plate number, the plate name, the segment count and the pen state; then a row of six hard-edged tool buttons (Contour / Hatch / Spiral / Voronoi / Redraw / Lift pen) with an offset paper-shadow press effect; then three sliders (lines 20–260, jitter 0–3.0, pen angle 0–180°); then a three-column notes panel on paper explaining the machine, the ink and the paper. Interaction: each of the four plate buttons redraws the canvas with a different generative algorithm — a contour field built from a layered sine function sampled across the page, a cross-hatch that follows the pen-angle slider in two passes, an Archimedean spiral of many turns, and a field of irregular closed cells — all in a single hairline black stroke on paper, with faint white "pen skip" specks scattered over the plate and a monospace title block stamped in the bottom margin; the Redraw button re-rolls the seed; Lift pen fades the whole drawing to 25% and flips the pen state readout; the three sliders redraw live. The segment count in the caption updates after every redraw. Responsive: the slider row and the notes panel become one column under 800px.
+
+DESCRIPTION:
+A ballpoint pen plotter, simulated honestly. The machine only knows how to move in straight lines, so everything expressive has to come from line density: a contour field, a cross-hatch, a spiral, a field of cells. The pen skips are the detail that sells it — faint white specks where the ball hitched at a direction change — and the title block stamped in the bottom margin is exactly the kind of thing every plotted drawing has carried since 1963.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas contour field sampled from summed sine harmonics, one stroke per level
+- Two-pass cross-hatching at a user-controlled pen angle
+- Archimedean spiral with thousands of incremental segments
+- Procedural closed cell polygons (a Voronoi impression) from a seeded point field
+- Scattered white specks simulating ballpoint skips on coated paper
+- Monospace title block and a stamped rectangle in the plate margin
+- Hard offset shadow press effect on the tool buttons
+- Seeded mulberry32 random source so Redraw is reproducible
+
+INTENDED INTERACTION MODEL:
+Choose a plate and tune the machine. Four buttons change the algorithm, three sliders change the plot (density, jitter, pen angle), Redraw re-rolls the seed, and Lift pen fades the whole drawing. The caption always reports exactly how many segments the last plot used.

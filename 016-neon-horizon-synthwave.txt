@@ -1,0 +1,20 @@
+TITLE: NEON HORIZON — Outrun tribute
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) that is an 1980s synthwave tribute called "NEON HORIZON". Art direction: cassette-era highway at sunset. Palette: deep violet #12003a ground, sky gradient from #0b0130 through #3a0a63 and #8b1a72 to #e0346f and #ff8a3d, sun gradient from #fff27a through #ffe259 and #ff9d4d to #ff2d95, cyan #00e5ff for the grid and buttons, magenta #ff2d95 as the secondary accent, yellow #ffe259 for headings. Layout: a full-height hero scene built from stacked absolute layers — a banded sky with faint horizontal interlace lines, a large sun disc that is cut into horizontal slits (repeating-linear-gradient bands) and fades to violet at the bottom, two layered mountain ridges drawn as inline SVG paths, a blurred cyan horizon glow, and two perspective grid planes. Each grid plane applies perspective(360px) rotateX(72deg) to itself and contains a child .lines element that is 300% tall, overflow-hidden by the parent, and translated 44px per cycle so the grid visibly travels toward the viewer along the ground plane. Above the scene: a header with a wide-tracked logo and four nav links, a centred hero with a chrome-gradient title whose four letters float out of phase, a letterspaced tagline with a magenta glow, and two angular clip-path buttons (one cyan, one magenta); a bottom row with a status line and three cassette labels. Below the hero, a dark band with three explanatory cards (Chrome, Grid, Sunset) that lift and glow on hover, then a footer. Interaction: the sun slowly bobs and shifts hue, and pressing the spacebar toggles a speed burst that accelerates the grid animation from 1.4s to 0.45s. Responsive: the three cards stack under 820px and the bottom row stacks.
+
+DESCRIPTION:
+A loving, precise reconstruction of the Outrun poster: banded sky, slit-cut sun, violet mountain silhouettes, a cyan and magenta perspective grid racing toward the viewer and chrome lettering that reads as polished metal. The grid is genuinely three-dimensional — a plane tipped into the ground with a pattern that translates along its own axis, so the lines accelerate as they approach — and the whole scene breathes slowly enough to be calm rather than frantic.
+
+MAJOR VISUAL TECHNIQUES:
+- Perspective ground plane: perspective() + rotateX() on a container with an oversized, overflow-clipped child pattern translated in the plane's own axis
+- Slit-cut sun: repeating-linear-gradient bands over a circular gradient, with a second pseudo-element fading the lower half to violet
+- Chrome lettering via a multi-stop vertical gradient clipped to the text with layered drop-shadow glow
+- Inline SVG two-layer mountain ridgelines
+- Out-of-phase letter float animation with staggered delays
+- Angular clip-path buttons (notched corners) with a colour-fill hover
+- Banded sky interlace via repeating-linear-gradient
+- Blurred horizon glow bar between the mountains and the grid
+
+INTENDED INTERACTION MODEL:
+Ambient and keyboard-driven. The scene animates on its own — the sun bobs and slowly rotates hue, the letters float out of phase, the grid travels. Pressing the space bar triggers a speed burst that halves the grid cycle time, and pressing it again returns to normal speed. Cards respond to hover. No forms, no audio, no external assets.

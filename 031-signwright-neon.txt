@@ -1,0 +1,20 @@
+TITLE: SIGNWRIGHT — a neon sign workshop
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "SIGNWRIGHT — a neon sign workshop". Art direction: a brick wall at night, seen from the pavement. Palette: wall brown #2a1a16, near-black #0d0908, neon pink #ff3b6b default with cyan #41e0ff, amber #ffd166, mint #8affc1, violet #c07bff and white as selectable tube colours, dim text #8b7a72. The wall is a fixed background built from three layered backgrounds (horizontal mortar lines, vertical brick joints offset by a 62px × 26px tile, and a vertical brown gradient) with an inline SVG turbulence texture in overlay blend; a second fixed layer holds a radial glow whose colour follows the current tube colour. Layout: a header with a tracked wordmark and a specification line; a bordered stage holding a 1000×420 inline SVG; below it a two-column control area — on the left a card with a text field, six colour swatches (each showing its own bloom) and four pill toggles (Powered, Flicker, Add arrow, Add frame); on the right a monospaced worksheet that lists characters, tube length, bends, tube colour, transformer model and state, plus two sliders for tube length and transformer. Below, three example signs, each an inline SVG showing a different neon form (a single stroke, an ellipse and an eye) built from the same two-layer technique. Interaction: typing in the text field rebuilds the sign — each letter becomes a bent tube path, the number of characters sets the spacing and the bend count, and the worksheet updates; choosing a colour re-tints the tube, the glow layer and the wall bloom; the four toggles switch the sign off, apply a stepped flicker keyframe, or add an arrow and a frame; the sliders change the worksheet numbers. Responsive: the control area stacks under 880px.
+
+DESCRIPTION:
+A neon workshop where the sign is built in the browser. The tube is drawn in two layers — a wide blurred bloom and a thin white-hot core — over a brick wall whose radial glow takes the colour of whatever is switched on. Type a phrase and the letters become bent tube paths whose spacing is computed from the character count; the worksheet then reports the bends, the tube length and the transformer you would actually need. It is a surprisingly convincing piece of signwriting, with none of the signwriting toolboxes.
+
+MAJOR VISUAL TECHNIQUES:
+- Two-layer neon rendering: blurred wide stroke plus a thin white core with a drop-shadow
+- CSS brick wall from three layered backgrounds with an offset vertical joint pattern
+- Radial wall bloom whose colour is derived from the current tube colour
+- Stepped flicker keyframe that drops opacity in irregular bursts
+- Procedural tube path per character with spacing computed from the character count
+- Optional frame and arrow drawn as additional tube paths
+- Monospaced worksheet with dot leaders and a transformer list
+- Three reference signs built with the same technique (stroke, ellipse, eye)
+
+INTENDED INTERACTION MODEL:
+Type and switch. The text field rebuilds the sign and the worksheet on every keystroke; the swatches re-tint the tube, the core and the wall glow; the toggles add power, flicker, an arrow and a frame; the sliders adjust the specification. Everything is immediate, nothing is submitted, and the sign never moves unless you ask it to.

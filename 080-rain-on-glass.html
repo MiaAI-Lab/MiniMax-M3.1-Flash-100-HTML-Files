@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAIN — the window at dusk</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0b1018;--ink:#e9edf3;--dim:#7c8797;--line:rgba(233,237,243,.14);--amber:#ffb86b;--sky:#3b5a7d;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before,.brand i:after{content:"";position:absolute;width:2px;height:13px;background:var(--ink);
+    transform:rotate(22deg);top:0;}
+  .brand i:before{left:5px;} .brand i:after{right:5px;height:9px;top:5px;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--amber);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .window{margin-top:5vh;border:1px solid var(--line);position:relative;background:#05080c;}
+  .window canvas{width:100%;height:auto;display:block;cursor:crosshair;}
+  .hud{position:absolute;top:14px;left:16px;font:400 11px/1.8 "Courier New",monospace;color:rgba(233,237,243,.6);
+    pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+  .hud b{color:var(--amber);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--amber);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--amber);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--amber);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--amber);color:var(--amber);background:rgba(255,184,107,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  .rrows div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .rrows b{color:var(--amber);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Rain</div>
+    <div class="meta">47° 22′ N · 8° 32′ E · 19:40</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Meteorology, indoors</div>
+    <h1>Every drop on<br>the glass is a<br><b>lens</b></h1>
+    <p>A bead of water on a window is a tiny curved mirror and a tiny curved lens, and the street behind it appears inside the bead, upside down and compressed. The big drops run, and as they run they pick up the small ones and leave a trail of them behind.</p>
+  </section>
+
+  <section class="window">
+    <canvas id="cv" width="1200" height="620"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Rainfall <output id="oa">medium</output></label>
+      <input type="range" id="rate" min="0" max="100" value="45">
+    </div>
+    <div class="fld">
+      <label>Wind <output id="ob">4 m/s</output></label>
+      <input type="range" id="wind" min="-30" max="30" value="4">
+    </div>
+    <div class="btns">
+      <button class="btn" id="wipe">Wipe the glass</button>
+      <button class="btn" id="storm">Storm</button>
+      <button class="btn" id="clear">Clear</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Why the<br>big ones<br>move</h2>
+      <p>Surface tension holds a drop in a sphere. On a vertical pane of glass the drop is squashed against the surface, and it sticks because of the wetting of the glass — water climbs a short way up the inside of the drop and is held there. Gravity pulls the drop down. The two balance until the drop is big enough that the weight beats the adhesion.</p>
+      <p>Then it starts to run, and as it goes it <b>collects</b> the smaller drops it meets, which is why a running drop on a window accelerates as it descends and why the trail behind it is a row of stationary beads. The same physics gives you the fat drops that race down a car window in winter.</p>
+    </div>
+    <div>
+      <h2>Conditions</h2>
+      <div class="rrows">
+        <div>Temperature <b>4.2 °C</b></div>
+        <div>Humidity <b>96 %</b></div>
+        <div>Wind <b id="w2">4 m/s</b></div>
+        <div>Glass <b>single, 4 mm</b></div>
+        <div>Drops on glass <b id="d1">0</b></div>
+        <div>Running <b id="d2">0</b></div>
+        <div>Runners per second <b id="d3">0</b></div>
+        <div>Refraction <b>inverted image</b></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Rain — the window at dusk</span>
+    <span>Droplets refracting a drawn street</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  // background scene
+  var bg=document.createElement('canvas'); bg.width=W; bg.height=H;
+  var bctx=bg.getContext('2d');
+  var sky=[];
+  function buildScene(){
+    var g=bctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#1b2a3d'); g.addColorStop(.45,'#3b5a7d'); g.addColorStop(.72,'#8a6f78'); g.addColorStop(1,'#d99a6c');
+    bctx.fillStyle=g; bctx.fillRect(0,0,W,H);
+    // clouds
+    for(var i=0;i<16;i++){
+      var cx=Math.random()*W, cy=40+Math.random()*170, r=40+Math.random()*90;
+      var cg=bctx.createRadialGradient(cx,cy,0,cx,cy,r);
+      cg.addColorStop(0,'rgba(255,220,200,.10)'); cg.addColorStop(1,'rgba(255,220,200,0)');
+      bctx.fillStyle=cg; bctx.beginPath(); bctx.arc(cx,cy,r,0,6.283); bctx.fill();
+    }
+    // far skyline
+    bctx.fillStyle='#28303d';
+    var x=0;
+    while(x<W){
+      var w=40+Math.random()*70, h=90+Math.random()*200;
+      bctx.fillRect(x,H*0.72-h,w,h+40);
+      x+=w+6;
+    }
+    // near buildings with windows
+    var x2=0;
+    while(x2<W){
+      var w2=60+Math.random()*90, h2=140+Math.random()*260;
+      var top=H*0.78-h2;
+      bctx.fillStyle='#161c26'; bctx.fillRect(x2,top,w2,h2+60);
+      for(var wy=top+14; wy<H*0.80; wy+=22){
+        for(var wx=x2+10; wx<x2+w2-12; wx+=18){
+          if(Math.random()>0.42){
+            bctx.fillStyle=Math.random()>0.3?'rgba(255,190,120,.85)':'rgba(180,210,255,.7)';
+            bctx.fillRect(wx,wy,8,11);
+          }
+        }
+      }
+      x2+=w2+10;
+    }
+    // street glow
+    var sg=bctx.createLinearGradient(0,H*0.72,0,H);
+    sg.addColorStop(0,'rgba(255,180,110,.18)'); sg.addColorStop(1,'rgba(20,16,14,.9)');
+    bctx.fillStyle=sg; bctx.fillRect(0,H*0.72,W,H*0.28);
+    // bokeh lights
+    for(var k=0;k<40;k++){
+      var bx=Math.random()*W, by=H*0.55+Math.random()*H*0.4, br=3+Math.random()*11;
+      var bgd=bctx.createRadialGradient(bx,by,0,bx,by,br*2.4);
+      bgd.addColorStop(0,'rgba(255,200,140,.45)'); bgd.addColorStop(1,'rgba(255,200,140,0)');
+      bctx.fillStyle=bgd; bctx.beginPath(); bctx.arc(bx,by,br*2.4,0,6.283); bctx.fill();
+    }
+  }
+  buildScene();
+
+  var drops=[], rate=0.45, wind=4;
+  var running=0, runnersLast=0, runners=0;
+  function spawnDrop(){
+    if(drops.length>900) return;
+    drops.push({x:Math.random()*W,y:-10,r:1+Math.random()*2.4,v:0,run:false,alive:true});
+  }
+  function physics(dt){
+    var nowRun=0;
+    for(var i=drops.length-1;i>=0;i--){
+      var d=drops[i];
+      if(!d.run){
+        d.r+=0.010*dt;
+        if(d.r>3.4+Math.random()*0.6){
+          d.run=true; d.v=0.2+Math.random()*0.4;
+        }
+        continue;
+      }
+      nowRun++;
+      d.v+=0.055*dt;
+      d.x+=wind*0.012*dt;
+      d.y+=d.v*dt;
+      d.r=Math.min(d.r+0.006*dt,9);
+      // leave residue
+      if(Math.random()<0.06*dt && drops.length<900){
+        var nr=Math.max(0.9, d.r*0.22);
+        drops.push({x:d.x+ (Math.random()-0.5)*4, y:d.y-d.r*0.6, r:nr, v:0, run:false, alive:true});
+      }
+      // absorb smaller static drops
+      for(var j=drops.length-1;j>=0;j--){
+        if(j===i) continue;
+        var o=drops[j];
+        if(o.run) continue;
+        var dx=o.x-d.x, dy=o.y-d.y;
+        if(dx*dx+dy*dy < (d.r+o.r)*(d.r+o.r)*0.5){
+          d.r=Math.min(11,d.r+o.r*0.55);
+          drops.splice(j,1);
+        }
+      }
+      if(d.y>H+20){ drops.splice(i,1); }
+    }
+    running=nowRun;
+  }
+  function drawDroplet(d){
+    var r=d.r;
+    if(r<0.7) return;
+    // refracted image
+    ctx.save();
+    ctx.beginPath(); ctx.arc(d.x,d.y,r,0,6.283); ctx.clip();
+    ctx.translate(d.x,d.y);
+    ctx.scale(-1,-1);
+    ctx.drawImage(bg, -r*1.5,-r*1.5, r*3, r*3);
+    ctx.restore();
+    // rim
+    ctx.beginPath(); ctx.arc(d.x,d.y,r,0,6.283);
+    ctx.strokeStyle='rgba(190,215,240,.35)'; ctx.lineWidth=1; ctx.stroke();
+    // highlight
+    var hg=ctx.createRadialGradient(d.x-r*0.35,d.y-r*0.4,r*0.05,d.x-r*0.3,d.y-r*0.35,r*0.9);
+    hg.addColorStop(0,'rgba(255,255,255,.75)');
+    hg.addColorStop(0.35,'rgba(255,255,255,.12)');
+    hg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=hg;
+    ctx.beginPath(); ctx.arc(d.x,d.y,r,0,6.283); ctx.fill();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // blurred background
+    ctx.save();
+    ctx.filter='blur(3px)';
+    ctx.drawImage(bg,0,0);
+    ctx.restore();
+    // mist
+    var mg=ctx.createLinearGradient(0,0,0,H);
+    mg.addColorStop(0,'rgba(30,44,60,.45)'); mg.addColorStop(1,'rgba(18,20,26,.55)');
+    ctx.fillStyle=mg; ctx.fillRect(0,0,W,H);
+    // drops
+    for(var i=0;i<drops.length;i++) drawDroplet(drops[i]);
+    // vignette + window frame
+    var vg=ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.95);
+    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.55)');
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(20,24,30,.9)'; ctx.lineWidth=18;
+    ctx.strokeRect(9,9,W-18,H-18);
+    ctx.strokeStyle='rgba(233,237,243,.12)'; ctx.lineWidth=2;
+    ctx.strokeRect(20,20,W-40,H-40);
+  }
+  var lastT=performance.now(), acc=0, spawnAcc=0;
+  function loop(t){
+    var dt=Math.min(3,(t-lastT)/16.67); lastT=t;
+    spawnAcc+=rate*dt*0.9;
+    while(spawnAcc>=1){ spawnDrop(); spawnAcc-=1; }
+    physics(dt);
+    draw();
+    if(Math.floor(t/1000)!==Math.floor((t-dt*16.67)/1000)){ runners=runnersLast; runnersLast=running; }
+    document.getElementById('d1').textContent=drops.length;
+    document.getElementById('d2').textContent=running;
+    document.getElementById('d3').textContent=runners;
+    document.getElementById('hud').innerHTML='DROPS <b>'+drops.length+'</b><br>RUNNING <b>'+running+'</b><br>RAIN <b>'+(rate*100).toFixed(0)+'%</b>';
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // wipe
+  var wiping=false;
+  cv.addEventListener('pointerdown',function(e){ wiping=true; wipe(e); });
+  cv.addEventListener('pointermove',function(e){ if(wiping) wipe(e); });
+  window.addEventListener('pointerup',function(){ wiping=false; });
+  function wipe(e){
+    var r=cv.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H;
+    for(var i=drops.length-1;i>=0;i--){
+      var d=drops[i];
+      if(Math.abs(d.x-x)<40 && Math.abs(d.y-y)<40) drops.splice(i,1);
+    }
+  }
+  document.getElementById('wipe').addEventListener('click',function(){
+    var keep=[];
+    for(var i=0;i<drops.length;i++) if(Math.random()<0.25) keep.push(drops[i]);
+    drops=keep;
+  });
+  document.getElementById('storm').addEventListener('click',function(){
+    rate = rate>0.8?0.45:0.95;
+    this.classList.toggle('on',rate>0.8);
+    document.getElementById('rate').value=Math.round(rate*100);
+    document.getElementById('oa').textContent = rate>0.8?'heavy':(rate>0.25?'medium':'light');
+  });
+  document.getElementById('clear').addEventListener('click',function(){ drops=[]; });
+  document.getElementById('rate').addEventListener('input',function(){
+    rate=parseInt(this.value,10)/100;
+    document.getElementById('oa').textContent = rate>0.8?'heavy':(rate>0.25?'medium':'light');
+  });
+  document.getElementById('wind').addEventListener('input',function(){
+    wind=parseInt(this.value,10);
+    document.getElementById('ob').textContent=wind+' m/s';
+    document.getElementById('w2').textContent=wind+' m/s';
+  });
+})();
+</script>
+</body>
+</html>

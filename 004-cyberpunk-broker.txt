@@ -1,0 +1,19 @@
+TITLE: NEXUS//GRID — Cyberpunk Data Broker
+
+PROMPT:
+Create a self-contained HTML page (inline CSS and JS only — no external fonts, images, SVG files, CDNs or libraries) styled as a cyberpunk prediction-market brokerage terminal named "NEXUS//GRID". Palette: near-black violet base #05010c, hot pink #ff2e88, electric cyan #00f0ff, violet #b14bff, acid yellow #ffe600, monospaced type throughout (SF Mono / JetBrains Mono / Courier New stack). Layers: an animated multi-radial-gradient background that breathes in brightness and saturation, a masked cyan grid overlay, an animated CRT scanline layer, and an occasional full-screen white flicker frame. Composition: a top bar with a rotated-square logo, node/uplink/heat/session status readouts; a two-column hero (uppercase glitch headline with the word FUTURE split into magenta/cyan clip-path ghost layers and a yellow base, a monospace paragraph, two outline buttons whose fill wipes in via background-size animation, and a bordered "live order flow" panel with corner brackets and a scrolling tick feed); a four-column metrics strip separated by hairlines; three service-tier cards with inset icon tiles; and a "shell access" terminal panel with macOS-style dots that types out a status/trace command sequence line by line with inline colour spans. Interaction: the order flow regenerates every 420ms, the flow clock ticks each second, the session id is randomised, two metrics jitter on a timer, the terminal self-types, and clicking a tier card outlines and glows it. Responsive: hero stacks under 980px, metrics become a 2×2 then single column, everything stays monospace and hairline-ruled.
+
+DESCRIPTION:
+A neon-noir landing page dressed as a bleeding-edge trading terminal. The page leans on three classic cyberpunk signals — magenta/cyan chromatic split on the headline, a CRT scanline veil and a flickering frame — but keeps them disciplined with hairline rules, corner-bracket panels and a monospace grid of live market data. A self-typing shell transcript gives the bottom of the page a narrative payoff.
+
+MAJOR VISUAL TECHNIQUES:
+- Two-layer clip-path pseudo-element glitch with stepped keyframes and chromatic text-shadow
+- CRT scanlines via repeating-linear-gradient plus a steps() flicker overlay
+- Masked perspective grid overlay (radial mask + linear-gradient grid)
+- Corner-bracket panel decoration built from two 2px borders
+- Button fill wipe using background-size 0% → 100% on a solid gradient layer
+- Self-typing terminal transcript with colour-coded inline spans
+- Inset "shadow" icon tiles and neon text-shadow bloom
+
+INTENDED INTERACTION MODEL:
+The page simulates a live system. The order-flow panel continuously appends new trade lines, the clock updates every second, telemetry values jitter, and the terminal types its own output on load. Tier cards act as selectable options (click to outline and glow). No login, no audio, no external data — everything is generated locally.

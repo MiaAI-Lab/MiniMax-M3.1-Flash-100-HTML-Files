@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUST — a portrait in twelve thousand points</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#101014;--ink:#f2efe8;--dim:#8a8a94;--line:rgba(242,239,232,.13);--warm:#e8a45c;--cool:#5f7fbf;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.44em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,var(--warm) 60%,transparent 72%);
+    display:block;box-shadow:0 0 16px rgba(232,164,92,.6);}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:999px;
+    cursor:pointer;font:400 10.5px/1 inherit;letter-spacing:.22em;text-transform:uppercase;transition:.3s;}
+  .tools button.on{border-color:var(--warm);color:var(--warm);}
+  .stage{position:relative;margin-top:24px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:#0c0c10;display:grid;grid-template-columns:1fr 300px;}
+  canvas{width:100%;height:auto;display:block;cursor:crosshair;}
+  .side{border-left:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:18px;
+    background:rgba(255,255,255,.02);}
+  .side h2{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);font-weight:500;}
+  .side .big{font-size:2.3rem;font-weight:200;letter-spacing:-.02em;}
+  .side p{font-size:.82rem;color:var(--dim);line-height:1.75;}
+  .side .ctl label{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:8px;}
+  .side .ctl label b{color:var(--ink);font-weight:400;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:rgba(242,239,232,.2);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+    background:var(--warm);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-radius:50%;background:var(--warm);cursor:pointer;}
+  .palette{display:flex;gap:6px;flex-wrap:wrap;}
+  .sw{width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:.2s;}
+  .sw.on{border-color:#fff;}
+  .note{margin-top:6vh;display:grid;grid-template-columns:.85fr 1.15fr;gap:5vw;border-top:1px solid var(--line);
+    padding-top:26px;}
+  .note h2{font-size:clamp(1.5rem,3.2vw,2.4rem);font-weight:200;line-height:1.16;}
+  .note p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .note p+p{margin-top:1.1em;}
+  footer{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.side{border-left:none;border-top:1px solid var(--line);}
+    .note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Dust</div>
+    <div class="tools">
+      <button class="on" id="auto">Auto</button>
+      <button id="breathe">Breathe</button>
+      <button id="invert">Invert</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <canvas id="cv" width="900" height="900"></canvas>
+    <aside class="side">
+      <h2>Plate</h2>
+      <div class="big" id="pCount">12,000</div>
+      <p>Points. Each one takes its size from the light behind it, the way a halftone does, and its colour from the surface it sits on.</p>
+      <div class="ctl">
+        <label>Light <b id="vLight">centre</b></label>
+        <input type="range" id="light" min="0" max="100" value="50">
+      </div>
+      <div class="ctl">
+        <label>Point size <b id="vSize">1.00</b></label>
+        <input type="range" id="size" min="30" max="220" value="100">
+      </div>
+      <div class="ctl">
+        <label>Density <b id="vDens">12,000</b></label>
+        <input type="range" id="dens" min="2000" max="30000" step="1000" value="12000">
+      </div>
+      <div>
+        <h2 style="margin-bottom:10px">Tone</h2>
+        <div class="palette" id="pal"></div>
+      </div>
+      <p style="margin-top:auto">Move the pointer across the plate to move the light. The face lights up where you point.</p>
+    </aside>
+  </div>
+
+  <section class="note">
+    <div><h2>A portrait is<br>a map of<br>where the light is</h2></div>
+    <div>
+      <p>The subject here is drawn from nothing: a set of overlapping radial fields that suggest a skull, a jaw, two eyes and the shadow of a nose, all of them soft ellipses in space. Twelve thousand points are scattered across the frame and each one is sized by how much light reaches it.</p>
+      <p>That is the whole trick of pointillism, and it is also how a printed halftone works — a photograph reduced to a grid of dots whose size encodes the local brightness. Move the light and the whole face changes, because the picture was never in the dots.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Dust — a portrait in twelve thousand points</span>
+    <span>Canvas · no images</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cvs=document.getElementById('cv'), ctx=cvs.getContext('2d');
+  var W=900,H=900;
+  var light={x:.5,y:.42}, sizeK=1, density=12000, auto=true, breathe=false, invert=false;
+  var tone=['#e8a45c','#f2efe8','#5f7fbf','#c9503f','#7fae6a'];
+
+  // the subject: soft fields
+  var FIELDS=[
+    {x:.5,y:.30,r:.24,c:[1.0,.96,.9],w:1.0},   // forehead
+    {x:.5,y:.48,r:.20,c:[1.0,.88,.74],w:1.0},  // face
+    {x:.42,y:.44,r:.085,c:[.25,.22,.24],w:1.0}, // eye socket L
+    {x:.58,y:.44,r:.085,c:[.25,.22,.24],w:1.0}, // eye socket R
+    {x:.5,y:.55,r:.06,c:[.9,.72,.58],w:.8},     // nose
+    {x:.5,y:.66,r:.13,c:[.55,.42,.36],w:.7},     // shadow
+    {x:.5,y:.72,r:.10,c:[.42,.32,.3],w:.6},     // jaw
+    {x:.35,y:.60,r:.09,c:[.3,.26,.3],w:.5},      // cheek L
+    {x:.65,y:.60,r:.09,c:[.3,.26,.3],w:.5},      // cheek R
+    {x:.5,y:.86,r:.20,c:[.2,.19,.24],w:.8},      // shoulders
+    {x:.5,y:.28,r:.26,c:[.9,.88,.86],w:.5}      // rim light
+  ];
+
+  function fieldVal(x,y){
+    var v=0;
+    for(var i=0;i<FIELDS.length;i++){
+      var f=FIELDS[i];
+      var dx=(x-f.x), dy=(y-f.y);
+      var d=Math.sqrt(dx*dx+dy*dy)/f.r;
+      if(d<1.4){
+        var g=Math.exp(-d*d*1.5)*f.w;
+        v=Math.max(v,g);
+      }
+    }
+    // directional light from pointer
+    var lx=(light.x-.5), ly=(light.y-.42);
+    var ndl=0.35+0.65*Math.max(0, 1- Math.sqrt((x-light.x)*(x-light.x)+(y-light.y)*(y-light.y))*1.6);
+    var shade=v*ndl;
+    if(invert) shade=1-shade;
+    return Math.max(0,Math.min(1,shade));
+  }
+
+  function draw(){
+    var img=ctx.createImageData(W,H);
+    var d=img.data;
+    for(var y=0;y<H;y+=2){
+      for(var x=0;x<W;x+=2){
+        var v=fieldVal(x/W,y/H);
+        var r=255*v+8, g=255*v*0.95+8, b=255*v*0.88+10;
+        for(var dy=0;dy<2;dy++)for(var dx=0;dx<2;dx++){
+          var i=((y+dy)*W+(x+dx))*4;
+          d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;
+        }
+      }
+    }
+    ctx.putImageData(img,0,0);
+    // points
+    ctx.fillStyle='rgba(20,18,24,.85)';
+    var n=density;
+    for(var p=0;p<n;p++){
+      var px=Math.random()*W, py=Math.random()*H;
+      var v=fieldVal(px/W,py/H);
+      var r=(1-v)*3.4*sizeK+0.4;
+      if(r<0.45) continue;
+      ctx.globalAlpha=Math.min(1,0.25+v);
+      ctx.beginPath(); ctx.arc(px,py,r,0,6.283); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    document.getElementById('pCount').textContent=n.toLocaleString('en-US');
+    document.getElementById('vDens').textContent=n.toLocaleString('en-US');
+  }
+
+  cvs.addEventListener('pointermove',function(e){
+    var r=cvs.getBoundingClientRect();
+    light.x=(e.clientX-r.left)/r.width; light.y=(e.clientY-r.top)/r.height;
+    auto=false; document.getElementById('auto').classList.remove('on');
+    draw();
+  });
+  document.getElementById('auto').addEventListener('click',function(){
+    auto=!auto; this.classList.toggle('on',auto); draw();
+  });
+  document.getElementById('breathe').addEventListener('click',function(){
+    breathe=!breathe; this.classList.toggle('on',breathe); draw();
+  });
+  document.getElementById('invert').addEventListener('click',function(){
+    invert=!invert; this.classList.toggle('on',invert); draw();
+  });
+  document.getElementById('light').addEventListener('input',function(){
+    light.x=+this.value/100; light.y=.42; draw();
+  });
+  document.getElementById('size').addEventListener('input',function(){
+    sizeK=+this.value/100; document.getElementById('vSize').textContent=sizeK.toFixed(2); draw();
+  });
+  document.getElementById('dens').addEventListener('input',function(){
+    density=+this.value; draw();
+  });
+
+  var pal=document.getElementById('pal');
+  tone.forEach(function(c,i){
+    var d=document.createElement('div');
+    d.className='sw'+(i===0?' on':'');
+    d.style.background=c;
+    d.addEventListener('click',function(){
+      pal.querySelectorAll('.sw').forEach(function(x){x.classList.remove('on');});
+      d.classList.add('on');
+      document.body.style.setProperty('--warm',c);
+    });
+    pal.appendChild(d);
+  });
+
+  // ambient loop
+  var t=0;
+  setInterval(function(){
+    t+=0.16;
+    if(auto){
+      light.x=0.5+Math.sin(t*0.011)*0.34;
+      light.y=0.42+Math.cos(t*0.009)*0.16;
+    }
+    if(breathe) sizeK=0.85+0.2*Math.sin(t*0.03);
+    draw();
+  },120);
+  draw();
+})();
+</script>
+</body>
+</html>

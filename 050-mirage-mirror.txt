@@ -1,0 +1,19 @@
+TITLE: MIRAGE — a mirror that remembers
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MIRAGE — a mirror that remembers". Art direction: a dreamlike dusk seen through thick old glass. Palette: ground #0a0a0f, ink #f0eef8, dim #87839b, hairline rgba(240,238,248,.13), accent pink #ff6b9d and cyan #7ae0ff. Layout: a header with a wide-tracked wordmark, a small arch-shaped logo and three pill controls (Warp / Flip / Still); then a stage split into two equal cells with a hairline seam down the middle — the left cell holds a CSS-painted dusk scene (a radial sun, three clip-path ridge layers, and a striped water band) labelled "Direct view", the right cell holds an identical scene labelled "Through the glass", covered by a pane carrying an SVG filter; below the stage, three sliders (distortion 0–60, scale 80–160%, chroma 0–60); then a two-column note with two small info cards; and a footer. Interaction: the page builds an inline SVG filter containing an feTurbulence with an animated baseFrequency, an feDisplacementMap whose scale is driven by the distortion slider and by how far the pointer is from the centre of the stage, an feGaussianBlur, and an feColorMatrix whose red and blue offsets are driven by the chroma slider; the pane uses filter: url(#glass) so the whole HTML scene behind it is genuinely displaced, not a picture of a displacement; the scale slider scales the right-hand scene; Flip mirrors it horizontally; Still freezes the warp so the distortion can be studied on its own. Responsive: the two cells stack under 880px and the sliders become one column.
+
+DESCRIPTION:
+Two identical sunsets side by side, one of them behind glass. The right-hand panel is not a picture of a reflection — it is the same CSS scene passed through a live SVG displacement filter, so the turbulence genuinely pushes the pixels around, and moving the pointer pushes them further. The chroma slider offsets the red and blue channels in opposite directions so the glass splits the colour the way real thick, old glass does.
+
+MAJOR VISUAL TECHNIQUES:
+- Inline SVG filter chain applied to an HTML element via filter: url(#id)
+- feTurbulence with an animated baseFrequency for the glass texture
+- feDisplacementMap with a live scale driven by slider plus pointer distance
+- feColorMatrix with opposing red/blue translation offsets for chromatic separation
+- Identical CSS-painted scenes in both cells so the difference is only the filter
+- Clip-path ridge silhouettes and a striped water band
+- Seamless hairline seam between the two cells
+
+INTENDED INTERACTION MODEL:
+Look through it. Move the pointer over the stage and the glass bends more the further you get from the centre; drag the sliders for distortion, scale and chroma; Flip mirrors the panel; Still freezes the warp. All of it is real filtering, not a video.

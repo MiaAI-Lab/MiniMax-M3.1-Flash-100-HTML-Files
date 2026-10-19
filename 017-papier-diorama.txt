@@ -1,0 +1,20 @@
+TITLE: PAPIER — a papercut world
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) called "PAPIER — a papercut world". Art direction: a paper-cut diorama at golden hour, craft-made and tactile. Palette: cream #f6efe2, six paper layers from #d9b98f through #c39a6d, #a87a52, #7d5a3c to #4a3626, ink #2c2018 and a single craft red #c0392b. Texture: two fixed full-page layers of inline SVG feTurbulence data URIs in multiply blend — a fine fractal noise for tooth and a stretched directional noise for paper fibre. The hero is a full-viewport scene built from seven stacked layers: a sky gradient, a soft radial sun, five torn ridge edges (each a clip-path polygon with an irregular hand-torn silhouette in a different paper tone), a layer of paper trees (each a stack of three CSS triangles) and a layer of flying birds (two bordered arcs each, drifting across on long keyframe translations). Over the scene: a large headline with one red word, a short paragraph, a diamond-shaped brand mark, and a bottom control row with three offset-shadow buttons (Deepen / Evening / Reset) plus a hint line. Below the hero, an editorial two-column section — an essay on the craft of papercut dioramas and a four-step numbered method list separated by hairlines — then a footer. Interaction: dragging anywhere in the scene shifts the layers with per-layer depth factors and eased inertia (near layers move more than far ones); the Deepen button multiplies the depth factors to exaggerate or flatten the parallax; Evening swaps the whole scene to a dusk palette; Reset recentres the layers. Responsive: the editorial section stacks under 880px and the headline moves up.
+
+DESCRIPTION:
+A seven-sheet world you can take apart. Each hill is a torn clip-path edge in a different paper tone, the trees are stacked triangles, and the whole diorama parallaxes as you drag it — the nearest sheets travel furthest, the way real mounted paper does. The Evening button repaints the entire scene from a cream afternoon into a violet dusk with a single red accent, and Deepen exaggerates the separation until the construction is obvious.
+
+MAJOR VISUAL TECHNIQUES:
+- Two-layer inline SVG feTurbulence paper texture (fractal tooth + stretched fibre) in multiply blend
+- Hand-authored torn-edge clip-path polygons, one per paper layer
+- Pointer-drag parallax with per-layer depth factors and eased inertia
+- CSS triangle stacks for paper conifers (transparent borders)
+- Border-radius arcs for birds drifting on long keyframe translations
+- Hard offset shadows on buttons for a printed, physical feel
+- Full-scene palette swap via a body class (day → evening)
+- Hairline-ruled numbered method list
+
+INTENDED INTERACTION MODEL:
+Direct and tactile. Drag the scene to move the layers apart and watch the near sheets travel further than the far ones. The Deepen button scales the depth factors (Normal → Deepen → Flat) to exaggerate or collapse the depth. Evening repaints the scene. Reset eases the layers back to centre. The rest of the page is a static editorial.

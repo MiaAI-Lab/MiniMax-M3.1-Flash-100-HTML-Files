@@ -1,0 +1,18 @@
+TITLE: ROSE — a window of stone and light
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ROSE — a window of stone and light". Art direction: dim cathedral interior, saturated jewel glass, gold lead. Palette: ground #15161c, ink #ece7dc, dim #86828c, hairline rgba(236,231,220,.14), gold #d4a94a. Layout: a header with a conic-gradient rose logo and a monospaced catalogue line; then a hero with a gold kicker, a huge light-weight headline with one gold bold word, and a paragraph; then a stage panel — a bordered box split into a large square canvas on the left and a 250px column of two boxes on the right (Window: petals per ring, rings, total lights, diameter, glass area and sun angle; and Palette: a row of colour swatches with a short note); then a control band of three sliders (Petals, Rings, Sun angle) and three buttons (New glass / Symmetric / Daylight); then a two-column section pairing an essay on how the tracery works with a note on the glass; and a footer. The window is generated procedurally on the canvas: a central oculus of small round lights, then a set of concentric rings, each ring holding more lancet petals than the last, every petal drawn as a pointed arch built from an arc along its base and two quadratic curves meeting at a point, filled from a palette of fourteen medieval glass colours, outlined in thick dark leading, and carrying painted striations clipped to the petal. Interaction: the Petals and Rings sliders rebuild the tracery; New glass reseeds every colour; Symmetric restricts the palette so the pattern repeats radially; the Sun angle slider rotates a light sweep across the glass; Daylight strengthens it; and clicking any individual light cycles its colour. Responsive: the stage and the two-column section stack under 900px.
+
+DESCRIPTION:
+A rose window, cut and glazed on the fly. The petals are real lancets — an arc along the base and two quadratics meeting at a point — hung in concentric rings with dark leading between them, and every light is clickable so you can re-glaze it. The lights and petals controls rebuild the whole tracery, the sun angle sweeps a highlight across the glass, and New glass re-seeds every colour from the fourteen-colour medieval palette.
+
+MAJOR VISUAL TECHNIQUES:
+- Lancet petal geometry from an arc base and two quadratic curves
+- Concentric ring layout with alternating angular offsets
+- Per-petal colour assignment from a seeded generator
+- Leading drawn as a dark outline over every light
+- Painted striations clipped to each petal shape
+- Radial light sweep composited over the glass
+
+INTENDED INTERACTION MODEL:
+Cut the window. Change the number of petals and rings, reseed the glass, toggle the symmetry and the daylight, and click individual lights to re-glaze them.

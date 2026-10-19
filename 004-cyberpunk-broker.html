@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS//GRID — Cyberpunk Data Broker</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#05010c;--p1:#ff2e88;--p2:#00f0ff;--p3:#b14bff;--p4:#ffe600;
+    --ink:#e9f6ff;--dim:#7a7f9c;
+    --mono:"SF Mono","JetBrains Mono","Courier New",ui-monospace,monospace;
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--mono);
+    overflow-x:hidden;position:relative;min-height:100vh;
+  }
+  /* ---------- atmosphere ---------- */
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .bg::before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 20% 0%,rgba(255,46,136,.22),transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 20%,rgba(0,240,255,.18),transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%,rgba(177,75,255,.2),transparent 65%),
+      linear-gradient(180deg,#05010c,#0a0320 50%,#05010c);
+    animation:pulseBg 9s ease-in-out infinite;}
+  @keyframes pulseBg{0%,100%{filter:brightness(1) saturate(1);}50%{filter:brightness(1.28) saturate(1.35);}}
+  .scan{position:fixed;inset:0;z-index:60;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.32) 2px 4px);}
+  .flick{position:fixed;inset:0;z-index:59;pointer-events:none;background:rgba(255,255,255,.035);
+    animation:flick 5.5s steps(1) infinite;}
+  @keyframes flick{0%,96%{opacity:0;}97%{opacity:1;}98%{opacity:0;}99%{opacity:.7;}100%{opacity:0;}}
+  .grid-lines{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;
+    background-image:linear-gradient(rgba(0,240,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.5) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,#000 20%,transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,#000 20%,transparent 75%);}
+
+  /* ---------- layout ---------- */
+  .shell{position:relative;z-index:5;max-width:1280px;margin:0 auto;padding:0 22px 80px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:18px 0;border-bottom:1px solid rgba(0,240,255,.22);}
+  .logo{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.18em;font-size:14px;}
+  .logo .sq{width:22px;height:22px;background:var(--p1);box-shadow:0 0 14px var(--p1);transform:rotate(45deg);}
+  .logo span{color:var(--p2);}
+  .status{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;}
+  .status b{color:var(--p2);font-weight:400;}
+  .status .hot{color:var(--p1);}
+
+  .hero{padding:64px 0 40px;display:grid;grid-template-columns:1.25fr .75fr;gap:44px;align-items:start;}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.3em;padding:6px 14px;border:1px solid var(--p2);
+    color:var(--p2);text-transform:uppercase;box-shadow:0 0 18px rgba(0,240,255,.25) inset;}
+  h1{font-size:clamp(2.4rem,6.4vw,4.6rem);line-height:1;letter-spacing:-.02em;margin:24px 0 20px;font-weight:700;
+    text-transform:uppercase;}
+  .glitch{position:relative;display:inline-block;color:var(--p4);
+    text-shadow:2px 0 var(--p1),-2px 0 var(--p2);}
+  .glitch::before,.glitch::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;overflow:hidden;}
+  .glitch::before{color:var(--p1);animation:gl1 2.6s infinite steps(2);}
+  .glitch::after{color:var(--p2);animation:gl2 3.1s infinite steps(2);}
+  @keyframes gl1{0%,92%,100%{clip-path:inset(0 0 100% 0);transform:none;}93%{clip-path:inset(12% 0 62% 0);transform:translate(-3px,-1px);}96%{clip-path:inset(58% 0 22% 0);transform:translate(3px,1px);}}
+  @keyframes gl2{0%,88%,100%{clip-path:inset(0 0 100% 0);}90%{clip-path:inset(34% 0 44% 0);transform:translate(3px,0);}95%{clip-path:inset(74% 0 8% 0);transform:translate(-3px,0);}}
+  .lede{color:var(--dim);line-height:1.85;max-width:54ch;font-size:14px;}
+  .lede em{color:var(--p2);font-style:normal;}
+  .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px;}
+  .btn{position:relative;padding:14px 26px;border:1px solid var(--p1);
+    background:linear-gradient(var(--p1),var(--p1)) no-repeat left center / 0% 100%;
+    color:var(--p1);font:700 12px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+    transition:background-size .35s cubic-bezier(.2,.8,.2,1),color .3s,box-shadow .3s,border-color .3s;}
+  .btn:hover{color:#08010d;box-shadow:0 0 26px rgba(255,46,136,.5);background-size:100% 100%;}
+  .btn.ghost{border-color:var(--p2);color:var(--p2);background-image:linear-gradient(var(--p2),var(--p2));}
+  .btn.ghost:hover{color:#001014;box-shadow:0 0 26px rgba(0,240,255,.5);border-color:var(--p2);}
+
+  .panel{border:1px solid rgba(0,240,255,.28);background:rgba(6,2,20,.72);backdrop-filter:blur(8px);
+position:relative;padding:18px;}
+  .panel::before,.panel::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--p1);}
+  .panel::before{top:-1px;left:-1px;border-right:0;border-bottom:0;}
+  .panel::after{bottom:-1px;right:-1px;border-left:0;border-top:0;}
+  .panel h3{font-size:11px;letter-spacing:.26em;color:var(--p2);text-transform:uppercase;margin-bottom:14px;
+    display:flex;justify-content:space-between;}
+  .panel h3 span{color:var(--dim);}
+  .feed{font-size:12px;line-height:1.95;max-height:290px;overflow:hidden;}
+  .feed div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .feed .t{color:var(--dim);} .feed .k{color:var(--p4);} .feed .v{color:var(--p1);}
+  .feed .g{color:var(--p2);}
+
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid rgba(0,240,255,.25);
+    margin:34px 0 0;}
+  .metric{padding:20px 18px;border-right:1px solid rgba(0,240,255,.18);}
+  .metric:last-child{border-right:0;}
+  .metric u{display:block;text-decoration:none;font-size:10.5px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;}
+  .metric s{display:block;text-decoration:none;font-size:1.7rem;color:var(--p2);margin:8px 0 4px;letter-spacing:-.02em;}
+  .metric i{font-style:normal;font-size:11px;color:var(--p1);}
+
+  .sect{padding:64px 0 0;}
+  .sect-h{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid rgba(0,240,255,.22);padding-bottom:12px;margin-bottom:28px;flex-wrap:wrap;}
+  .sect-h h2{font-size:clamp(1.2rem,3vw,1.9rem);letter-spacing:.06em;text-transform:uppercase;color:var(--p4);}
+  .sect-h p{font-size:12px;color:var(--dim);letter-spacing:.1em;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;}
+  .card{border:1px solid rgba(255,46,136,.3);padding:22px;background:linear-gradient(160deg,rgba(255,46,136,.07),transparent 60%);
+    transition:.35s;position:relative;overflow:hidden;}
+  .card:hover{border-color:var(--p2);transform:translateY(-6px);box-shadow:0 20px 50px -24px rgba(0,240,255,.6);}
+  .card .ico{width:40px;height:40px;border:1px solid var(--p1);display:grid;place-items:center;color:var(--p1);
+    font-size:15px;margin-bottom:16px;box-shadow:0 0 18px rgba(255,46,136,.2) inset;}
+  .card h3{font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;color:var(--ink);}
+  .card p{font-size:12.5px;color:var(--dim);line-height:1.75;}
+  .card .price{margin-top:18px;font-size:1.3rem;color:var(--p4);}
+  .card .price small{font-size:10.5px;color:var(--dim);letter-spacing:.14em;}
+
+  .terminal{margin-top:20px;border:1px solid rgba(177,75,255,.35);background:rgba(10,2,26,.85);padding:0;font-size:13px;
+    box-shadow:0 30px 70px -40px #000;}
+  .terminal .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(177,75,255,.25);
+    background:rgba(177,75,255,.08);}
+  .terminal .bar i{width:10px;height:10px;border-radius:50%;display:block;}
+  .terminal .bar span{margin-left:10px;font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;}
+  .terminal pre{margin:0;padding:18px;line-height:1.9;min-height:210px;white-space:pre-wrap;word-break:break-word;}
+  .c1{color:var(--p2);} .c2{color:var(--p1);} .c3{color:var(--p4);} .c4{color:var(--dim);} .c5{color:var(--p3);}
+
+  footer{margin-top:70px;padding:24px 0;border-top:1px solid rgba(0,240,255,.2);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;}
+
+  @media(max-width:980px){.hero{grid-template-columns:1fr;gap:34px;}.metrics{grid-template-columns:repeat(2,1fr);}
+    .metric:nth-child(2){border-right:0;}.metric:nth-child(1),.metric:nth-child(2){border-bottom:1px solid rgba(0,240,255,.18);}}
+  @media(max-width:560px){.metrics{grid-template-columns:1fr;}.metric{border-right:0;border-bottom:1px solid rgba(0,240,255,.18);}
+    .shell{padding:0 14px 60px;}.status{font-size:10px;gap:12px;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="grid-lines"></div><div class="scan"></div><div class="flick"></div>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="logo"><span class="sq"></span>NEXUS<span>//</span>GRID</div>
+    <div class="status">
+      <span>Node <b>SHINJUKU-7</b></span>
+      <span>Uplink <b class="hot">12.4 Tb/s</b></span>
+      <span>Heat <b>41%</b></span>
+      <span>Session <b id="sid">#0000</b></span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="tag">Brokerage terminal // v9.1</span>
+      <h1>Buy the <span class="glitch" data-t="FUTURE">FUTURE</span><br>before it happens</h1>
+      <p class="lede">NEXUS//GRID routes prediction markets to fourteen hundred neural clients. Every tick, every order, every rumour — <em>settled in nanoseconds</em> and rendered into a stream you can actually read.</p>
+      <div class="row">
+        <button class="btn">Open a channel</button>
+        <button class="btn ghost">Read the whitepaper</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Live order flow <span id="flowclock">00:00:00</span></h3>
+      <div class="feed" id="feed"></div>
+    </div>
+  </section>
+
+  <section class="metrics">
+    <div class="metric"><u>Active channels</u><s id="m1">1,402</s><i>▲ 18 today</i></div>
+    <div class="metric"><u>Latency p50</u><s id="m2">0.9 ms</s><i>▼ 0.2 ms</i></div>
+    <div class="metric"><u>Volume / 24h</u><s id="m3">$4.18B</s><i>▲ 7.4%</i></div>
+    <div class="metric"><u>Oracle uptime</u><s>99.997%</s><i>stable</i></div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-h"><h2>Service tiers</h2><p>select a plan to provision</p></div>
+    <div class="cards" id="cards">
+      <article class="card" data-plan="basic">
+        <div class="ico">◈</div><h3>Listener</h3>
+        <p>Read-only access to public channels. 200 requests per minute, delayed 500 ms.</p>
+        <div class="price">$0<small> / month</small></div>
+      </article>
+      <article class="card" data-plan="pro">
+        <div class="ico">◉</div><h3>Broker</h3>
+        <p>Full order-book depth, webhook push, and a dedicated shard with sub-ms routing.</p>
+        <div class="price">$1,200<small> / month</small></div>
+      </article>
+      <article class="card" data-plan="apex">
+        <div class="ico">✦</div><h3>Apex</h3>
+        <p>Co-located rack, custom threat models, and a named operator on a 4-hour rotation.</p>
+        <div class="price">$9,800<small> / month</small></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-h"><h2>Shell access</h2><p>type HELP for the command list</p></div>
+    <div class="terminal">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>nexus@shinjuku-7 — /var/log/grid</span></div>
+      <pre id="term" class="c1"></pre>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2088 Nexus Grid K.K. — unregistered entity</span>
+    <span>Do not attempt illegal access · 3 attempts logged</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ---- live order flow feed ----
+  var feed=document.getElementById('feed');
+  var venues=['SHINJUKU','NIGHT-MKT','OSAKA-3','ROTOR-9','BERLIN-X','LAGOS-1'];
+  var pairs=['¥USD','ETH/JPY','SPX/Ξ','KRW/CHF','Ø/RMB','VOL-NDX'];
+  var kinds=[{k:'FILL',c:'g'},{k:'CANCEL',c:'v'},{k:'SNIP',c:'c1'},{k:'SWAP',c:'c3'}];
+  function line(){
+    var v=venues[Math.floor(Math.random()*venues.length)];
+    var p=pairs[Math.floor(Math.random()*pairs.length)];
+    var kd=kinds[Math.floor(Math.random()*kinds.length)];
+    var px=(Math.random()*9000+12).toFixed(2);
+    var qty=Math.floor(Math.random()*900+1);
+    var ms=String(Math.floor(Math.random()*1000)).padStart(3,'0');
+    return '<div><span class="t">'+ms+'</span> <span class="c3">'+v+'</span> <span class="c4">'+p+'</span> '+
+           '<span class="'+(kd.c==='c1'?'c1':kd.c)+'">'+kd.k+'</span> '+
+           '<span class="k">'+px+'</span> <span class="v">×'+qty+'</span></div>';
+  }
+  var buf='';
+  function push(){
+    buf=line()+buf;
+    if(buf.split('\n').length>14) buf=buf.split('\n').slice(0,14).join('\n');
+    feed.innerHTML=buf;
+  }
+  for(var i=0;i<14;i++) push();
+  setInterval(push,420);
+
+  // ---- flow clock ----
+  var fc=document.getElementById('flowclock');
+  setInterval(function(){
+    var d=new Date();
+    fc.textContent=[d.getHours(),d.getMinutes(),d.getSeconds()].map(function(n){return String(n).padStart(2,'0');}).join(':');
+  },1000);
+
+  // ---- session id ----
+  document.getElementById('sid').textContent='#'+String(Math.floor(Math.random()*9999)).padStart(4,'0');
+
+  // ---- metric jitter ----
+  function jit(id,base,var2,pre,post){
+    var e=document.getElementById(id);
+    setInterval(function(){
+      var v=base+(Math.random()-.5)*var2;
+      e.textContent=(pre||'')+v.toFixed(0)+(post||'');
+    },2600);
+  }
+  jit('m1',1402,40,'',' ');
+  jit('m2',0.9,0.3,'',' ms');
+
+  // ---- terminal ----
+  var term=document.getElementById('term');
+  var lines=[
+    '<span class="c1">nexus@shinjuku-7</span>:<span class="c5">~</span>$ <span class="c2">status</span>',
+    '  shard ........... <span class="c2">healthy</span>  (37 nodes, 0 drained)',
+    '  queue depth ..... <span class="c4">412</span>  <span class="c3">▼ 18%</span>',
+    '  cold storage ..... <span class="c4">88.2 TB</span>',
+    '  auth ............. <span class="c2">ok</span>  key <span class="c4">…7f3a</span>',
+    '  <span class="c1">nexus@shinjuku-7</span>:<span class="c5">~</span>$ <span class="c2">trace --order 9F2A</span>',
+    '  t0 <span class="c4">03:12:44.108</span> → ingress',
+    '  t1 <span class="c4">03:12:44.109</span> → risk engine <span class="c3">(skip)</span>',
+    '  t2 <span class="c4">03:12:44.110</span> → router shard-07',
+    '  t3 <span class="c4">03:12:44.112</span> → counterparty <span class="c2">settled</span>',
+    '  elapsed <span class="c2">4.2 ms</span>  ·  checksum <span class="c4">0x9be21f</span>',
+    '  <span class="c1">nexus@shinjuku-7</span>:<span class="c5">~</span>$ <span class="c2">_</span>'
+  ];
+  var li=0;
+  function typeLine(){
+    if(li>=lines.length) return;
+    term.innerHTML=lines.slice(0,li+1).join('\n');
+    li++;
+    setTimeout(typeLine, li<3?180:420);
+  }
+  typeLine();
+
+  // ---- card selection ----
+  var cards=document.querySelectorAll('.card');
+  cards.forEach(function(c){
+    c.style.cursor='pointer';
+    c.addEventListener('click',function(){
+      cards.forEach(function(x){x.style.borderColor='';x.style.boxShadow='';});
+      c.style.borderColor='var(--p2)';
+      c.style.boxShadow='0 0 30px rgba(0,240,255,.35)';
+    });
+  });
+})();
+</script>
+</body>
+</html>

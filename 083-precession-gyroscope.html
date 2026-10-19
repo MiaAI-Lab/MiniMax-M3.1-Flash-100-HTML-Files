@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRECESSION — the heavy top</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0e1114;--ink:#e8e9ec;--dim:#7d838c;--line:rgba(232,233,236,.13);--brass:#d0a24c;--steel:#8fa3b8;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before{content:"";position:absolute;left:3px;top:8px;width:16px;height:4px;background:var(--brass);}
+  .brand i:after{content:"";position:absolute;left:10px;top:1px;width:2px;height:20px;background:var(--steel);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--brass);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--brass);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#0b0e11;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--brass);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--brass);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--brass);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--brass);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--brass);color:var(--brass);background:rgba(208,162,76,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  .eq div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .eq b{color:var(--steel);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Precession</div>
+    <div class="meta">Symmetric top · Euler angles · RK4</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Rigid body dynamics</div>
+    <h1>Spin it, and it<br>falls <b>sideways</b></h1>
+    <p>Give a top a spin and the top does not fall. Instead it turns about the vertical at a steady rate, and the faster it is spinning the slower it precesses. The reason is that gravity is trying to make the top fall, and the only way the top can fall is by turning about its own axis — and it is already turning about its own axis, very fast, so the fall becomes a sideways sweep instead.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="640"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Spin <output id="oa">120 rad/s</output></label>
+      <input type="range" id="spin" min="10" max="320" value="120">
+    </div>
+    <div class="fld">
+      <label>Tilt <output id="ob">30°</output></label>
+      <input type="range" id="tilt" min="5" max="80" value="30">
+    </div>
+    <div class="fld">
+      <label>Disc mass <output id="oc">1.4 kg</output></label>
+      <input type="range" id="mass" min="20" max="300" value="140">
+    </div>
+    <div class="btns">
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="nut">Nutation</button>
+      <button class="btn" id="trace">Trace on</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The<br>equation</h2>
+      <p>For a symmetric top there are three Euler angles: the tilt <b>θ</b> from the vertical, the precession <b>φ</b> about the vertical, and the spin <b>ψ</b> about the top's own axis. Gravity applies no torque about the symmetry axis, so the angular momentum along that axis is constant, and because the pivot is fixed, the angular momentum about the vertical is constant too.</p>
+      <p>Those two conserved quantities, together with the energy, give the closed-form precession rate: <b>φ̇ = (p<sub>φ</sub> − p<sub>ψ</sub> cos θ) / (A sin² θ)</b>. Put in a fast spin and the numerator grows, so the precession slows. That is the whole of the gyroscope, and it is why a spinning wheel does not fall over.</p>
+    </div>
+    <div>
+      <h2>Motion</h2>
+      <div class="eq">
+        <div>Precession φ̇ <b id="s1">—</b></div>
+        <div>Precession period <b id="s2">—</b></div>
+        <div>Nutation θ range <b id="s3">—</b></div>
+        <div>Spin ψ̇ <b id="s4">—</b></div>
+        <div>Angular momentum L<sub>z</sub> <b id="s5">—</b></div>
+        <div>Energy <b id="s6">—</b></div>
+        <div>Torque |Mgl sin θ| <b id="s7">—</b></div>
+        <div>Disc inertia C <b id="s8">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Precession — the heavy top</span>
+    <span>Euler angles integrated in the browser</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var M=1.4, R=0.09, l=0.16, g=9.81;
+  var spin=120, tilt=30, theta, phi, psi, psiDot, phiDot, thetaDot;
+  var pphi, ppsi, A, C;
+  var tracePts=[], showTrace=true, nutate=false;
+  var t=0;
+
+  function moments(){
+    C=0.5*M*R*R;
+    A=0.25*M*R*R + 0.25*M*R*R + M*l*l;   // transverse: disc + parallel axis
+  }
+  function reset(){
+    moments();
+    theta=tilt*Math.PI/180;
+    phi=0; psi=0;
+    psiDot=spin;
+    ppsi=C*psiDot;
+    pphi=C*psiDot*Math.cos(theta);
+    phiDot=(pphi-ppsi*Math.cos(theta))/(A*Math.sin(theta)*Math.sin(theta));
+    thetaDot=0;
+    tracePts=[];
+    t=0;
+  }
+  function derivs(th,ph,ps,thd,phd,psd){
+    var s=Math.sin(th), c=Math.cos(th);
+    if(Math.abs(s)<1e-4) s=1e-4;
+    var pdot=(pphi-ppsi*c)/(A*s*s);
+    var psd2=ppsi/C-pdot*c;
+    var thdd=((pphi-ppsi*c)*(ppsi/C) - M*g*l*A*s)/(A*A*s*s);
+    return [thd,pdot,psd2,thdd];
+  }
+  function rk4(dt){
+    var k1=derivs(theta,phi,psi,thetaDot,phiDot,psiDot);
+    var th2=theta+k1[0]*dt/2, ph2=phi+k1[1]*dt/2, ps2=psi+k1[2]*dt/2;
+    var td2=thetaDot+k1[3]*dt/2, pd2=phiDot+k1[1]*dt/2, sd2=psiDot+k1[2]*dt/2;
+    var k2=derivs(th2,ph2,ps2,td2,pd2,sd2);
+    var th3=theta+k2[0]*dt/2, ph3=phi+k2[1]*dt/2, ps3=psi+k2[2]*dt/2;
+    var td3=thetaDot+k2[3]*dt/2, pd3=phiDot+k2[1]*dt/2, sd3=psiDot+k2[2]*dt/2;
+    var k3=derivs(th3,ph3,ps3,td3,pd3,sd3);
+    var th4=theta+k3[0]*dt, ph4=phi+k3[1]*dt, ps4=psi+k3[2]*dt;
+    var td4=thetaDot+k3[3]*dt, pd4=phiDot+k3[1]*dt, sd4=psiDot+k3[2]*dt;
+    var k4=derivs(th4,ph4,ps4,td4,pd4,sd4);
+    theta+=dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);
+    phi  +=dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);
+    psi  +=dt/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]);
+    thetaDot+=dt/6*(k1[3]+2*k2[3]+2*k3[3]+k4[3]);
+    phiDot  +=dt/6*(k2[1]*0+2*k2[1]+2*k3[1]+k4[1]);
+    psiDot  +=dt/6*(2*k2[2]+2*k3[2]+k4[2]);
+  }
+
+  // projection
+  var SC=1700; // pixels per metre
+  function project(p){
+    var z=p.z, k=1+z*0.55;
+    return {x:W/2+(p.x*k)*SC, y:H*0.62-(p.y*k)*SC + z*30};
+  }
+  function axisVec(){
+    var s=Math.sin(theta), c=Math.cos(theta);
+    // axis: tilt theta from vertical, precessed by phi
+    return {x:s*Math.sin(phi), y:c, z:s*Math.cos(phi)};
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var bg=ctx.createRadialGradient(W/2,H*0.45,60,W/2,H*0.5,W*0.75);
+    bg.addColorStop(0,'#151a1f'); bg.addColorStop(1,'#0a0d10');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    // floor
+    ctx.strokeStyle='rgba(232,233,236,.08)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var i=-6;i<=6;i++){
+      ctx.moveTo(W/2+i*60,H*0.86); ctx.lineTo(W/2+i*200,H);
+      ctx.moveTo(W/2-260+i*40,H*0.86); ctx.lineTo(W/2+260+i*40,H);
+    }
+    ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(W/2,H*0.86,240,36,0,0,6.283); ctx.stroke();
+    // pivot
+    var px=W/2, py=H*0.86;
+    ctx.fillStyle='#2a3138';
+    ctx.beginPath(); ctx.moveTo(px-16,py); ctx.lineTo(px+16,py); ctx.lineTo(px+6,py-46); ctx.lineTo(px-6,py-46);
+    ctx.closePath(); ctx.fill();
+    var p0=project({x:0,y:0,z:0});
+    ctx.beginPath(); ctx.arc(p0.x,p0.y,9,0,6.283); ctx.fillStyle='#8fa3b8'; ctx.fill();
+
+    var a=axisVec();
+    // trace of the axis tip
+    if(showTrace && tracePts.length>1){
+      ctx.strokeStyle='rgba(208,162,76,.55)'; ctx.lineWidth=1.4;
+      ctx.beginPath();
+      for(var t2=0;t2<tracePts.length;t2++){
+        var p=tracePts[t2];
+        if(t2===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+      }
+      ctx.stroke();
+    }
+    // disc centre
+    var centre=project({x:a.x*l,y:a.y*l,z:a.z*l});
+    // build orthonormal basis in the disc plane
+    var up={x:0,y:1,z:0};
+    var e1={x:a.z,y:0,z:-a.x};
+    var el=Math.hypot(e1.x,e1.z)||1; e1.x/=el; e1.z/=el;
+    var e2={x:a.y*e1.z-a.z*e1.y, y:a.z*e1.x-a.x*e1.z, z:a.x*e1.y-a.y*e1.x};
+    // disc ellipse
+    ctx.beginPath();
+    for(var k=0;k<=64;k++){
+      var ang=k/64*6.2832;
+      var px3=centre.x+(e1.x*Math.cos(ang)+e2.x*Math.sin(ang))*R*SC;
+      var py3=centre.y-(e1.y*Math.cos(ang)+e2.y*Math.sin(ang))*R*SC;
+      if(k===0) ctx.moveTo(px3,py3); else ctx.lineTo(px3,py3);
+    }
+    var dg=ctx.createLinearGradient(centre.x-R*SC,centre.y-R*SC,centre.x+R*SC,centre.y+R*SC);
+    dg.addColorStop(0,'#5b6a78'); dg.addColorStop(.4,'#aebecb'); dg.addColorStop(.6,'#66788a'); dg.addColorStop(1,'#39434d');
+    ctx.fillStyle=dg; ctx.fill();
+    ctx.strokeStyle='rgba(232,233,236,.4)'; ctx.lineWidth=1.4; ctx.stroke();
+    // spin marker
+    var sm=psi%6.2832;
+    var sx=centre.x+(e1.x*Math.cos(sm)+e2.x*Math.sin(sm))*R*SC;
+    var sy=centre.y-(e1.y*Math.cos(sm)+e2.y*Math.sin(sm))*R*SC;
+    ctx.beginPath(); ctx.arc(sx,sy,8,0,6.283); ctx.fillStyle='#d0a24c'; ctx.fill();
+    // hub and axis
+    ctx.beginPath(); ctx.arc(centre.x,centre.y,10,0,6.283); ctx.fillStyle='#3b4a57'; ctx.fill();
+    ctx.strokeStyle='rgba(143,163,184,.65)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(centre.x,centre.y); ctx.stroke();
+    // gimbal ring
+    ctx.beginPath();
+    for(var k2=0;k2<=64;k2++){
+      var ang2=k2/64*6.2832;
+      var gx=centre.x+e1.x*Math.cos(ang2)*R*1.35*SC;
+      var gy=centre.y-e1.y*Math.cos(ang2)*R*1.35*SC;
+      if(k2===0) ctx.moveTo(gx,gy); else ctx.lineTo(gx,gy);
+    }
+    ctx.strokeStyle='rgba(143,163,184,.35)'; ctx.lineWidth=2; ctx.stroke();
+    // labels
+    ctx.fillStyle='rgba(232,233,236,.4)'; ctx.font='11px "Courier New",monospace';
+    ctx.fillText('AXIS TILT θ = '+(theta*180/Math.PI).toFixed(1)+'°',18,24);
+    ctx.fillText('PRECESSION φ = '+((phi*180/Math.PI)%360).toFixed(1)+'°',18,40);
+  }
+  function update(){
+    var phiDotNow=(pphi-ppsi*Math.cos(theta))/(A*Math.sin(theta)*Math.sin(theta));
+    var T=2*Math.PI/Math.abs(phiDotNow);
+    document.getElementById('s1').textContent=phiDotNow.toFixed(3)+' rad/s';
+    document.getElementById('s2').textContent=T.toFixed(2)+' s';
+    document.getElementById('s3').textContent=(theta*180/Math.PI).toFixed(2)+'°';
+    document.getElementById('s4').textContent=psiDot.toFixed(1)+' rad/s';
+    document.getElementById('s5').textContent=(pphi).toFixed(4)+' kg·m²/s';
+    var E=0.5*A*thetaDot*thetaDot+0.5*A*phiDotNow*phiDotNow*Math.sin(theta)*Math.sin(theta)
+          +0.5*C*psiDot*psiDot+M*g*l*Math.cos(theta);
+    document.getElementById('s6').textContent=E.toFixed(4)+' J';
+    document.getElementById('s7').textContent=(M*g*l*Math.sin(theta)).toFixed(4)+' N·m';
+    document.getElementById('s8').textContent=C.toFixed(5)+' kg·m²';
+    document.getElementById('hud').innerHTML='SPIN <b>'+psiDot.toFixed(0)+' rad/s</b><br>PRECESSION <b>'+
+      (phiDotNow*60/(2*Math.PI)).toFixed(1)+' rpm</b><br>TILT <b>'+(theta*180/Math.PI).toFixed(1)+'°</b>';
+  }
+  function loop(){
+    var dt=1/600;
+    if(nutate){ thetaDot += 0.0; }
+    for(var i=0;i<3;i++) rk4(dt);
+    t+=3*dt;
+    var a=axisVec();
+    var p=project({x:a.x*l,y:a.y*l,z:a.z*l});
+    if(showTrace){ tracePts.push(p); if(tracePts.length>900) tracePts.shift(); }
+    draw(); update();
+    requestAnimationFrame(loop);
+  }
+  reset();
+  requestAnimationFrame(loop);
+
+  document.getElementById('spin').addEventListener('input',function(){
+    spin=parseInt(this.value,10);
+    document.getElementById('oa').textContent=spin+' rad/s';
+    reset();
+  });
+  document.getElementById('tilt').addEventListener('input',function(){
+    tilt=parseInt(this.value,10);
+    document.getElementById('ob').textContent=tilt+'°';
+    reset();
+  });
+  document.getElementById('mass').addEventListener('input',function(){
+    M=parseInt(this.value,10)/100;
+    document.getElementById('oc').textContent=M.toFixed(2)+' kg';
+    reset();
+  });
+  document.getElementById('reset').addEventListener('click',reset);
+  document.getElementById('nut').addEventListener('click',function(){
+    nutate=!nutate; this.classList.toggle('on',nutate);
+    if(nutate){ thetaDot=1.2; } else { reset(); }
+  });
+  document.getElementById('trace').addEventListener('click',function(){
+    showTrace=!showTrace; this.classList.toggle('on',showTrace);
+  });
+})();
+</script>
+</body>
+</html>

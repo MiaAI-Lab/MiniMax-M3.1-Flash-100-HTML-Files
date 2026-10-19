@@ -1,0 +1,18 @@
+TITLE: SEISMOGRAPH — the record of a shaking
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "SEISMOGRAPH — the record of a shaking". Art direction: laboratory instrument, cold grey-green, one alarm-red trace. Palette: ground #0d0f0e, ink #e7e6e0, dim #7e8480, hairline rgba(231,230,224,.14), trace red #d0503c. Layout: a header with a hairline logo mark crossed by a red line and a monospaced station line; then a hero with a red kicker, a huge light-weight headline with one bold word across four short lines, and a paragraph; then a bordered recorder panel with a gradient face, a header row reading the record type and a live recording indicator, a 1200×380 canvas, and a four-item footer of monospaced readouts; then a control band of three sliders (Magnitude, Distance, Gain) and a row of five buttons (Quiet / Distant / Local / Great / Drum view); then a two-column section pairing an essay on reading a seismogram with a phase table giving the P, S and surface-wave arrival times and the estimated distance and magnitude; and a footer. The trace is synthesised sample by sample: a background microseism built from summed sines plus white noise, then a small fast P wave with a short exponential decay, then a much larger lower-frequency S wave, then long rolling surface waves with a very slow decay, all scaled by a magnitude-to-amplitude curve. Interaction: the sliders rebuild the whole record and the phase table; the four buttons set named presets; Drum view switches the canvas between the unrolled flat trace and the same data drawn as a three-turn spiral on a rotating drum with a pen; clicking the recording indicator stops and starts the refresh. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A seismogram you can make happen. The record is built sample by sample — background microseism, a fast small P wave, a bigger slower S wave, then long surface waves — with the distance slider genuinely moving the arrivals apart and the magnitude slider scaling the amplitude on a logarithmic curve. Drum view redraws the same data as a spiral on a turning drum, with a pen at the end of the trace.
+
+MAJOR VISUAL TECHNIQUES:
+- Sample-by-sample synthesis of P, S and surface-wave phases
+- Logarithmic magnitude-to-amplitude scaling
+- Spiral trace on a simulated rotating drum
+- Glowing canvas trace with shadowBlur
+- Monospaced phase table updated from the synthesised event
+- Grid-paper recorder face from a canvas grid
+
+INTENDED INTERACTION MODEL:
+Make an earthquake. Move the magnitude, distance and gain, fire the named presets, and switch between the flat trace and the drum.

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOOT//SEC — vintage machine console</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--amber:#ffb000;--amber2:#ffd67a;--bg:#0a0700;--dim:#7a5410;}
+  body{background:#05040a;color:var(--amber);
+    font-family:"Courier New",Courier,ui-monospace,monospace;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;padding:24px 16px;}
+  .crt{
+    width:100%;max-width:900px;background:
+      radial-gradient(ellipse 120% 100% at 50% 50%,rgba(255,176,0,.09),transparent 60%),
+      #0a0700;
+    border:2px solid #2a1c00;border-radius:16px;
+    box-shadow:0 0 0 8px #100c02, 0 0 60px -10px rgba(255,176,0,.35), inset 0 0 90px rgba(255,140,0,.10);
+    padding:30px 30px 26px;position:relative;overflow:hidden;}
+  .crt::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 3px,rgba(0,0,0,.45) 3px 6px);
+    mix-blend-mode:multiply;}
+  .crt::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+    background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 55%,rgba(0,0,0,.85) 100%);}
+  .bezel{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3a2704;
+    padding-bottom:12px;margin-bottom:16px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+  .bezel .led{display:flex;gap:8px;align-items:center;}
+  .bezel .led i{width:9px;height:9px;border-radius:50%;background:#3a2704;display:block;}
+  .bezel .led i.on{background:var(--amber);box-shadow:0 0 10px var(--amber);}
+  .screen{min-height:430px;position:relative;z-index:2;}
+  pre{font:14px/1.55 "Courier New",Courier,monospace;white-space:pre-wrap;word-break:break-word;margin:0;
+    color:var(--amber);text-shadow:0 0 9px rgba(255,176,0,.55);}
+  .ok{color:#7dff9b;text-shadow:0 0 9px rgba(125,255,155,.5);}
+  .warn{color:var(--amber2);}
+  .err{color:#ff6b5e;text-shadow:0 0 9px rgba(255,107,94,.5);}
+  .dim{color:var(--dim);}
+  .cursor{display:inline-block;width:9px;height:15px;background:var(--amber);vertical-align:-2px;animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .promptline{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;}
+  .promptline input{flex:1;min-width:120px;background:transparent;border:none;outline:none;color:var(--amber);
+    font:14px/1.55 "Courier New",Courier,monospace;caret-color:transparent;}
+  .keys{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #3a2704;}
+  .keys button{background:transparent;border:1px solid #4a3206;color:var(--dim);padding:7px 12px;cursor:pointer;
+    font:11px/1 "Courier New",monospace;letter-spacing:.16em;text-transform:uppercase;transition:.25s;}
+  .keys button:hover{border-color:var(--amber);color:var(--amber);}
+  .foot{margin-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;color:#4a3206;position:relative;z-index:2;}
+  .badge{display:inline-block;border:1px solid var(--amber);padding:2px 8px;margin-right:8px;color:var(--amber2);}
+</style>
+</head>
+<body>
+<div class="crt">
+  <div class="bezel">
+    <div>ORTHOLUX<span style="color:#4a3206">/</span>MODEL 77 <span class="badge">BIOS 2.4</span></div>
+    <div class="led"><span>POWER</span><i class="on"></i><i class="on"></i><i id="hdd"></i><span>DRIVE</span></div>
+  </div>
+
+  <div class="screen"><pre id="screen"></pre></div>
+
+  <div class="keys">
+    <button data-cmd="help">help</button>
+    <button data-cmd="dir">dir</button>
+    <button data-cmd="ver">ver</button>
+    <button data-cmd="mem">mem</button>
+    <button data-cmd="spec">spec</button>
+    <button data-cmd="clear">cls</button>
+    <button data-cmd="reboot">reboot</button>
+    <button data-cmd="time">time</button>
+  </div>
+
+  <div class="foot">
+    <span>64K RAM · 2 floppy · 1 tape</span>
+    <span>© 1979 Ortholux Computing</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var screen=document.getElementById('screen');
+  var buffer='';
+  var booted=false;
+
+  var POST=[
+    {t:'ORTHOLUX BIOS 2.4 — (C) 1979 ORTHOLUX COMPUTING LTD.',c:'warn',d:260},
+    {t:'',c:'',d:60},
+    {t:'CPU  ZILOG Z80A @ 4.000 MHz .................... ' + 'OK',c:'ok',d:180},
+    {t:'RAM  64 KB DYNAMIC ......................... ' + 'OK',c:'ok',d:180},
+    {t:'ROM  16 KB BOOT + BASIC .................... ' + 'OK',c:'ok',d:180},
+    {t:'CRT  80x24 MONOCHROME ...................... ' + 'OK',c:'ok',d:160},
+    {t:'FDD  DRIVE A: 720KB 3.5" ................... ' + 'OK',c:'ok',d:200},
+    {t:'FDD  DRIVE B: NOT PRESENT ................... ' + 'NONE',c:'dim',d:180},
+    {t:'MT   TAPE UNIT ............................. ' + 'OK',c:'ok',d:200},
+    {t:'RTC  146818 @ 00:00:00 .................... ' + 'OK',c:'ok',d:160},
+    {t:'',c:'',d:40},
+    {t:'POST COMPLETE — 4.21 SECONDS ELAPSED',c:'ok',d:400},
+    {t:'',c:'',d:40},
+    {t:'Type HELP for the command list.',c:'warn',d:200}
+  ];
+
+  function write(txt,cls){
+    buffer += cls? '<span class="'+cls+'">'+txt+'</span>' : txt;
+    buffer += '\n';
+    screen.innerHTML=buffer;
+  }
+  function raw(txt){ buffer += txt; screen.innerHTML=buffer; }
+
+  function post(){
+    booted=false;
+    var i=0;
+    (function step(){
+      if(i>=POST.length){ booted=true; prompt(); return; }
+      var l=POST[i++];
+      write(l.t,l.c);
+      setTimeout(step,l.d);
+    })();
+  }
+
+  var PROMPT='<span class="ok">C:\\</span><span class="warn">ORTHEX</span><span class="ok">&gt;</span>';
+  var promptAt=0;
+  function prompt(){
+    promptAt=buffer.length;
+    buffer += PROMPT+'<span class="cursor"></span>';
+    screen.innerHTML=buffer;
+  }
+
+  var HISTORY=[];
+  function run(cmd){
+    buffer = buffer.slice(0,promptAt);
+    buffer += '\n';
+    var c=cmd.trim().toLowerCase();
+    if(c==='help'){
+      write('  COMMAND      DESCRIPTION','warn');
+      write('  dir          list disk directories','dim');
+      write('  ver          system version','dim');
+      write('  mem          memory map','dim');
+      write('  spec         hardware inventory','dim');
+      write('  time         real time clock','dim');
+      write('  cls          clear screen','dim');
+      write('  reboot       warm restart','dim');
+      write('  about        who built this thing','dim');
+    }else if(c==='dir'){
+      write(' Volume in drive C is ORTHEX');
+      write(' Volume Serial Number is 4C7A-0091');
+      write('');
+      write(' A        <DIR>        BINARY');
+      write(' C        <DIR>        FORTRAN');
+      write(' D        <DIR>        GAMES');
+      write(' SOURCE   <DIR>        ASM');
+      write('');
+      write('        3 File(s)   41,984 bytes');
+      write('        8,192 bytes free');
+    }else if(c==='ver'){
+      write('ORTHOLUX BASIC 3.11  (C) 1979');
+      write('ROM REV 2.4 · SERIAL 0194-B');
+    }else if(c==='mem'){
+      write('  MEMORY MAP');
+      write('  0000-3FFF  ROM  SYSTEM         16KB');
+      write('  4000-7FFF  ROM  BASIC          16KB');
+      write('  8000-BFFF  RAM  SCREEN         16KB');
+      write('  C000-FFFF  RAM  FREE          16KB');
+      write('  TOTAL FREE ..................  9,216 bytes');
+    }else if(c==='spec'){
+      write(' CPU .... Z80A 4.000 MHz');
+      write(' RAM .... 64 KB');
+      write(' VIDEO .. 80x24 MONO');
+      write(' AUDIO .. 1-BIT PC SPEAKER');
+      write(' DISK ... 720 KB 5.25" SINGLE SIDED');
+      write(' CLOCK .. MC146818');
+    }else if(c==='time'){
+      var d=new Date();
+      write('  SYSTEM TIME  ' + d.toString().slice(0,24));
+      write('  ' + d.getTime() + ' ms since epoch');
+    }else if(c==='about'){
+      write('This machine was assembled in a room above a','dim');
+      write('hardware shop in Cambridge by two people who','dim');
+      write('believed the personal computer was inevitable.','dim');
+    }else if(c==='reboot'){
+      write('  <span class="err">!!</span> WARM RESTART INITIATED','err');
+      buffer=''; screen.innerHTML='';
+      setTimeout(post,700);
+      return;
+    }else if(c==='cls'||c==='clear'){
+      buffer=''; screen.innerHTML='';
+    }else if(c===''){
+      // nothing
+    }else{
+      write("Bad command or file name",'err');
+    }
+    prompt();
+  }
+
+  // capture typing
+  document.addEventListener('keydown',function(e){
+    if(!booted) return;
+    if(e.key==='Enter'){
+      var v=pending.join(''); pending=[];
+      HISTORY.push(v); histIdx=HISTORY.length;
+      buffer = buffer.slice(0,promptAt);
+      buffer += 'C:\\ORTHEX>'+v+'\n';
+      screen.innerHTML=buffer;
+      run(v);
+      return;
+    }
+    if(e.key==='Backspace'){
+      if(pending.length) pending.pop();
+      redraw();
+      return;
+    }
+    if(e.key.length===1 && !e.ctrlKey && !e.metaKey){
+      pending.push(e.key); redraw();
+    }
+  });
+  var pending=[], histIdx=0;
+  function redraw(){
+    buffer = buffer.slice(0,promptAt);
+    buffer += PROMPT+pending.join('')+'<span class="cursor"></span>';
+    screen.innerHTML=buffer;
+  }
+  document.addEventListener('keyup',function(e){
+    if(e.key==='ArrowUp'&&HISTORY.length){
+      histIdx=Math.max(0,histIdx-1); pending=HISTORY[histIdx].split(''); redraw();
+    }
+    if(e.key==='ArrowDown'&&HISTORY.length){
+      histIdx=Math.min(HISTORY.length,histIdx+1);
+      pending=(histIdx===HISTORY.length?[]:HISTORY[histIdx].split('')); redraw();
+    }
+  });
+
+  // quick command buttons
+  document.querySelectorAll('.keys button').forEach(function(b){
+    b.addEventListener('click',function(){ if(!booted) return; run(b.dataset.cmd); });
+  });
+
+  post();
+})();
+</script>
+</body>
+</html>

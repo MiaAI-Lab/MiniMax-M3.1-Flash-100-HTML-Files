@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNACK-O-MATIC — a vending machine you can operate</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--steel:#c3c9d2;--steel2:#8f96a3;--dark:#22262f;--red:#e0442f;--cream:#f2ede2;}
+  body{background:radial-gradient(circle at 50% 20%,#2b2f3d,#12141c 70%);color:#e8ecf6;
+    font-family:"SF Mono","Courier New",ui-monospace,monospace;min-height:100vh;display:flex;align-items:center;
+    justify-content:center;padding:26px 16px;}
+  .room{width:100%;max-width:1000px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start;}
+
+  .machine{width:330px;background:linear-gradient(160deg,#dfe3ea,#9aa1ae 60%,#7d8492);
+    border-radius:16px;padding:14px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.7);
+    position:relative;}
+  .machine::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;
+    background:linear-gradient(115deg,rgba(255,255,255,.35) 0 18%,transparent 22% 100%);}
+  .sign{background:var(--red);border-radius:8px;padding:10px;text-align:center;margin-bottom:10px;
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),0 3px 8px rgba(0,0,0,.3);}
+  .sign b{font-size:1.05rem;letter-spacing:.16em;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.3);}
+  .sign span{display:block;font-size:8.5px;letter-spacing:.3em;color:rgba(255,255,255,.8);margin-top:3px;}
+  .glass{background:linear-gradient(180deg,#1b2430,#0d1219);border-radius:10px;padding:10px 10px 8px;
+    box-shadow:inset 0 3px 14px rgba(0,0,0,.8), inset 0 0 0 2px rgba(255,255,255,.14);position:relative;overflow:hidden;}
+  .glass::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(115deg,rgba(255,255,255,.14) 0 30%,transparent 34% 60%,rgba(255,255,255,.06) 62%);}
+  .shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 0;border-bottom:2px solid rgba(255,255,255,.12);}
+  .slot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+  .px{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(7,1fr);gap:0;width:36px;height:50px;}
+  .px i{display:block;background:transparent;}
+  .slot .nm{font-size:7px;letter-spacing:.06em;color:#9fb0c8;white-space:nowrap;}
+  .slot .pr{font-size:8px;color:#ffd36b;}
+  .slot.empty{opacity:.25;pointer-events:none;}
+  .slot.sold .px{filter:grayscale(1) brightness(.55);}
+  .slot:hover .px{filter:brightness(1.25);transform:translateY(-2px);}
+  .px{transition:.25s;}
+  .disp{background:#0a0d13;border-radius:6px;margin:10px 0;padding:8px 10px;font-size:11px;color:#7dff9b;
+    letter-spacing:.1em;box-shadow:inset 0 0 12px rgba(0,0,0,.9);display:flex;justify-content:space-between;}
+  .disp b{color:#ffd36b;}
+  .panel{display:grid;grid-template-columns:1fr 84px;gap:10px;align-items:end;}
+  .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .keys button{background:linear-gradient(180deg,#f0f2f6,#b9bfca);border:none;border-bottom:3px solid #7e8593;
+    border-radius:5px;padding:9px 0;font-family:inherit;font-weight:700;font-size:10px;line-height:1;color:#22262f;cursor:pointer;transition:.12s;}
+  .keys button:active{border-bottom-width:1px;transform:translateY(2px);}
+  .keys button.coin{background:linear-gradient(180deg,#ffd98a,#d9a53e);color:#4a3410;}
+  .coins{display:grid;gap:6px;}
+  .coins button{background:linear-gradient(180deg,#eef1f5,#aeb5c1);border:none;border-bottom:3px solid #767d8b;
+    border-radius:5px;padding:8px 0;font-family:inherit;font-weight:700;font-size:10px;line-height:1;cursor:pointer;}
+  .coins button:active{border-bottom-width:1px;transform:translateY(2px);}
+  .tray{height:64px;margin-top:10px;background:linear-gradient(180deg,#0e1219,#1a2029);border-radius:8px;
+    box-shadow:inset 0 4px 12px rgba(0,0,0,.9);position:relative;overflow:hidden;}
+  .tray .label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:7px;letter-spacing:.24em;color:#4d5a70;}
+  .drop{position:absolute;left:50%;top:-40px;transform:translateX(-50%);width:34px;height:48px;display:grid;
+    grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(7,1fr);}
+  .drop i{background:transparent;display:block;}
+
+  .side h1{font-size:1.6rem;letter-spacing:-.02em;margin-bottom:10px;font-weight:500;}
+  .side p{color:#9aa3b8;font-size:.92rem;line-height:1.85;margin-bottom:18px;}
+  .side .k{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#6f7a92;margin-bottom:10px;}
+  .log{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;
+    font-size:11.5px;line-height:2;color:#8fe6a8;max-height:210px;overflow:auto;}
+  .log div span{color:#5c6780;}
+  .stock{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:18px;}
+  .stock div{border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;font-size:11px;color:#9aa3b8;
+    display:flex;justify-content:space-between;}
+  .stock div b{color:#e8ecf6;font-weight:500;}
+  .hint{margin-top:16px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#5f6880;}
+
+  @media(max-width:860px){.room{grid-template-columns:1fr;justify-items:center;}.side{width:100%;max-width:430px;}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="room">
+  <div class="machine">
+    <div class="sign"><b>SNACK-O-MATIC</b><span>EST. 1984 · MODEL VM-2</span></div>
+    <div class="glass">
+      <div class="disp"><span id="dispmsg">READY</span><b id="credit">$0.00</b></div>
+      <div id="shelf"></div>
+    </div>
+    <div class="panel">
+      <div class="keys">
+        <button class="coin" data-coin="1">+ $1</button>
+        <button data-code="A1">A1</button><button data-code="A2">A2</button>
+        <button data-code="B1">B1</button><button data-code="B2">B2</button>
+        <button data-code="C1">C1</button>
+      </div>
+      <div class="coins">
+        <button data-coin="2">+$2</button>
+        <button data-coin="5">+$5</button>
+      </div>
+    </div>
+    <div class="tray" id="tray"><div class="label">TAKE</div></div>
+  </div>
+
+  <div class="side">
+    <div class="k">Operation manual</div>
+    <h1>Feed it, then choose</h1>
+    <p>Twelve slots, six products, one tray. Insert credit with the coin keys, then press a product in the glass. If the machine likes you, it drops.</p>
+    <div class="k">Transaction log</div>
+    <div class="log" id="log"></div>
+    <div class="stock" id="stock"></div>
+    <div class="hint">Keys A1–C1 select the matching slot position</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 5x7 pixel sprites: 1 = filled
+  var SPR={
+    cola:["01110","11111","10101","10101","10101","11111","01110"],
+    lem:["00100","01110","11111","11111","01110","01110","01010"],
+    mint:["01110","10101","10101","11111","01110","01110","00100"],
+    grap:["01110","11111","11011","10101","11011","11111","01110"],
+    cof:["00100","01110","11111","10001","11111","01110","00100"],
+    aqua:["01110","10001","10101","10101","10101","10001","01110"]
+  };
+  var COL={
+    cola:['#7a3b1c','#a8522a','#c56a35','#5a2a12','#e0a870'],
+    lem:['#e8c22a','#f4dc5c','#f7eb9b','#b89512','#fff8c8'],
+    mint:['#2f9e5c','#4fc47e','#8ee0ab','#1d6b3c','#c9f5da'],
+    grap:['#7a3f9e','#9b57c4','#c08ae0','#552a72','#e0c4f5'],
+    cof:['#4a2c1a','#6b4028','#8d5a38','#2f1a0e','#b98457'],
+    aqua:['#2f8fd0','#4fb4e8','#8fd8f5','#1d5f8f','#c4ecff']
+  };
+  var ITEMS=[
+    {id:'cola',code:'A1',name:'COLA',price:2.00,stock:4},
+    {id:'lem', code:'A2',name:'LEMON',price:1.75,stock:3},
+    {id:'mint',code:'B1',name:'MINT',price:2.25,stock:2},
+    {id:'grap',code:'B2',name:'GRAPE',price:2.00,stock:3},
+    {id:'cof', code:'C1',name:'COFFEE',price:2.50,stock:2},
+    {id:'aqua',code:'C2',name:'AQUA',price:1.50,stock:0}
+  ];
+  var KEYMAP={A1:'A1',A2:'A2',B1:'B1',B2:'B2',C1:'C1',C2:'C2'};
+
+  function sprite(id,el){
+    var rows=SPR[id], cols=COL[id], html='';
+    for(var r=0;r<7;r++)for(var c=0;c<5;c++){
+      var on=rows[r].charAt(c)==='1';
+      html+='<i'+(on?' style="background:'+cols[(r+c)%cols.length]+'"':'')+'></i>';
+    }
+    el.innerHTML=html;
+  }
+
+  var shelf=document.getElementById('shelf'), logEl=document.getElementById('log');
+  var dispmsg=document.getElementById('dispmsg'), creditEl=document.getElementById('credit');
+  var credit=0, stockEl=document.getElementById('stock');
+  var codeToId={};
+  ITEMS.forEach(function(it){ codeToId[it.code]=it.id; });
+
+  function renderShelf(){
+    shelf.innerHTML='';
+    var shelfEl=document.createElement('div'); shelfEl.className='shelf';
+    ITEMS.forEach(function(it){
+      var s=document.createElement('div');
+      s.className='slot'+(it.stock<=0?' empty':'');
+      s.dataset.id=it.id;
+      var px=document.createElement('div'); px.className='px'; sprite(it.id,px);
+      s.appendChild(px);
+      var nm=document.createElement('div'); nm.className='nm'; nm.textContent=it.name;
+      var pr=document.createElement('div'); pr.className='pr'; pr.textContent='$'+it.price.toFixed(2);
+      s.appendChild(nm); s.appendChild(pr);
+      s.addEventListener('click',function(){ buy(it.id); });
+      shelfEl.appendChild(s);
+    });
+    shelf.appendChild(shelfEl);
+  }
+
+  function renderStock(){
+    stockEl.innerHTML='';
+    ITEMS.forEach(function(it){
+      var d=document.createElement('div');
+      d.innerHTML='<span>'+it.name+'</span><b>'+it.stock+'</b>';
+      stockEl.appendChild(d);
+    });
+  }
+
+  function log(txt){
+    var d=document.createElement('div');
+    var ts=new Date();
+    d.innerHTML='<span>'+String(ts.getHours()).padStart(2,'0')+':'+String(ts.getMinutes()).padStart(2,'0')+':'+
+      String(ts.getSeconds()).padStart(2,'0')+'</span> '+txt;
+    logEl.insertBefore(d,logEl.firstChild);
+    while(logEl.children.length>14) logEl.removeChild(logEl.lastChild);
+  }
+
+  function updateCredit(){
+    creditEl.textContent='$'+credit.toFixed(2);
+  }
+
+  function buy(id){
+    var it=null;
+    ITEMS.forEach(function(x){ if(x.id===id) it=x; });
+    if(!it) return;
+    if(it.stock<=0){ dispmsg.textContent='SOLD OUT'; log(it.name+' — sold out'); return; }
+    if(credit < it.price){
+      dispmsg.textContent='NEED $'+(it.price-credit).toFixed(2);
+      log('<span style="color:#ff8a72">INSUFFICIENT CREDIT for '+it.name+'</span>');
+      return;
+    }
+    credit-=it.price; updateCredit();
+    it.stock--;
+    dispmsg.textContent='DISPENSING '+it.name;
+    log(it.name+' — $'+it.price.toFixed(2)+' — dispensed');
+    renderShelf(); renderStock();
+    // animate the can down the chute
+    var tray=document.getElementById('tray');
+    var d=document.createElement('div');
+    d.className='drop';
+    sprite(it.id,d);
+    d.style.transition='top 1s cubic-bezier(.5,0,.75,0)';
+    tray.appendChild(d);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ d.style.top='14px'; }); });
+    setTimeout(function(){
+      d.remove();
+      dispmsg.textContent='THANK YOU';
+      setTimeout(function(){ dispmsg.textContent='READY'; },1100);
+    },1100);
+  }
+
+  document.querySelectorAll('[data-coin]').forEach(function(b){
+    b.addEventListener('click',function(){
+      credit += parseFloat(b.dataset.coin);
+      updateCredit();
+      dispmsg.textContent='CREDIT ADDED';
+      log('coin +$'+b.dataset.coin.toFixed(2));
+      setTimeout(function(){ if(dispmsg.textContent==='CREDIT ADDED') dispmsg.textContent='READY'; },900);
+    });
+  });
+
+  document.querySelectorAll('[data-code]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=codeToId[b.dataset.code];
+      if(id) buy(id);
+    });
+  });
+
+  renderShelf(); renderStock(); updateCredit();
+  log('machine ready — insert credit');
+})();
+</script>
+</body>
+</html>

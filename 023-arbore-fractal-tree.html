@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARBORE — a recursive forest</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0d1410;--ink:#e8f0e6;--dim:#7d9182;--moss:#8fbf6a;--bark:#6b4a30;--gold:#e8c26a;--line:rgba(232,240,230,.12);}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    overflow-x:hidden;min-height:100vh;}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse 80% 70% at 50% 40%,transparent 40%,rgba(6,12,8,.85) 100%);}
+  .wrap{position:relative;z-index:3;max-width:1300px;margin:0 auto;padding:0 4vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:11px;font-size:12px;letter-spacing:.42em;text-transform:uppercase;}
+  .brand i{width:12px;height:12px;background:var(--moss);border-radius:50% 0 50% 50%;transform:rotate(45deg);display:block;
+    box-shadow:0 0 16px rgba(143,191,106,.7);}
+  .tools{display:flex;gap:10px;flex-wrap:wrap;}
+  .tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:9px 17px;cursor:pointer;
+    font-family:inherit;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;transition:.3s;border-radius:999px;}
+  .tools button:hover,.tools button.on{border-color:var(--moss);color:var(--moss);background:rgba(143,191,106,.08);}
+
+  .stage{position:relative;margin-top:26px;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    background:linear-gradient(180deg,#101a14,#0a120d);}
+  .stage svg{width:100%;max-width:100%;height:auto;display:block;}
+  .hud{position:absolute;left:0;right:0;top:0;padding:18px 22px;display:flex;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;pointer-events:none;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+  .hud b{color:var(--moss);font-weight:400;}
+  .hud .right{text-align:right;}
+
+  .grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;margin-top:24px;}
+  .grid>*{min-width:0;}
+  .panel{border:1px solid var(--line);border-radius:20px;padding:24px;background:rgba(255,255,255,.025);}
+  .panel h2{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-bottom:18px;font-weight:400;}
+  .ctl{margin-bottom:20px;}
+  .ctl label{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:9px;}
+  .ctl label b{color:var(--ink);font-weight:400;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(232,240,230,.18);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--moss);cursor:pointer;box-shadow:0 0 12px rgba(143,191,106,.6);}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--moss);cursor:pointer;}
+  .seedrow{display:flex;gap:8px;margin-top:6px;}
+  .seedrow input{flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;}
+  .seedrow input:focus{border-color:var(--moss);}
+  .seedrow button{background:rgba(143,191,106,.14);border:1px solid rgba(143,191,106,.4);color:var(--moss);
+    border-radius:10px;padding:10px 16px;cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;transition:.3s;}
+  .seedrow button:hover{background:var(--moss);color:#0d1410;}
+
+  .about h3{font-size:1.25rem;font-weight:300;letter-spacing:-.01em;margin-bottom:12px;}
+  .about p{color:var(--dim);font-size:.94rem;line-height:1.9;}
+  .about p+p{margin-top:1.1em;}
+  .about .quote{margin-top:22px;padding-left:18px;border-left:2px solid var(--moss);font-style:italic;color:#c4d6c0;font-size:.95rem;line-height:1.8;}
+  .about .attrib{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-top:12px;font-style:normal;}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dim);}
+  .legend span{display:flex;align-items:center;gap:8px;}
+  .legend i{width:9px;height:9px;border-radius:50%;display:block;}
+
+  .notes{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .note{border-top:1px solid var(--line);padding-top:16px;}
+  .note .n{font-size:10px;letter-spacing:.28em;color:var(--moss);margin-bottom:10px;}
+  .note h4{font-size:1rem;font-weight:400;margin-bottom:7px;}
+  .note p{color:var(--dim);font-size:.86rem;line-height:1.85;}
+
+  footer{margin-top:50px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  @media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr);}.notes{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="vignette"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Arbore</div>
+    <div class="tools">
+      <button class="on" id="grow">Regrow</button>
+      <button id="sway">Wind</button>
+      <button id="bare">Bare</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 1200 700" aria-label="Generative fractal tree"></svg>
+    <div class="hud">
+      <div>Specimen <b id="hudSeed">#0000</b></div>
+      <div class="right">Branches <b id="hudCount">0</b> · Season <b id="hudSeason">summer</b></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <aside class="panel">
+      <h2>Parameters</h2>
+      <div class="ctl">
+        <label>Depth <b id="vDepth">9</b></label>
+        <input type="range" id="depth" min="4" max="12" value="9">
+      </div>
+      <div class="ctl">
+        <label>Branch angle <b id="vAngle">26°</b></label>
+        <input type="range" id="angle" min="8" max="52" value="26">
+      </div>
+      <div class="ctl">
+        <label>Decay <b id="vDecay">0.72</b></label>
+        <input type="range" id="decay" min="50" max="88" value="72">
+      </div>
+      <div class="ctl">
+        <label>Lean <b id="vLean">4°</b></label>
+        <input type="range" id="lean" min="-20" max="20" value="4">
+      </div>
+      <div class="ctl">
+        <label>Seed</label>
+        <div class="seedrow">
+          <input id="seed" value="1041" inputmode="numeric">
+          <button id="rand">Random</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="about">
+      <h3>One rule, applied until it stops</h3>
+      <p>A branch is a line. At the end of a line, two more lines begin, each shorter than the last, each turned away from its parent by a fixed angle. There is no model here and no dataset — only a recursion that terminates when the length falls below a pixel.</p>
+      <p>What makes the result feel like a tree rather than a diagram is the small irregularities: a seeded pseudo-random wobble on every angle, a slight lean that accumulates down the trunk, and a taper that is faster in one direction than the other.</p>
+      <div class="quote">"The tree is not the model. The tree is what the model does when nobody is watching."<div class="attrib">— note in the margin, 1987</div></div>
+      <div class="legend">
+        <span><i style="background:#6b4a30"></i>Trunk</span>
+        <span><i style="background:#8fbf6a"></i>Branch</span>
+        <span><i style="background:#e8c26a"></i>Leaf</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="notes">
+    <article class="note"><div class="n">01 / LENGTH</div><h4>Geometric decay</h4><p>Each generation is a fixed fraction of the last, which is why a real tree narrows towards the crown and not towards its middle.</p></article>
+    <article class="note"><div class="n">02 / ANGLE</div><h4>Divergence</h4><p>The angle between parent and child is small enough to keep the silhouette coherent and large enough to avoid a lattice.</p></article>
+    <article class="note"><div class="n">03 / LEAF</div><h4>Termination</h4><p>Leaves appear on the last two generations only. Drawing them everywhere turns a tree into a cloud.</p></article>
+  </section>
+
+  <footer>
+    <span>Arbore — a recursive forest</span>
+    <span>SVG · seeded</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var svg=document.getElementById('svg');
+  var NS='http://www.w3.org/2000/svg';
+  var depth=9, angle=26, decay=0.72, lean=4, seed=1041;
+  var showLeaves=true, wind=false, count=0;
+  var groups={};
+  var seasons={
+    summer:{leaf:'#e8c26a',trunk:'#6b4a30',branch:'#8fbf6a',bg:['#101a14','#0a120d']},
+    autumn:{leaf:'#e08a3c',trunk:'#5a3a24',branch:'#c2703a',bg:['#1a1410','#0d0a08']},
+    winter:{leaf:'#cfe0ea',trunk:'#4a4238',branch:'#7d8f9c',bg:['#131a20','#0a0e12']}
+  };
+  var season='summer';
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  function build(){
+    count=0;
+    svg.innerHTML='';
+    var pal=seasons[season];
+    var bg=document.createElementNS(NS,'rect');
+    bg.setAttribute('width','1200'); bg.setAttribute('height','700'); bg.setAttribute('fill',pal.bg[0]);
+    svg.appendChild(bg);
+    var g2=document.createElementNS(NS,'rect');
+    g2.setAttribute('width','1200'); g2.setAttribute('height','700'); g2.setAttribute('fill',pal.bg[1]);
+    g2.setAttribute('opacity','0.6');
+    svg.appendChild(g2);
+
+    groups={};
+    ['trunk','branch','leaf'].forEach(function(k){
+      var g=document.createElementNS(NS,'g');
+      g.setAttribute('id','g-'+k);
+      svg.appendChild(g);
+      groups[k]=g;
+    });
+
+    var rnd=mulberry32(seed);
+    var baseX=600, baseY=660, len=210;
+
+    function branch(x,y,ang,len,d,wob){
+      if(d<=0||len<3) return;
+      count++;
+      var nx=x+Math.cos(ang)*len, ny=y+Math.sin(ang)*len;
+      var isTrunk=(d===depth);
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('x1',x.toFixed(2)); line.setAttribute('y1',y.toFixed(2));
+      line.setAttribute('x2',nx.toFixed(2)); line.setAttribute('y2',ny.toFixed(2));
+      line.setAttribute('stroke', isTrunk?pal.trunk:pal.branch);
+      line.setAttribute('stroke-width',(wob||Math.max(0.7,d*0.9)).toFixed(2));
+      line.setAttribute('stroke-linecap','round');
+      line.setAttribute('opacity',(0.45+0.55*(d/depth)).toFixed(2));
+      var target = isTrunk?'trunk':'branch';
+      var path=document.createElementNS(NS,'animate');
+      path.setAttribute('attributeName','x2'); path.setAttribute('from',x); path.setAttribute('to',nx);
+      path.setAttribute('dur',(0.02*d+0.1).toFixed(2)+'s'); path.setAttribute('fill','freeze');
+      line.appendChild(path);
+      groups[target].appendChild(line);
+
+      if(d<=2 && showLeaves){
+        var leaf=document.createElementNS(NS,'circle');
+        leaf.setAttribute('cx',nx.toFixed(2)); leaf.setAttribute('cy',ny.toFixed(2));
+        leaf.setAttribute('r',(2+Math.random()*3.4).toFixed(2));
+        leaf.setAttribute('fill',pal.leaf);
+        leaf.setAttribute('opacity','0');
+        var ap=document.createElementNS(NS,'animate');
+        ap.setAttribute('attributeName','opacity'); ap.setAttribute('from','0'); ap.setAttribute('to','0.9');
+        ap.setAttribute('dur','0.5s'); ap.setAttribute('fill','freeze');
+        leaf.appendChild(ap);
+        groups.leaf.appendChild(leaf);
+      }
+
+      var spread=angle*(Math.PI/180)*(0.82+rnd()*0.36);
+      var jitterA=(rnd()-0.5)*0.16;
+      var childLen=len*decay*(0.9+rnd()*0.2);
+      var leanA=(lean*Math.PI/180);
+      branch(nx,ny,ang-spread+jitterA+leanA,childLen,d-1,0);
+      branch(nx,ny,ang+spread+jitterA+leanA,childLen,d-1,1);
+      if(d>3 && rnd()<0.18){
+        branch(nx,ny,ang+jitterA+leanA,childLen*0.82,d-1,2);
+      }
+    }
+    branch(baseX,baseY,-Math.PI/2,len,depth,0);
+
+    document.getElementById('hudCount').textContent=count;
+    document.getElementById('hudSeed').textContent='#'+String(seed).padStart(4,'0');
+    document.getElementById('hudSeason').textContent=season;
+  }
+
+  function bindRange(id,out,fn,fmt){
+    var el=document.getElementById(id), o=document.getElementById(out);
+    el.addEventListener('input',function(){var v=+el.value;fn(v);o.textContent=fmt(v);build();});
+  }
+  bindRange('depth','vDepth',function(v){depth=v;},function(v){return v;});
+  bindRange('angle','vAngle',function(v){angle=v;},function(v){return v+'°';});
+  bindRange('decay','vDecay',function(v){decay=v/100;},function(v){return (v/100).toFixed(2);});
+  bindRange('lean','vLean',function(v){lean=v;},function(v){return v+'°';});
+
+  document.getElementById('seed').addEventListener('input',function(e){
+    var v=parseInt(e.target.value,10);
+    if(!isNaN(v)){seed=v;build();}
+  });
+  document.getElementById('rand').addEventListener('click',function(){
+    seed=Math.floor(Math.random()*9999);
+    document.getElementById('seed').value=seed;
+    build();
+  });
+  document.getElementById('grow').addEventListener('click',build);
+  document.getElementById('bare').addEventListener('click',function(){
+    showLeaves=!showLeaves; this.classList.toggle('on',!showLeaves);
+    this.textContent=showLeaves?'Bare':'Leaves';
+    build();
+  });
+  document.getElementById('sway').addEventListener('click',function(){
+    wind=!wind; this.classList.toggle('on',wind);
+    [groups.branch,groups.leaf].forEach(function(g){
+      if(!g) return;
+      g.style.transformOrigin='600px 660px';
+      g.style.transition='transform .6s ease';
+      g.style.transform= wind? 'rotate(0.7deg)' : 'rotate(0deg)';
+    });
+  });
+
+  build();
+  // cycle the season quietly
+  var order=['summer','autumn','winter'];
+  var si=0;
+  setInterval(function(){
+    si=(si+1)%order.length; season=order[si]; build();
+  },14000);
+})();
+</script>
+</body>
+</html>

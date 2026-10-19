@@ -1,0 +1,20 @@
+TITLE: ABYSS — a descent in six stages
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ABYSS — a descent in six stages", a deep-sea research log. Art direction: bioluminescent darkness. Palette: near-black #01070f, ink #dff3f7, dim #5d8a97, deep dim #3f6270, glow cyan #54f0ff, jelly violet #c98cff, warm amber #ffb46b. Layout: a fixed full-viewport canvas behind everything draws the water; a fixed left depth rail (56px) carries a vertical "Depth" label, seven depth ticks and a glowing cursor that tracks the current depth; the content column is offset by the rail. The header shows the wordmark and a live HUD with depth, pressure, temperature and a count of observed species. The hero states the premise in a light-weight 200 headline with one cyan phrase. A five-row zone list follows: each row is a depth figure, a zone name and paragraph, an observed-cohort line, and a hairline progress bar that fills on hover or click. Below, four CSS jellyfish float at different scales and phases, each with a pulsing bell (radial gradient plus an asymmetric border-radius) and three trailing tentacles that wave. Then a glass note panel with a scientific aside about the 470–490nm blue-green band. A footer closes. Interaction: moving the pointer vertically drives the depth continuously, which changes the water gradient (six colour steps from teal to near-black), fades the surface light shaft out, increases marine-snow speed, and updates the HUD numbers and the rail cursor; clicking a zone jumps to that depth; hovering a zone fills its bar. Responsive: the depth rail is hidden and the zone rows re-grid under 820px.
+
+DESCRIPTION:
+A descent you perform with the mouse. The canvas is a real depth simulation: the water gradient steps through six palettes from sunlit teal to the particular black of the hadal zone, the surface shaft fades out as you go deeper, and the marine snow falls faster under pressure. Bioluminescent flashes fire on their own in the dark. The jellyfish, the zone list and the HUD are all CSS and typography, so the page stays light while the feeling gets darker.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas depth simulation with six interpolated water palettes
+- Surface light shaft that fades out below 40% depth
+- Marine snow particles with a depth-scaled fall rate and sinusoidal alpha
+- Bioluminescent flashes composited additively with radial gradients
+- Fixed depth rail with a glowing cursor tracking the simulated depth
+- CSS jellyfish: asymmetric border-radius bell with a scaleX/scaleY pulse, waving gradient tentacles
+- Zone rows with hairline progress bars filled on hover or click
+- Live HUD computing pressure (1 bar + depth/10), temperature and species count
+
+INTENDED INTERACTION MODEL:
+Vertical pointer movement is the dive. The deeper you go the darker, colder and faster it gets, and the HUD and depth rail follow. Clicking a zone row jumps straight to that depth; hovering fills its bar. The jellyfish and the flashes animate on their own.

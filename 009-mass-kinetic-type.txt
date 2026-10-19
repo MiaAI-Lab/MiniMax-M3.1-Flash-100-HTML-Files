@@ -1,0 +1,19 @@
+TITLE: MASS — A kinetic type laboratory
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) called "MASS — A kinetic type laboratory". Art direction: Swiss typographic laboratory on a bone ground (#efece3) with near-black ink (#111110), grey micro-labels (#8b887e) and two accents — signal red #ff3b1f and electric blue #1b4dff. Layout: a sticky blurred header with a letterspaced wordmark and three anchor links; a hero with a small letterspaced kicker, a giant display word "MASS" whose four letters are individual spans (hovering a letter lifts and skews it and turns it red), and three range sliders beneath (Weight 100–900, Tracking −60…+40 thousandths of an em, Leading 0.60–1.50) that each print a live value. The weight slider fakes a continuous variable-font axis: it sets real font-weight and simultaneously grows a synthetic -webkit-text-stroke-width on the display and the specimen paragraph, with the stroke colour set to currentColor. Below the hero: a specimen section where the same sliders restyle a single large paragraph; a "field" section where the word MOMENTUM is split into spans and each letter scales, turns blue and fades according to its distance from the pointer as it moves; a "weight ladder" of six hairline rows (Thin→Black) that invert to black-on-bone with a red label on hover; a split section contrasting a black panel and a bone panel with two essays on variable fonts; and a footer. Responsive: the three tool columns stack under 820px, the split becomes one column, the ladder label column narrows.
+
+DESCRIPTION:
+A typographic workbench that makes the reader feel weight, tracking and leading as physical quantities. The headline trick is honest about its own trickery: the page has no variable font, so the weight axis is faked with a synthetic stroke that thickens as the slider climbs, giving a genuinely continuous ramp from hairline to black. A second experiment lets the pointer push a giant word around like a field of soft bodies.
+
+MAJOR VISUAL TECHNIQUES:
+- Faux variable-weight axis: font-weight combined with a growing -webkit-text-stroke-width and matching currentColor stroke
+- Per-letter proximity field: distance-to-pointer computed in JS, driving scale, colour and opacity
+- Three synchronised sliders (weight / tracking / leading) that restyle two separate type specimens at once
+- Sticky translucent header with backdrop blur
+- Row-level inversion (bone-on-ink) with a red micro-label on hover
+- Oversized display type with negative tracking and tight leading, clamped fluidly
+- Two-tone split editorial panel (ink panel vs bone panel)
+
+INTENDED INTERACTION MODEL:
+Direct manipulation. Dragging any slider restyles the display word and the specimen paragraph in real time, with the numeric value echoed beside the label. Moving the pointer across the kinetic word inflates and colours the letters you pass over, and they settle back when the pointer leaves. Ladder rows invert on hover. Nothing else on the page moves.

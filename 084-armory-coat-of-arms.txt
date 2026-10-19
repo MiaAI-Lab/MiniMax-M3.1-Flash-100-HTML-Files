@@ -1,0 +1,18 @@
+TITLE: ARMORY — a maker of arms
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ARMORY — a maker of arms". Art direction: manuscript, cream paper, serif, the flat colours of a real blazon. Palette: background #f4f1ea, ink #1c1a16, dim #7a7367, hairline rgba(28,26,22,.24), gold #9b7b2e, red #9c2b22. Body text is Georgia / Times. Layout: a header with a bold uppercase wordmark and a monospaced description under a 2px rule; then a hero with a gold kicker, a large serif headline with one red bold word, and a paragraph; then a studio — a two-column grid with the shield on the left, displayed in a raised cream panel with a deep shadow, and on the right four bordered groups of controls (Field, Ordinary, Charge, Tinctures); then a row of two buttons (Grant a new arm / Plain field); then a blazon panel ruled in black with the blazon itself set in a large serif, a rule, and a monospaced line of notes about the tinctures; then a two-column section pairing an essay on the rules that make heraldry a language with a note on why it survived; and a footer. The shield is inline SVG generated as markup: a heater-shaped path, the field divided per pale, per fess, per bend, per chevron, quarterly, per saltire or gyronny, then an ordinary laid over it as chief, fess, pale, bend, bendlet, cross, saltire, chevron or bordure, then a charge drawn as its own path — mullet, crescent, cross, roundel, lozenge, scallop, fleur-de-lis, tower, lion, eagle — all clipped to the shield, with a heavy black outline. Ten tinctures are offered, and the notes line reports which are metals and which are colours and flags a metal-on-metal conflict. Interaction: click any option in a group to change the shield and rewrite the blazon; the tincture swatches fill the field, the second field, the ordinary and the charge in turn; Grant a new arm randomises the whole thing. Responsive: the studio and the two-column section stack under 880px.
+
+DESCRIPTION:
+A heraldic workshop. Pick a division, an ordinary and a charge, and the shield redraws and the blazon is written out in the correct order — field, then ordinary, then charge — with the tinctures named in English. The notes line underneath reports which of the colours you have used are metals and flags a metal-on-metal conflict, because that is the one rule the system really cares about.
+
+MAJOR VISUAL TECHNIQUES:
+- Inline SVG shield built from a clipped path and layered field divisions
+- Nine field divisions including gyronny and per saltire
+- Ten ordinary forms and twelve charges drawn as bespoke paths
+- Blazon generated in the fixed heraldic order with correct article and case
+- Tincture classification into metals and colours with conflict detection
+- Tiled fleur-de-lis, tower and lion charges built from grouped paths
+
+INTENDED INTERACTION MODEL:
+Grant arms. Choose the field, the ordinary and the charge, cycle the tinctures, and read the blazon that results. Grant a new arm randomises the whole achievement.

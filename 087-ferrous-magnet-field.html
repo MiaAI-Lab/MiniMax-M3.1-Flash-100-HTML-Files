@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FERROUS — the shape of a magnet</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0e1116;--ink:#e7ebf0;--dim:#7a828e;--line:rgba(231,235,240,.13);--red:#e0564a;--blue:#5b8fe0;--iron:#c3cad2;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:11px;display:block;position:relative;}
+  .brand i:before{content:"";position:absolute;left:0;top:0;width:11px;height:11px;background:var(--red);}
+  .brand i:after{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:var(--blue);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--iron);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--red);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;border:1px solid var(--line);background:#0b0e13;position:relative;}
+  .stage canvas{width:100%;height:auto;display:block;cursor:crosshair;}
+  .hud{position:absolute;top:16px;right:18px;font:400 11px/1.85 "Courier New",monospace;color:var(--dim);
+    text-align:right;pointer-events:none;}
+  .hud b{color:var(--iron);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--iron);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--iron);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--iron);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--iron);color:var(--iron);background:rgba(195,202,210,.1);}
+
+  .readout{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+  .readout div{border-top:1px solid var(--line);padding-top:9px;}
+  .readout u{display:block;text-decoration:none;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);}
+  .readout s{display:block;text-decoration:none;font:400 1.2rem/1.4 "Courier New",monospace;margin-top:6px;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Ferrous</div>
+    <div class="meta">Point poles · filings alignment · B ∝ 1/r²</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Magnetism</div>
+    <h1>A magnet does<br>not pull on iron.<br>Iron <b>lines up</b></h1>
+    <p>Iron filings scattered on a card over a magnet do not point at the magnet. They point along the field — each one becomes a tiny compass needle, swivelling to the nearest direction of the magnetic force, and the pattern they make is a picture of the field itself, frozen in a thousand small decisions.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="1200" height="620"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Filings density <output id="oa">2 400</output></label>
+      <input type="range" id="dens" min="200" max="6000" value="2400">
+    </div>
+    <div class="fld">
+      <label>Magnet strength <output id="ob">1.0</output></label>
+      <input type="range" id="str" min="30" max="220" value="100">
+    </div>
+    <div class="btns">
+      <button class="btn" id="add">Add a magnet</button>
+      <button class="btn" id="clear">Clear</button>
+      <button class="btn" id="lines">Field lines</button>
+      <button class="btn" id="two">Two in opposition</button>
+    </div>
+  </section>
+
+  <section class="readout">
+    <div><u>Magnets</u><s id="s1">1</s></div>
+    <div><u>Field at origin</u><s id="s2">—</s></div>
+    <div><u>Direction at origin</u><s id="s3">—</s></div>
+    <div><u>Null points</u><s id="s4">—</s></div>
+    <div><u>Separation</u><s id="s5">—</s></div>
+    <div><u>Model</u><s>two point poles</s></div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Field<br>lines are<br>a<br>fiction</h2>
+      <p>A field line is a curve whose tangent at every point is the direction of the field. There is no such thing as a real line of force in the material world — but the fiction is enormously useful, because a line that starts on the north pole of a magnet and ends on the south pole has to close, and the number of lines leaving a pole is proportional to its strength.</p>
+      <p>Which is why the lines from two like poles never meet, and why the space between them is empty: a field line has to go somewhere, and it cannot cross another, so it goes round. The filings show you this without being told: there is a bare wedge between the two north poles, and the iron has simply left.</p>
+    </div>
+    <div>
+      <h2>Two poles,<br>one field</h2>
+      <p>Outside a magnet, the field is exactly the same as that of two point poles a little way apart inside it — a result usually called Gilbert's model. It is not an approximation for a bar magnet, it is an exact identity for the external field of a uniformly magnetised body, and it makes the mathematics possible with a pencil.</p>
+      <p>Here the field is sampled on a grid and each sample is drawn as a short line in the direction of the force, with the opacity set by the strength of the field. That is precisely what the filings do, which is why the picture looks like a photograph of real filings: it is one.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ferrous — the shape of a magnet</span>
+    <span>Field sampled on a grid · filings drawn live</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var magnets=[{x:600,y:310,a:0,len:150,p:1}];
+  var density=2400, strength=1.0, showLines=false;
+  var dragIdx=-1;
+
+  function poles(m){
+    var hx=Math.cos(m.a)*m.len/2, hy=Math.sin(m.a)*m.len/2;
+    return [
+      {x:m.x+hx,y:m.y+hy,q:m.p*strength},
+      {x:m.x-hx,y:m.y-hy,q:-m.p*strength}
+    ];
+  }
+  function field(x,y){
+    var bx=0,by=0;
+    for(var i=0;i<magnets.length;i++){
+      var ps=poles(magnets[i]);
+      for(var j=0;j<2;j++){
+        var dx=x-ps[j].x, dy=y-ps[j].y;
+        var r2=dx*dx+dy*dy+36;
+        var inv=ps[j].q/(r2*Math.sqrt(r2));
+        bx+=dx*inv; by+=dy*inv;
+      }
+    }
+    return [bx,by];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W/2,H/2,40,W/2,H/2,W*0.7);
+    g.addColorStop(0,'#141922'); g.addColorStop(1,'#090b0f');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    // filings
+    var cols=Math.round(Math.sqrt(density*W/H)), rows=Math.round(density/cols);
+    ctx.lineCap='round';
+    for(var r=0;r<rows;r++){
+      for(var c=0;c<cols;c++){
+        var x=(c+0.5)/cols*W, y=(r+0.5)/rows*H;
+        var f=field(x,y);
+        var mag=Math.hypot(f[0],f[1]);
+        if(mag<1e-6) continue;
+        var ux=f[0]/mag, uy=f[1]/mag;
+        var len=4+Math.min(5,mag*1.2);
+        var a=Math.min(0.55,0.06+mag*0.05);
+        ctx.strokeStyle='rgba(195,202,210,'+a.toFixed(3)+')';
+        ctx.lineWidth=1.3;
+        ctx.beginPath();
+        ctx.moveTo(x-ux*len/2,y-uy*len/2);
+        ctx.lineTo(x+ux*len/2,y+uy*len/2);
+        ctx.stroke();
+      }
+    }
+    // field lines
+    if(showLines){
+      ctx.strokeStyle='rgba(91,143,224,.35)'; ctx.lineWidth=1;
+      for(var m2=0;m2<magnets.length;m2++){
+        var ps2=poles(magnets[m2]);
+        for(var sgn=0;sgn<2;sgn++){
+          var pole=ps2[sgn];
+          for(var k=0;k<14;k++){
+            var ang=sgn===0? (k/14*6.2832) : (k/14*6.2832+0.22);
+            var px=pole.x+Math.cos(ang)*34, py=pole.y+Math.sin(ang)*34;
+            ctx.beginPath(); ctx.moveTo(px,py);
+            var steps=180;
+            for(var st=0;st<steps;st++){
+              var f2=field(px,py);
+              var m2a=Math.hypot(f2[0],f2[1]);
+              if(m2a<1e-9) break;
+              px+=f2[0]/m2a*2.4; py+=f2[1]/m2a*2.4;
+              if(px<0||py<0||px>W||py>H) break;
+              ctx.lineTo(px,py);
+            }
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    // magnets
+    magnets.forEach(function(m){
+      ctx.save();
+      ctx.translate(m.x,m.y); ctx.rotate(m.a);
+      var h=26, w=m.len/2;
+      var grd=ctx.createLinearGradient(0,-h,0,h);
+      grd.addColorStop(0,'#3a4250'); grd.addColorStop(0.5,'#6a7382'); grd.addColorStop(1,'#2a303a');
+      ctx.fillStyle=grd;
+      ctx.fillRect(-w,-h/2,m.len,h);
+      ctx.fillStyle=m.p>0?'#e0564a':'#5b8fe0';
+      ctx.fillRect(-w,-h/2,m.len*0.24,h);
+      ctx.fillStyle=m.p>0?'#5b8fe0':'#e0564a';
+      ctx.fillRect(w-m.len*0.24,-h/2,m.len*0.24,h);
+      ctx.strokeStyle='rgba(231,235,240,.35)'; ctx.lineWidth=1;
+      ctx.strokeRect(-w,-h/2,m.len,h);
+      ctx.restore();
+    });
+    // null point finder + readouts
+    var f0=field(W/2,H/2);
+    var m0=Math.hypot(f0[0],f0[1]);
+    document.getElementById('s1').textContent=magnets.length;
+    document.getElementById('s2').textContent=m0.toFixed(4);
+    document.getElementById('s3').textContent=m0>1e-9?((Math.atan2(f0[1],f0[0])*180/Math.PI+360)%360).toFixed(0)+'°':'—';
+    document.getElementById('s4').textContent=countNulls();
+    if(magnets.length>=2){
+      var d=Math.hypot(magnets[0].x-magnets[1].x, magnets[0].y-magnets[1].y);
+      document.getElementById('s5').textContent=(d/10).toFixed(2)+' m';
+    }else document.getElementById('s5').textContent='—';
+    document.getElementById('hud').innerHTML='FIELD AT CENTRE <b>'+m0.toFixed(3)+'</b><br>'+
+      'MAGNETS <b>'+magnets.length+'</b><br>DRAG TO MOVE';
+  }
+  function countNulls(){
+    var n=0, step=24;
+    for(var x=step;x<W;x+=step){
+      for(var y=step;y<H;y+=step){
+        var f=field(x,y);
+        if(Math.hypot(f[0],f[1])<0.004) n++;
+      }
+    }
+    return n;
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+
+  function toCanvas(e){
+    var r=cv.getBoundingClientRect();
+    var t=e.touches?e.touches[0]:e;
+    return [(t.clientX-r.left)/r.width*W,(t.clientY-r.top)/r.height*H];
+  }
+  cv.addEventListener('pointerdown',function(e){
+    var p=toCanvas(e);
+    var best=-1,bd=1e9;
+    magnets.forEach(function(m,i){
+      var d=Math.hypot(m.x-p[0],m.y-p[1]);
+      if(d<bd){bd=d;best=i;}
+    });
+    if(best>=0 && bd<90){
+      dragIdx=best;
+      if(e.shiftKey){ magnets[best].p*=-1; return; }
+    }else{
+      magnets.push({x:p[0],y:p[1],a:0,len:150,p:1});
+      dragIdx=magnets.length-1;
+    }
+    cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(dragIdx<0) return;
+    var p=toCanvas(e);
+    magnets[dragIdx].x=p[0]; magnets[dragIdx].y=p[1];
+  });
+  window.addEventListener('pointerup',function(){ dragIdx=-1; });
+  cv.addEventListener('dblclick',function(e){
+    var p=toCanvas(e);
+    var best=-1,bd=1e9;
+    magnets.forEach(function(m,i){
+      var d=Math.hypot(m.x-p[0],m.y-p[1]);
+      if(d<bd){bd=d;best=i;}
+    });
+    if(best>=0) magnets[best].p*=-1;
+  });
+  document.getElementById('add').addEventListener('click',function(){
+    magnets.push({x:W/2+Math.random()*200-100,y:H/2+Math.random()*200-100,a:Math.random()*6.28,len:150,p:1});
+  });
+  document.getElementById('clear').addEventListener('click',function(){
+    magnets=[{x:600,y:310,a:0,len:150,p:1}];
+  });
+  document.getElementById('lines').addEventListener('click',function(){
+    showLines=!showLines; this.classList.toggle('on',showLines);
+  });
+  document.getElementById('two').addEventListener('click',function(){
+    magnets=[{x:520,y:310,a:0,len:150,p:1},{x:700,y:310,a:Math.PI,len:150,p:1}];
+  });
+  document.getElementById('dens').addEventListener('input',function(){
+    density=parseInt(this.value,10);
+    document.getElementById('oa').textContent=density.toLocaleString();
+  });
+  document.getElementById('str').addEventListener('input',function(){
+    strength=parseInt(this.value,10)/100;
+    document.getElementById('ob').textContent=strength.toFixed(1);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+TITLE: SNACK-O-MATIC — a vending machine you can operate
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) that is an operable 1980s vending machine called "SNACK-O-MATIC" with an operation manual beside it. Art direction: brushed steel machine on a dark arcade-room background. Palette: steel #c3c9d2 to #7d8492, machine red #e0442f, deep interior #0d1219, green LED #7dff9b, amber credit #ffd36b, cream #f2ede2, monospaced type throughout. The machine is drawn entirely with CSS: a rounded steel body with a diagonal specular sheen overlay, a red sign panel with an inset shadow, a dark glass window (inset shadow plus a diagonal reflection gradient) containing a shelf of products, a green-on-black LED display showing the current message and the credit, a keypad of chunky keys with pressed states, a coin column with gold-tinted coin keys, and a dispensing tray. Every product is a 5×7 pixel-art sprite generated in JavaScript from a bitmask string and rendered as a CSS grid of coloured cells — six drinks (cola, lemon, mint, grape, coffee, aqua) each with its own four-colour ramp. Beside the machine: a manual with a title, an explanation, a live transaction log (timestamped lines, newest first, capped at 14) and a stock table showing remaining units per product. Interaction: coin keys add $1/$2/$5 credit; clicking a product in the glass (or pressing a slot key A1–C2) buys it; the machine refuses purchases when credit is short (the display states the shortfall) or when the slot is sold out; a successful purchase deducts the price, decrements stock, animates the can falling down the chute, then shows THANK YOU before returning to READY. Responsive: the layout stacks with the manual below the machine under 860px.
+
+DESCRIPTION:
+A complete micro-interaction: a vending machine you can actually feed. The products are hand-authored pixel sprites built from bitmask strings and painted cell by cell, so they look like 1984 hardware rather than emoji. The machine keeps honest state — credit, per-item stock, sold-out slots, a refusal when you are short — and the transaction log records every coin, refusal and purchase with a timestamp.
+
+MAJOR VISUAL TECHNIQUES:
+- 5×7 pixel-art sprites defined as string bitmasks and rendered into CSS grid cells
+- Per-sprite four-colour ramps with a diagonal index so each row shifts hue
+- Brushed-steel gradient body with a diagonal specular overlay pseudo-element
+- CRT-ish glass reflection: diagonal linear-gradient highlight over the product window
+- Chunky physical keys with a shrinking bottom border on :active
+- LED display with inset shadow and two-tone green/amber readouts
+- Chute animation: the sprite element transitions its top offset into the tray
+- Scrollable, time-stamped transaction log with capped history
+
+INTENDED INTERACTION MODEL:
+Insert credit, then choose. Coin keys and slot keys are both live; the machine's display and log give constant feedback, including refusals with the exact shortfall. A purchase animates the product down the chute before the tray clears it. The stock table updates in real time, and sold-out slots grey out and stop accepting clicks.

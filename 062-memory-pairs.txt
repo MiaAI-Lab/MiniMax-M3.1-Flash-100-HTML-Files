@@ -1,0 +1,18 @@
+TITLE: MEMORY — a game of pairs
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "MEMORY — a game of pairs", a playable concentration game. Art direction: calm, tactile, midnight blue. Palette: ground #101a24, card back gradient #1b2a38, ink #e8f0f4, dim #7f93a3, hairline rgba(232,240,244,.13), gold #f0c05a, teal #4fd0c0. Layout: a header with a rotated-square logo and a live score strip (moves, matched, time); then a hero with a kicker, a huge light-weight headline with one bold line and a paragraph; then a six-column grid of 36 cards (twelve pairs) using a 0.78 aspect ratio; then a two-card panel with the game controls (New game / Hint / Peek all) and a monospaced transaction log; then a two-column note on memory as pattern recognition; and a footer. The cards use real 3D: each has perspective, an inner wrapper with preserve-3d, and two faces with backface-visibility hidden, so flipping is a genuine rotateY on the Y axis. Interaction: clicking a card flips it; a second click either matches (the pair locks, shrinks slightly and gains a teal outline) or flips back after 900ms; moves, matched count and elapsed time all update live; New game reshuffles and resets; Hint reveals one matching pair for a moment; Peek all flips every card for 1.2 seconds. Responsive: the card grid drops to four columns under 520px and the two-card panel stacks under 860px.
+
+DESCRIPTION:
+A complete memory game, correctly built: real rotateY flips on 3D-transformed faces, honest move counting, and a match state that locks the pair with a teal outline. The Hint button is the interesting one — it reveals a single pair, which feels like cheating and is actually a gift, because the match is easier when you have a position to attach the memory to.
+
+MAJOR VISUAL TECHNIQUES:
+- 3D card flip with perspective, preserve-3d and backface-visibility
+- Matched pairs scale down and gain a teal ring
+- Monospaced, timestamp-free log of misses and matches
+- Rotated-square gradient logo
+- Six-to-four column responsive card grid
+- Overlapping transitions on letter spacing and colour
+
+INTENDED INTERACTION MODEL:
+Play. Flip cards, count moves, use Hint when stuck and Peek when desperate. New game starts over. The log tells the story of the attempt.

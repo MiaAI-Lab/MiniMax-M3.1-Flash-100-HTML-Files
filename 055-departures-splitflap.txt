@@ -1,0 +1,19 @@
+TITLE: DEPARTURES — board 4
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "DEPARTURES — board 4", a live split-flap departure board for a fictional ferry terminal. Art direction: 1980s station board, dim and precise. Palette: background #0d0f10, board casing #1a1d1f, flap #24282b with a lighter top edge #33393d, ink #e8e4d8, dim #8d9196, amber #ffb648, green #57d98a, red #ff6b5e. Layout: a wide board panel with a header strip (the board title in wide letterspaced caps and a live amber clock), a column header row (Time / Destination / Gate / Status), eight departure rows, and a two-card row beneath holding an announcements list (each line with an amber timestamp) and a conditions card with a large temperature, a visibility line and a gradient meter; then a footer. Each departure row renders its time as a row of individual flap characters: every character is its own element with a vertical gradient, a hairline across its middle, an inner highlight and a drop shadow, so it reads as physical plastic. The gate is a second, shorter flap row. The status is a small pill coloured green for boarding, amber for delayed and red for cancelled. Interaction: the clock runs on the real system time; the flaps update by comparing the rendered characters with the new value and flipping only the cells that changed, with a short rotateX keyframe on the changing glyph; departures whose time has passed show a dash and turn red. Responsive: under 760px the gate column is hidden and the flap characters shrink.
+
+DESCRIPTION:
+A departure board that behaves like the real thing: every character is a separate plastic flap with a hairline down the middle, and when a value changes only the cells that actually differ flip. The clock in the header is the system clock, so the board really does go red behind you as the morning's sailings slip past. The announcements underneath carry a timetable's worth of small administrative dread — points failures, re-platforming, and an unbounded number of bicycles.
+
+MAJOR VISUAL TECHNIQUES:
+- Per-character flap cells with a vertical gradient, middle hairline and drop shadow
+- rotateX flip keyframe applied only to changed characters
+- Live system clock in amber monospace
+- Status pills for boarding, delayed and cancelled
+- Past-departure state shown as a dash with a red time
+- Dim casing, hairline separators and dotted announcement rules
+- Gradient meter bar for conditions
+
+INTENDED INTERACTION MODEL:
+Watch it. The board updates itself from the system clock, flipping characters as needed. There is nothing to click — the whole point is that it is running.

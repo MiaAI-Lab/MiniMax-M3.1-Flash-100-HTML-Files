@@ -1,0 +1,18 @@
+TITLE: AUREA — gold leaf and rubrication
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "AUREA — gold leaf and rubrication". Art direction: a page from a medieval manuscript, photographed in a dark room. Palette: room #241a12, vellum #efe3c6, ink #2b1d10, dim #8a7355, red #a8291f, ultramarine #1e3f7a, gold #c9a227. Body text is Georgia / Times; the instrument rows are monospaced. Layout: a header with a rotated gold-gradient square logo and a monospaced catalogue line; then a hero with a gold kicker, a huge light-weight serif headline in which the last two lines are gold, and a paragraph; then a large vellum leaf — a raised sheet with a deep shadow, an inset warm tint, a fine horizontal laid-line texture and a floated giant initial letter A, followed by two rubricated paragraphs in which the lead words are red small-caps, a caption line, and a marginal gold ornament drawn in inline SVG as nested leaf-shaped paths with a vermilion boss; then a control band of three fields — Leaf thickness slider, Burnish slider, and a three-way segmented control for the angle of the light (Fixed / Raking / Flat); then a two-column section pairing an essay on why the initial is raised with an atelier specification list; and a footer. The initial is painted entirely in CSS: a multi-stop metallic gradient clipped to the glyph with background-clip text, whose stop positions, background size, drop shadow and specular bloom are all rebuilt in JavaScript whenever a control changes. Interaction: the Leaf thickness slider widens the bright band of the gradient and enlarges the specular bloom; the Burnish slider tightens the highlight and deepens the contact shadow; the angle control rotates the light source. Responsive: the columns stack under 860px and the marginal ornament is hidden.
+
+DESCRIPTION:
+A gilded initial, painted live in the browser. The letter is a CSS background-clip gradient whose stops are recomputed from the sliders: a thin leaf gives a narrow bright band and a wide specular bloom, a thick leaf gives a broad band and a tight one, and burnishing tightens the highlight and deepens the shadow where the letter presses into the gesso. The page around it is a rubricated manuscript leaf with a marginal ornament drawn in SVG.
+
+MAJOR VISUAL TECHNIQUES:
+- Metallic gradient clipped to a glyph with background-clip: text
+- Stop positions, gradient size, bloom and drop shadow rebuilt on every input
+- Raised vellum sheet with deep shadow and inset warm tint
+- Laid-line texture from a repeating linear gradient
+- Red small-caps rubrication and a floated drop initial
+- Inline SVG marginal ornament of nested leaf paths
+
+INTENDED INTERACTION MODEL:
+Light it. Change the leaf thickness and the burnish and watch the gold change, then rotate the light with the angle control. The essay underneath explains why real gold leaf has to be bedded into raised gesso.

@@ -1,0 +1,18 @@
+TITLE: HERBARIUM — a pressed collection
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "HERBARIUM — a pressed collection". Art direction: an institutional botanical archive, 1908–1931. Palette: desk #d8d2c0, sheet #efe9d8, ink #2c2a22, separator brown #7b6b4f, dim #8b8267, hairline rgba(44,42,34,.2). A fixed layer of inline SVG feTurbulence in multiply blend gives the whole page a fibrous, foxed-paper surface. Layout: a header with an uppercase letterspaced wordmark, a collection date range and a right-aligned holdings note; then a responsive grid of six herbarium sheets, each a card of warm paper with a deep shadow, containing a hand-authored inline SVG illustration of a pressed plant (glasswort's jointed succulent branches, mountain avens' five-petalled white flower, eelgrass's long blades, wintergreen's raceme, a pink dianthus, and a quillwort's quill-like leaves) over a soft radial highlight, plus a round accession stamp in the corner, and a label block beneath the drawing with the Latin name in italic, the family, the habitat and the date, separated by a hairline. Below the grid, a two-column section explaining what a herbarium sheet actually is, with a six-row index of accessions (number, italic Latin name, habitat and date) separated by dotted rules. Interaction: sheets lift and straighten slightly on hover; everything else is static, as a catalogue should be. Responsive: the grid reflows with auto-fill, and the two-column section stacks under 820px.
+
+DESCRIPTION:
+Six pressed plants, drawn rather than photographed, mounted on the kind of card a 1911 botanist would have pinned to a sheet. Each drawing is built from strokes and fills in two greens and a paper cream — a glasswort's jointed arms, a mountain avens with a five-petal flower, eelgrass blades, a wintergreen raceme, a dianthus, a quillwort. The Latin names are italic, the habitats are honest, and the accession stamps in the corners do the institutional work.
+
+MAJOR VISUAL TECHNIQUES:
+- Six hand-authored inline SVG plant illustrations built from paths, ellipses and circles
+- Radial highlight behind each specimen to suggest pressed paper
+- Fixed feTurbulence paper texture in multiply blend across the whole page
+- Circular accession stamp with a rotated border
+- Dotted-rule index rows with italic Latin names
+- Warm paper cards with deep directional shadows on a grey desk ground
+
+INTENDED INTERACTION MODEL:
+Read and hover. The only motion is the sheet lifting and straightening under the pointer. This is a catalogue, not an application.

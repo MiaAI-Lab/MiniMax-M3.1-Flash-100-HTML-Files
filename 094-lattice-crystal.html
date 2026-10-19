@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LATTICE — the packing of atoms</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0d10;--ink:#e6ecf0;--dim:#7a848d;--line:rgba(230,236,240,.13);--atom:#7fb4e8;--atom2:#e8a45c;--cell:#c9a227;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+  .brand i b{background:var(--atom);display:block;border-radius:50%;}
+  .brand i b:nth-child(2){background:var(--atom2);}
+  .brand i b:nth-child(3){background:var(--atom2);}
+  .brand i b:nth-child(4){background:var(--atom);}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--cell);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--atom);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .stage{margin-top:5vh;display:grid;grid-template-columns:1fr 250px;gap:26px;align-items:start;
+    border:1px solid var(--line);background:#070a0c;padding:24px;}
+  .stage canvas{width:100%;height:auto;display:block;cursor:grab;touch-action:none;}
+  .stage canvas:active{cursor:grabbing;}
+  .side{display:flex;flex-direction:column;gap:16px;}
+  .box{border:1px solid var(--line);padding:16px;}
+  .box h2{font:400 9.5px/1 "Courier New",monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px;}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .row b{color:var(--cell);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--cell);color:var(--cell);background:rgba(201,162,39,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:900px){.stage{grid-template-columns:1fr;}.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i><b></b><b></b><b></b><b></b></i>Lattice</div>
+    <div class="meta">Cubic unit cell · hard spheres · a = 3.52 Å</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Crystallography</div>
+    <h1>Crystals are<br>not tidy. They<br>are <b>efficient</b>.</h1>
+    <p>Every metal you have ever used is a pile of spheres packed as tightly as the geometry allows. The densest packing of equal spheres fills seventy-four per cent of the space, and the arrangements that get close to it — face-centred cubic and hexagonal close packed — are the same arrangement with the same neighbours, seen from a different angle. The rest of the periodic table is what happens when you insist on something more symmetric.</p>
+  </section>
+
+  <section class="stage">
+    <canvas id="cv" width="800" height="620"></canvas>
+    <div class="side">
+      <div class="box">
+        <h2>Structure</h2>
+        <div class="row"><span>Type</span><b id="s1">—</b></div>
+        <div class="row"><span>Atoms per cell</span><b id="s2">—</b></div>
+        <div class="row"><span>Coordination</span><b id="s3">—</b></div>
+        <div class="row"><span>Packing fraction</span><b id="s4">—</b></div>
+        <div class="row"><span>Atomic radius</span><b id="s5">—</b></div>
+        <div class="row"><span>Lattice constant</span><b id="s6">—</b></div>
+      </div>
+      <div class="box">
+        <h2>Example</h2>
+        <div class="row"><span>Element</span><b id="s7">—</b></div>
+        <div class="row"><span>System</span><b id="s8">—</b></div>
+        <div class="row"><span>Year</span><b id="s9">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctrl">
+    <button class="btn" data-t="sc">Simple cubic</button>
+    <button class="btn" data-t="bcc">Body centred</button>
+    <button class="btn on" data-t="fcc">Face centred</button>
+    <button class="btn" data-t="hcp">Hexagonal close packed</button>
+    <button class="btn" data-t="dia">Diamond</button>
+  </div>
+
+  <section class="cols">
+    <div>
+      <h2>Packing<br>and the<br>holes</h2>
+      <p>Stack spheres in rows and the second layer sits in the hollows of the first — but there are two kinds of hollow, and only one of them is a proper fit. A layer sitting in the <b>triangular</b> hollows gives cubic close packing, which is the same thing as face-centred cubic seen from a different angle. A layer sitting in the <b>cubic</b> hollows gives hexagonal close packing, and it is marginally denser, which is why the densest packing of equal spheres fills 74.05 per cent of the space and not 74.048.</p>
+      <p>Everything less dense — body centred, simple cubic — is a structure that has given up a little packing in exchange for something else: a lattice with more symmetry, or a direction along which the atoms are evenly spaced.</p>
+    </div>
+    <div>
+      <h2>Why it<br>matters</h2>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;">The coordination number — how many neighbours touch a given atom — is the number that governs almost everything: iron is body centred with twelve neighbours and melts at a thousand degrees less than aluminium, which is face centred with twelve neighbours and a much stronger bond. Copper and diamond have the same coordination number and completely different structures, and diamond is hard because its bonds point in four fixed directions.</p>
+      <p style="color:var(--dim);font-size:.96rem;line-height:1.95;margin-top:1em;">Everything a crystal does — the way it cleaves, the way it conducts, the way it bends light — comes out of the arrangement of atoms and the symmetry of the cell they sit in.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Lattice — the packing of atoms</span>
+    <span>Unit cells drawn in perspective</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var yaw=0.7, pitch=0.5, dragging=false, lastX=0, lastY=0, type='fcc';
+  var S=110; // pixels per unit cell edge
+
+  var TYPES={
+    sc:{n:'Simple cubic',atoms:1,coord:6,pack:0.5236,ex:'Polonium',sys:'α-Po',year:1899},
+    bcc:{n:'Body centred cubic',atoms:2,coord:8,pack:0.6802,ex:'Iron, tungsten',sys:'α-Fe, W',year:1891},
+    fcc:{n:'Face centred cubic',atoms:4,coord:12,pack:0.7405,ex:'Copper, aluminium',sys:'Cu, Al',year:1812},
+    hcp:{n:'Hexagonal close packed',atoms:6,coord:12,pack:0.7405,ex:'Zinc, magnesium',sys:'Zn, Mg',year:1812},
+    dia:{n:'Diamond cubic',atoms:8,coord:4,pack:0.3401,ex:'Diamond, silicon',sys:'C, Si',year:1812}
+  };
+  function build(kind){
+    var pts=[], a=1;
+    for(var i=0;i<2;i++) for(var j=0;j<2;j++) for(var k=0;k<2;k++){
+      pts.push({x:i*a,y:j*a,z:k*a,r:0.5,core:true});
+    }
+    if(kind==='bcc'||kind==='fcc'||kind==='dia'){
+      pts.push({x:.5,y:.5,z:.5,r:0.55,core:true});
+    }
+    if(kind==='fcc'||kind==='dia'){
+      pts.push({x:.5,y:.5,z:0,r:.5});
+      pts.push({x:.5,y:.5,z:1,r:.5});
+      pts.push({x:.5,y:0,z:.5,r:.5});
+      pts.push({x:.5,y:1,z:.5,r:.5});
+      pts.push({x:0,y:.5,z:.5,r:.5});
+      pts.push({x:1,y:.5,z:.5,r:.5});
+    }
+    if(kind==='dia'){
+      pts.push({x:.25,y:.25,z:.25,r:.42});
+      pts.push({x:.75,y:.75,z:.25,r:.42});
+      pts.push({x:.75,y:.25,z:.75,r:.42});
+      pts.push({x:.25,y:.75,z:.75,r:.42});
+    }
+    if(kind==='hcp'){
+      pts.length=0;
+      for(var i2=0;i2<2;i2++) for(var j2=0;j2<2;j2++){
+        pts.push({x:i2,y:j2,z:0,r:.5,core:true});
+        pts.push({x:i2+0.5,y:j2+0.5,z:0.816,r:.5,core:true});
+      }
+    }
+    return pts;
+  }
+  function project(p){
+    var cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+    var x=p.x*cy+p.z*sy;
+    var z=-p.x*sy+p.z*cy;
+    var y=p.y*cp-z*sp;
+    z=p.y*sp+z*cp;
+    return {x:W/2+x*S, y:H/2-y*S, z:z, depth:z};
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W/2,H*0.45,40,W/2,H/2,W*0.7);
+    g.addColorStop(0,'#121820'); g.addColorStop(1,'#070a0c');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    var T=TYPES[type];
+    var pts=build(type);
+    // unit cell edges
+    var corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]];
+    var edges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    ctx.strokeStyle='rgba(201,162,39,.5)'; ctx.lineWidth=1.4;
+    edges.forEach(function(e){
+      var a2=project(corners[e[0]]), b2=project(corners[e[1]]);
+      ctx.beginPath(); ctx.moveTo(a2.x,a2.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+    });
+    // sort atoms by depth
+    var sorted=pts.map(function(p){ return {p:p,q:project(p)}; });
+    sorted.sort(function(a,b){ return b.q.depth-a.q.depth; });
+    sorted.forEach(function(o){
+      var p=o.p,q=o.q;
+      var r=(p.r||0.45)*S*0.46;
+      var grd=ctx.createRadialGradient(q.x-r*0.35,q.y-r*0.4,r*0.05,q.x,q.y,r);
+      if(p.core){
+        grd.addColorStop(0,'#d8ecff'); grd.addColorStop(.35,'#7fb4e8'); grd.addColorStop(1,'#2c5c86');
+      }else{
+        grd.addColorStop(0,'#ffe2bd'); grd.addColorStop(.35,'#e8a45c'); grd.addColorStop(1,'#8a5320');
+      }
+      ctx.beginPath(); ctx.arc(q.x,q.y,r,0,6.283);
+      ctx.fillStyle=grd; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=1; ctx.stroke();
+    });
+    // labels
+    ctx.fillStyle='rgba(230,236,240,.45)'; ctx.font='12px "Courier New",monospace';
+    ctx.fillText(T.n.toUpperCase()+' · a = 3.52 Å', 18, 26);
+    ctx.fillText('drag to rotate', 18, 44);
+    document.getElementById('s1').textContent=T.n;
+    document.getElementById('s2').textContent=T.atoms;
+    document.getElementById('s3').textContent=T.coord;
+    document.getElementById('s4').textContent=(T.pack*100).toFixed(1)+' %';
+    document.getElementById('s5').textContent=(3.52*T.pack*0.25).toFixed(3)+' Å';
+    document.getElementById('s6').textContent='3.52 Å';
+    document.getElementById('s7').textContent=T.ex;
+    document.getElementById('s8').textContent=T.sys;
+    document.getElementById('s9').textContent=T.year;
+  }
+  function loop(){ draw(); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+  cv.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    yaw+=(e.clientX-lastX)*0.01;
+    pitch=Math.max(-1.4,Math.min(1.4,pitch+(e.clientY-lastY)*0.01));
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  window.addEventListener('pointerup',function(){dragging=false;});
+  var btns=document.querySelectorAll('[data-t]');
+  Array.prototype.forEach.call(btns,function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(btns,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      type=b.getAttribute('data-t');
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+TITLE: Aurora Glass — Aether Institute
+
+PROMPT:
+Build a single self-contained HTML page (no external files, no CDN, no webfonts, all CSS and JS inline) for a fictional atmospheric-optics observatory called "Aether Institute". The page must read like a premium design-showcase landing page: a deep midnight-navy canvas with a blurred, screen-blended aurora field of four slowly drifting colour blobs (mint #5ef2d0, violet #7b6bff, magenta #ff5fa2, cyan #4fd8ff) rendered as fixed radial gradients, plus a fine SVG-turbulence grain overlay and a radial vignette. The hero is a two-column layout — on the left a pill eyebrow, a huge gradient-clipped headline ("We study the light that bends around a world.") in a light weight, a dimmed paragraph and two pill buttons; on the right a glassmorphic "station readout" card with a conic-gradient rotating orb, a live UTC clock, a drifting KP index and four small stat tiles. Below, a scrolling history ticker, a row of four glass "field" cards that lift and glow on hover, and a footer. Interaction: the glass panel tilts in 3D toward the pointer (perspective + rotateX/rotateY), the KP index drifts on a timer, the clock updates every second, and a "Live spectrum" button rotates the orb's conic gradient hue. Typography: system geometric sans, wide letter-spaced uppercase micro-labels. Fully responsive, single breakpoint set at 900px and 520px, and respects prefers-reduced-motion.
+
+DESCRIPTION:
+A dark, atmospheric landing page for a fictional aurora research institute. The visual language is soft glass over a slow-breathing aurora: large blurred colour fields drift behind a crisp, high-contrast glass card, an inline SVG grain layer adds filmic texture, and the headline is set in a light weight with a clipped multi-stop gradient. Live data readouts (UTC clock, KP index, orbital readout) and a pointer-driven 3D tilt make the panel feel like an instrument rather than a picture.
+
+MAJOR VISUAL TECHNIQUES:
+- Fixed blurred radial-gradient "aurora" blobs with mix-blend-mode: screen and staggered keyframe drift/scale animations
+- Inline SVG feTurbulence data-URI grain overlay (overlay blend) + radial vignette for filmic depth
+- Glassmorphism: backdrop-filter blur + saturate, layered translucent gradient fill, gradient border via mask-composite
+- Gradient-clipped headline using background-clip:text with a five-stop linear gradient
+- Conic-gradient rotating orb with inset radial-gradient core and coloured outer glow
+- Pointer-driven 3D tilt (perspective, rotateX/rotateY) on the glass panel
+- Seamless CSS marquee ticker of duplicated list items
+- Soft radial glow pseudo-element revealed on card hover
+
+INTENDED INTERACTION MODEL:
+Passive, ambient motion by default (blobs drift, orb spins, ticker scrolls, clock ticks, KP value jitters). The glass readout panel tilts to follow the pointer across the whole window. The "Live spectrum" button re-hues the orb gradient and changes its own label. Cards react to hover with a lift and a revealed glow. No audio, no scroll-jacking, no user data required.

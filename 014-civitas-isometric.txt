@@ -1,0 +1,20 @@
+TITLE: CIVITAS — An isometric city that lives
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "CIVITAS — An isometric city that lives". Art direction: a hand-projected isometric city at golden hour that can be switched to night. Palette: sky gradient from deep indigo #1a2a5e through violet to sunset orange #e8663c and gold #ffc46b; four district colour triples (warm sandstone #c9a27a/#7d5f45/#5f4734, harbour blue #8fb0e8/#4a6799/#354d78, terraced green #a8ddc2/#5a9179/#436e5c, glass rose #f0c9d8/#9c5f77/#78465a). Layout: a fixed sky layer with a slotted sun disc (horizontal mask bands), a haze layer, a sticky header with a rotated-square logo and three pill buttons (Day / Night / Rebuild), a full-width stage holding the city, and a glass information panel (two columns: an essay plus a selection card, and a district list with animated progress bars) above a footer. The city is generated in JavaScript on a 9×9 lot grid using a hand-written 2:1 isometric projection (screen x = (gx−gy)·U, screen y = (gx+gy)·V − height): each building is three absolutely positioned divs clipped to computed polygons — a roof, a left wall and a right wall — plus a fourth clipped layer carrying a repeating window pattern that is dim by day and glows at night. Buildings are painted back-to-front by sorting on (gx+gy). The ground is an inline SVG grid of parallel lines in both isometric directions. Interaction: clicking a building selects it, outlines it with a warm drop-shadow, and writes its name, district, height and a line of description into the selection card; Rebuild regenerates the entire city; Night swaps the sky gradient, hides the sun, and turns on the windows. Responsive: the info panel becomes one column under 860px and the stage shortens.
+
+DESCRIPTION:
+A small city drawn the way an architect draws one: a 2:1 isometric grid, four districts, and buildings assembled from three polygons apiece. The projection is computed in JavaScript rather than faked with 3D transforms, which means every roof, wall and window grid lands exactly on the grid. Switching to night doesn't hide the city — it reveals that the window rectangles were always there, waiting under a 20% opacity.
+
+MAJOR VISUAL TECHNIQUES:
+- Hand-written 2:1 isometric projection (U=34, V=17) with computed clip-path polygons per face
+- Back-to-front painter's algorithm sorting buildings on (gx+gy)
+- Four-layer building construction: roof, shaded wall, lit wall, window-pattern overlay
+- Repeating linear-gradient window pattern clipped to the wall polygon, dim by day and emissive at night
+- Inline SVG isometric ground grid drawn as two families of parallel lines
+- Slotted sun disc built from stacked linear-gradient bands matching the sky colour
+- Day/night transition driven by a body class with CSS transitions on the sky and sun
+- Glass information panel with backdrop blur and animated district progress bars
+
+INTENDED INTERACTION MODEL:
+Exploration by clicking. Selecting a building highlights it and fills a card with its name, district, height and description. The Night button re-lights the city; Rebuild regenerates every lot, height and district assignment from scratch. The district bars animate in once on load. Nothing scrolls away from the reader and nothing autoplays noisily.

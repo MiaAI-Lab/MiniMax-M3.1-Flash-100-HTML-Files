@@ -1,0 +1,20 @@
+TITLE: RAW MATERIAL — A Brutalist Manifesto
+
+PROMPT:
+Create a self-contained HTML page (inline CSS + JS only, no external assets, fonts, CDNs or libraries) that is a loud Swiss-Brutalist design manifesto titled "RAW MATERIAL". Visual direction: uncoated paper background (#e8e2d4) with a heavy multiply-blended fractal-noise texture, pure black (#111) as the only structural colour, and four flat spot colours (red #e03b12, yellow #f5c518, blue #1b3fd8, green #0f7a3d) used as load-bearing blocks. Composition: a thick black masthead rule, a header with a huge black wordmark and right-aligned monospace metadata, a colossal uppercase headline "DESIGN WITHOUT APOLOGY" where the word "DESIGN" is set as paper-coloured text with a 3px black stroke (text-stroke), a hand-drawn red strike-through crossing the word "WITHOUT", a two-column lede with a black-ruled monospace sidebar, a row of four full-bleed coloured blocks (red/yellow/blue/green) each with an oversized index numeral, an "Eleven laws" list of numbered rows that highlight yellow and indent on hover, a full-width black marquee with yellow separators, and a poster panel with a multiply-blended red circle and a black-gapped grid of monospace spec cells. Add two rotated yellow masking-tape strips pinned to the viewport edges. Typography: Helvetica Neue / Arial for display, Courier New for metadata. Rules: zero border-radius anywhere, hard 3–4px black borders, no shadows except a single tape shadow. Fully responsive with breakpoints at 900px and 520px; the block row collapses to two then one column, and the manifesto rows reflow to a 2-column grid.
+
+DESCRIPTION:
+A typographically violent manifesto page that treats the browser like a broadsheet newspaper printed on rough stock. Every rule, colour block and hairline is deliberate; the only "soft" element on the page is the fractal-noise paper texture and the two strips of yellow tape stuck to the screen edges. The page argues for brutalist design in its own visual language — visible grid, real borders, oversized type and four flat spot colours.
+
+MAJOR VISUAL TECHNIQUES:
+- Inline SVG feTurbulence fractal-noise data-URI overlay with mix-blend-mode: multiply for press-paper grain
+- Outlined display type via -webkit-text-stroke and background-clip:text for the reversed "DESIGN" line
+- Hand-drawn strike-through using a rotated ::after bar in spot red
+- Full-bleed flat spot-colour blocks as structural grid cells with 4px black dividers
+- Rotated masking-tape strips (yellow, drop shadow) pinned to the viewport
+- Monospace metadata blocks and a spec-grid poster with mix-blend-mode: multiply circle
+- Infinite black marquee with yellow separator glyphs
+- Row-level hover that swaps background to yellow and shifts the row horizontally
+
+INTENDED INTERACTION MODEL:
+Almost entirely static and print-like — the page is meant to be read, not operated. The only motion is the looping marquee band. Manifesto rows respond to hover with a yellow wash and a 16px horizontal nudge. There are no buttons, no forms and no navigation; anchors do not scroll away from the reading flow.

@@ -1,0 +1,18 @@
+TITLE: ENIGMA — a rotor machine
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "ENIGMA — a rotor machine". Art direction: 1940s cipher machine, black bakelite and brass. Palette: ground #11100e, case #2a2724, panel #211f1c, ink #efe9dd, dim #8e8578, hairline rgba(239,233,221,.14), lamp amber #ffb64a, brass #c9a227. Layout: a header with a ring logo and a monospaced specification line; then a hero with a brass kicker, a huge light-weight headline with one bold word, and a paragraph; then a machine panel — a rounded case with a vertical gradient, split into two decks: on the left a lampboard (a six-column grid of twenty-six round lamps, unlit ones in a dark radial gradient, lit ones glowing amber with a coloured halo and a short transition) and a readout panel below it; on the right a keyboard of twenty-six round keys and a settings panel listing the three rotor types, the ring setting, the reflector, and three rotor windows in large serif numerals with each rotor's notch letter beside it; then a two-box section with a plaintext textarea, a ciphertext textarea and buttons; then a two-column section pairing an essay on why the rotors step with a note on the machine; and a footer. The cipher is a real implementation: rotors I through V with their historical wirings and notch letters, the UKW-B reflector, ring settings of AAA, and the standard double-stepping, so the right rotor advances on every keypress, drags the middle at its notch, and the middle drags the left. Interaction: clicking a key on the machine or typing a letter on the physical keyboard presses it, lights the resulting lamp and steps the rotors with the window letters updating; Encrypt and Decrypt run whole strings (the machine is reciprocal, so the same routine does both); Reset rotors returns the wheels to A and clears the counters; Copy and Clear handle the text panels. Responsive: the deck and the two-column section stack under 860px, and the lamp and key grids drop to four and six columns under 460px.
+
+DESCRIPTION:
+A working Enigma, not a picture of one. The rotors carry their historical wirings and notch letters, the reflector is UKW-B, and the stepping follows the real double-step rule, so the windows genuinely turn and the machine's state is genuinely different for every message. Click the keys or type on the keyboard and the lampboard lights with the letter the signal produced.
+
+MAJOR VISUAL TECHNIQUES:
+- Enigma rotor permutations with historical wirings and notch letters
+- Standard double-stepping carry logic
+- Reciprocal encryption and decryption from one routine
+- Glowing lampboard with radial gradients and a coloured halo
+- Bakelite case with a vertical gradient and an inner top highlight
+- Large serif rotor windows with monospaced notch indicators
+
+INTENDED INTERACTION MODEL:
+Operate the machine. Press keys, watch the rotors turn and the lamps light, encrypt and decrypt whole messages, and reset the wheels. The essay explains why the stepping was the weakness that the codebreakers at Bletchley Park used.

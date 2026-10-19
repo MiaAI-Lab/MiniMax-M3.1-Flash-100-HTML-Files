@@ -1,0 +1,20 @@
+TITLE: LA ROUE — the great wheel at dusk
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LA ROUE — the great wheel at dusk". Art direction: a Belle Époque observation wheel at the blue hour, seen from the quay. Palette: night violet #140a26, dusk #3d1548, ember orange #ff7a3d, gold #ffd08a, rose #ff5c8a, teal #4ad9c4, ink #f6e9f7, dim mauve #b295bd. The wheel itself is built entirely in CSS: a rim rendered as stacked radial-gradient rings, sixteen tapered spokes (2px gradient lines rotated about the hub), a gold hub with a dark core, a trapezoid stand, and sixteen gondolas. Each gondola is a full-height half-radius element whose rotation origin is its own bottom-centre, so rotating it carries the cabin around the rim; the cabin body is a rounded gradient tile with a coloured glow, centred on the rim by a half-height translate. The scene sits on a fixed radial+linear gradient sky with an SVG turbulence grain in overlay blend and ninety twinkling stars. Layout: a header with a pulsing brand mark and three pill buttons (Ride / Hold / Lights); a stage holding the wheel with a side panel showing the selected cabin's name and description plus a facts list (diameter, height, cabins, rotation, ticket); a vertical caption on the left; three editorial cards below; and a footer. Interaction: the wheel is driven by a requestAnimationFrame loop that rotates the rim, the spokes and every gondola together at 22 minutes per turn; Ride resumes and Hold stops the rotation; Lights dims the rim, spokes and cabins; clicking any gondola selects it and rewrites the panel with that cabin's name, description and number. Responsive: the side panel moves below the wheel under 940px and the cards stack.
+
+DESCRIPTION:
+A great wheel rendered as pure geometry, turning at a believable twenty-two minutes per revolution. The gondolas are the real trick: each one is anchored so that rotating it about its own base sweeps it around the rim, which means the cabins stay upright relative to the spoke and the whole assembly can be driven from a single angle. Clicking a cabin brings up the view from that seat — the Seine, the cathedral, the last ferry — which is a small piece of writing disguised as an interface.
+
+MAJOR VISUAL TECHNIQUES:
+- Gondola placement via a half-radius element with a bottom-centre rotation origin and a negative half-height translate
+- Rim drawn with stacked radial-gradient rings (inner hub ring, mid band, outer rail)
+- Tapered spoke gradient from gold to transparent, rotated about the hub
+- requestAnimationFrame-driven shared rotation angle across rim, spokes and cabins
+- SVG turbulence grain overlay in overlay blend over a dusk gradient sky
+- Star field of ninety elements with randomised twinkle delays
+- Colour-wheel gondola palette with per-cabin glow shadows
+- Vertical writing-mode caption rail
+
+INTENDED INTERACTION MODEL:
+Ride, hold, and look. The wheel turns on its own until Hold is pressed; Ride resumes it. Lights dims the whole apparatus to a silhouette. Clicking a gondola selects it and rewrites the side panel with that seat's name and view. No forms, no audio, no external data.

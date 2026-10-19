@@ -1,0 +1,18 @@
+TITLE: PALIMPSEST — what was written before
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "PALIMPSEST — what was written before". Art direction: manuscript, aged vellum, scholarly. Palette: background #e6dcc3, page #ded2b4, ink #332a1c, dim #7a6c54, hairline rgba(51,42,28,.28), red #8e2f22. Body type is Georgia / Times. Layout: a header with a small-caps wordmark and a catalogue line separated by a double rule; then a hero with a red kicker, a huge serif headline in which one word is red italic, and a paragraph; then a "leaf" panel — a raised parchment sheet with a deep shadow, an inset warm tint, ruled vertical fibres and three stacked layers, each labelled with a date and set in the recovered hand, showing the 1140 accounts, the 1280 erased reliquary entry and the 1711 current hand; then an "Erase the top layer" section: a bordered panel with a 180px box in which a canvas sits over a div holding the current text, so that scrubbing the canvas with destination-out compositing reveals the older writing underneath; then a two-column section pairing an essay on why erased script survives with a specimen table; and a footer with a double rule. Interaction: pointer down and drag over the panel erases a 26px radius of the top layer, uncovering the text below; Restore the surface repaints the canvas; Reveal all clears the canvas entirely. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A palimpsest you can scrub. Three hands are stacked on one leaf — the 1140 accounts, the 1280 entry about a stolen reliquary, and the dull 1711 complaint about the ink. The middle panel is a real compositing trick: a canvas sits over the older text and is erased with destination-out where you drag, so the surface you uncover is literally the pixels underneath, not a swap.
+
+MAJOR VISUAL TECHNIQUES:
+- Canvas destination-out compositing used as an eraser over DOM text
+- Layered parchment with deep shadow and inset warm tint
+- Vertical fibre ruling over the leaf
+- Double-rule header and footer rules
+- Small-caps and italic-red editorial accents
+- Specimen table with hairline row dividers
+
+INTENDED INTERACTION MODEL:
+Scrub. Drag across the panel to uncover the erased hand, restore the surface when you have read enough, or reveal everything at once. The prose explains why the parts somebody tried hardest to destroy are the parts we can still read.

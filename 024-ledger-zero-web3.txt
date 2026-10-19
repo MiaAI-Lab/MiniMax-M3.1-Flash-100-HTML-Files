@@ -1,0 +1,20 @@
+TITLE: LEDGER//ZERO — decentralised, badly
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LEDGER//ZERO — decentralised, badly", a landing page for a fictional settlement protocol. Art direction: loud, cheap-and-confident crypto brutalism — flat fields, hard 3px black rules, zero gradients, no rounded corners. Palette: paper #f2f2ee, ink #0a0a0a, acid green #d7ff00, signal red #ff2b00, electric blue #0028ff, grey #8a8a84. Layout: a black ticker strip at the very top scrolling pairs of symbol, price and change; a header with a bordered square logo and four 2px-bordered nav links that invert to acid green on hover; a two-column hero — on the left an enormous uppercase headline where one word is outlined with a 3px text-stroke, another is highlighted in acid green with a <mark> element, and a phrase inside the paragraph is set as a red highlight; two chunky buttons whose hover state shifts them up-left with a hard offset shadow, plus a status line; on the right an acid-green panel with a black title bar showing a live block number and six pool rows that drift in price every three seconds, each with a green or red percentage chip; then a three-column band of blocks (blue / paper / black) numbered 01–03; then a bordered terminal panel that types a ledger replay line by line with green, red, yellow and grey spans; then a four-column statistics strip; then a footer. Interaction: the Connect wallet button resolves a truncated 0x address after a delay and disables itself; the whitepaper button replies with a joke in the status line; the pool prices update on an interval; the terminal types itself out; the top ticker scrolls continuously. Responsive: the hero stacks under 960px, the three-block band and the stats strip collapse from three/four columns to one, and the nav wraps.
+
+DESCRIPTION:
+A deliberately un-polished web3 landing page: flat acid green, hard black rules, a scrolling price strip and a terminal that replays nine million events to prove a point. The humour is in the confidence — "nobody needs to be a bank to be a bank" — while the visual language is exactly the cheap-loud register the genre is known for, rendered with care rather than irony.
+
+MAJOR VISUAL TECHNIQUES:
+- Flat spot-colour blocking with 3px black rules and zero border-radius
+- Outlined display type using -webkit-text-stroke
+- Hard offset shadow on hover (translate + box-shadow) for a printed feel
+- Acid-green panel with a black title bar and live-updating price rows
+- <mark>-style inline highlight blocks in both display and body copy
+- Self-typing terminal transcript with colour-coded spans
+- Infinite price ticker built from a duplicated list
+- Resolved wallet address with a fake connection delay
+
+INTENDED INTERACTION MODEL:
+Two buttons, one simulation. Connecting a wallet resolves an address after a beat and reports it; the whitepaper button answers with a joke. Pool prices and the block height tick every three seconds, the terminal types itself on load, and the top ticker scrolls forever. Everything else is set in large, flat, deliberately loud type.

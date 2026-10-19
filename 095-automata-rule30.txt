@@ -1,0 +1,17 @@
+TITLE: AUTOMATA — one hundred cells and a rule
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "AUTOMATA — one hundred cells and a rule". Art direction: phosphor terminal, black, one bright green. Palette: ground #06070a, ink #e9ecf2, dim #767d8a, hairline rgba(233,236,242,.13), live #7ef2c0, dead #1a1d24. Layout: a header with a six-cell logo mark and a monospaced specification line; then a hero with a green kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding a 1200×620 canvas that draws the space-time diagram, one generation per row, with the newest generation at the bottom, plus an absolutely positioned monospace HUD; then a control band of two sliders (Rule, Generations per second) and a row of seven buttons (Reset / Single cell / Random row / Rule 30 / Rule 90 / Rule 110 / Rule 184); then a six-item readout strip giving the rule in binary, the Wolfram class, the generation count, the number of live cells, the density and a plain-language description of the behaviour; then a two-column section pairing an essay on four neighbours and eight choices with a note on the four Wolfram classes; and a footer. The automaton is real: a row of six hundred cells on a ring, each new cell's state read from the rule's eight binary digits using the neighbourhood index formed from the left, centre and right cells, so rule thirty reproduces the chaotic triangle and rule ninety reproduces the Sierpinski gasket. Interaction: the Rule slider sweeps all two hundred and fifty-six rules and reseeds the row, the speed slider changes the rate, the four preset buttons jump to the famous rules, and the two seeding buttons restart from a single cell or from a random row. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A one-dimensional cellular automaton, running for real: the rule's eight binary digits are looked up by neighbourhood index, so rule 30 gives the chaotic triangle and rule 90 gives the Sierpinski gasket, drawn as a space-time diagram with each generation a new row. Sweep the rule slider through all two hundred and fifty-six and watch the whole taxonomy of behaviour go past.
+MAJOR VISUAL TECHNIQUES:
+- Rule table indexed by the left, centre and right neighbourhood
+- Six hundred cells on a ring so the row is periodic
+- Space-time diagram with one generation per row, newest at the bottom
+- Eight-digit binary rule readout
+- Wolfram class heuristic from the shape of the rule table
+- Presets for rules 30, 90, 110 and 184
+
+INTENDED INTERACTION MODEL:
+Sweep the rule. Drag the rule slider through all two hundred and fifty-six, change the speed, reseed from a single cell or a random row, and jump to the four famous rules.

@@ -1,0 +1,18 @@
+TITLE: LATHER — the colour of a thin film
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LATHER — the colour of a thin film". Art direction: iridescent, pearlescent, dark background so the colours read. Palette: ground #07080c, ink #eef0f6, dim #7b8090, hairline rgba(238,240,246,.13), sheen #9ad7ff. Layout: a header with a bubble logo mark and a monospaced film line; then a hero with a pale kicker, a huge light-weight headline with one bold word, and a paragraph; then a bordered stage holding a 1200×640 canvas and an absolutely positioned monospace HUD; then a control band of two sliders (Film thickness, Film lifetime) and three buttons (Blow / Pop all / Still); then a six-item readout strip giving the film thickness in nanometres, the dominant reflected wavelength, the number of bubbles alive, the mean bubble radius, the time since the soap was made and the age of the oldest bubble; then a two-column section pairing an essay on why there are two colours with a note on the arithmetic; and a footer. The colours are computed, not chosen: for a film of refractive index 1.33 and a given thickness, the reflectance at each wavelength is evaluated from the phase difference of the two reflected rays, including the half-wavelength shift at the air-to-liquid surface, and a thirty-one-sample spectrum is integrated against three rough colour response curves to give red, green and blue. Each bubble is drawn as a stack of horizontal bands, each band coloured by the interference colour for the thickness at that height — thin at the top, where the liquid has drained away, and thick at the bottom — with a rim and a specular highlight over the top. Interaction: Blow releases a burst of bubbles that rise, expand and thin until they pop; clicking a bubble pops it; the thickness slider changes the film and therefore every colour on the page; Still freezes the animation. Responsive: the two-column section stacks under 860px.
+
+DESCRIPTION:
+A soap bubble, with the colour computed from the optics rather than picked from a palette. The film is thin at the top and thick at the bottom, and because a thin film reflects some wavelengths and not others, the two regions show completely different colours — so each bubble is drawn as a stack of bands, each coloured by the interference calculation for the thickness at that height. Change the film thickness and every bubble on the page changes colour at once.
+
+MAJOR VISUAL TECHNIQUES:
+- Thin-film reflectance computed per wavelength with the half-wave phase shift
+- Thirty-one-sample spectrum integrated against three colour response curves
+- Bubble drawn as stacked horizontal bands of interference colour
+- Thickness gradient from thin crown to thick base as the liquid drains
+- Rim shading and specular highlight over the film bands
+- Bubbles that rise, expand, thin and pop
+
+INTENDED INTERACTION MODEL:
+Blow bubbles. Click them to pop them, change the film thickness and watch every colour change, freeze the scene, or pop the lot at once.

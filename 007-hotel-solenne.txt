@@ -1,0 +1,20 @@
+TITLE: HÔTEL SOLENNE — A quiet house on the coast
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or SVG files) for a fictional 21-room boutique hotel on the French Atlantic coast called "HÔTEL SOLENNE". Art direction: minimal luxury / quiet editorial. Palette: ivory #f3efe6 ground, ink #191713, brass #a3803f, hairline rules at 18% black. Type: a Didone stack (Didot, Bodoni MT, Playfair Display, Hoefler Text, Georgia) for display and prose, Helvetica Neue for micro-labels; letterspaced uppercase micro-labels throughout. The full-bleed hero is a dusk scene painted entirely in CSS: a vertical sky gradient (sand → clay → slate), a soft breathing sun disc, a clip-path headland ridge, a dark sea band, a haze overlay and an inset vignette. Over it: a fixed left vertical rail with rotated "Est. 1927 — Cap Ferret" text, a top bar with a letterspaced wordmark and four hairline nav links, a centred serif headline "SOLENNE" revealed letter by letter with staggered rise animation, a sub-line and a thin rule, and a bottom row with the address plus an animated scroll cue. Body sections: an editorial two-column introduction with a brass label, a serif headline containing an italic brass word, two paragraphs and a handwritten-style signature; a rooms list of four rows (roman numeral, serif name, description, serif price) separated by hairlines, where hovering a row slides in a small gradient thumbnail that follows the pointer and turns the room name brass; a dark charcoal reservation block with a two-column layout and a form of underline-only inputs and a native select, whose submit button reports the guest's name back; an infinite marquee of the four seasons in serif; and a three-column footer plus a legal bar. Responsive: hero rail hidden under 900px, the room rows reflow to two columns and lose the thumbnail under 600px, the footer stacks.
+
+DESCRIPTION:
+A restrained, expensive-feeling hotel page where every image is drawn in CSS and every rule is a hairline. The dusk hero uses layered gradients and a clip-path ridge rather than photography, and the typography carries the luxury: a Didone wordmark, generous leading, brass used exactly three times per screen. The room list rewards attention with a pointer-following preview, and the reservation form confirms by naming the guest.
+
+MAJOR VISUAL TECHNIQUES:
+- CSS-only dusk landscape (multi-stop sky gradient, radial sun, clip-path ridge polygon, sea band, haze, inset vignette)
+- Letter-by-letter staggered reveal using per-span animation-delay
+- Vertical writing-mode text rail pinned to the viewport
+- Hairline rules at 18% ink with a generous editorial grid
+- Pointer-following gradient thumbnail on room-row hover
+- Underline-only form fields with a brass focus state and a custom select caret
+- Infinite serif marquee of seasons
+- Brass italic accent used as the single chromatic note
+
+INTENDED INTERACTION MODEL:
+Calm and mostly passive. The wordmark animates itself in on load; room rows reveal a preview on hover that tracks the pointer; the reservation form acknowledges submission inline by name; the seasons marquee loops. No modals, no audio, no motion on scroll.

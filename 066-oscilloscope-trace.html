@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSCILLOSCOPE — a green trace</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#050907;--ink:#d6ffe4;--dim:#4d7a5e;--line:rgba(214,255,228,.13);--grn:#39ff88;--amber:#ffb545;}
+  body{background:var(--bg);color:var(--ink);font-family:"Courier New",Courier,monospace;overflow-x:hidden;}
+  .crt{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 50% 45%,#08130c 0%,#040705 70%,#000 100%);}
+  .scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.30;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.55) 0 1px,transparent 1px 3px);}
+  .wrap{position:relative;z-index:4;max-width:1100px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:13px;letter-spacing:.4em;text-transform:uppercase;color:var(--grn);text-shadow:0 0 12px rgba(57,255,136,.6);}
+  .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 4vh;max-width:700px;}
+  .k{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--grn);}
+  h1{font-size:clamp(2rem,5.4vw,3.9rem);font-weight:400;line-height:1.05;letter-spacing:-.02em;margin:18px 0 20px;
+    text-shadow:0 0 26px rgba(57,255,136,.28);}
+  .hero p{color:var(--dim);font-size:.98rem;line-height:1.9;max-width:56ch;}
+  .hero p b{color:var(--ink);font-weight:400;}
+
+  .scope{margin-top:5vh;border:1px solid var(--line);padding:16px;background:rgba(57,255,136,.025);
+    box-shadow:inset 0 0 60px rgba(57,255,136,.05);}
+  .scope canvas{width:100%;height:auto;display:block;background:#030704;}
+  .readout{margin-top:12px;display:flex;gap:26px;flex-wrap:wrap;font-size:11px;letter-spacing:.16em;color:var(--dim);}
+  .readout b{color:var(--grn);font-weight:400;}
+  .readout .a{color:var(--amber);}
+
+  .ctrl{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{color:#04160b;background:var(--grn);border-color:var(--grn);box-shadow:0 0 18px rgba(57,255,136,.45);}
+
+  .note{margin-top:6vh;border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:.9fr 1.1fr;gap:5vw;}
+  .note h2{font-size:clamp(1.2rem,2.8vw,1.9rem);font-weight:400;line-height:1.28;letter-spacing:.02em;}
+  .note p{color:var(--dim);font-size:.92rem;line-height:1.95;}
+  .note p+p{margin-top:1em;}
+  .note p b{color:var(--ink);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+  @media(max-width:860px){.note{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="crt"></div>
+<div class="scan"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">Oscilloscope</div>
+    <div class="meta">Model 1741A · 100 kHz · green phosphor</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Instrument</div>
+    <h1>Watch a signal<br>you cannot hear</h1>
+    <p>An oscilloscope draws voltage against time. Before the microphone there was the <b>oscillograph</b>, which photographed a trace on a moving film drum — and before that, the <b>galvanometer</b>, a needle that swung and wrote a line on a moving strip of smoked glass. Every one of them is a way of turning time into a picture.</p>
+  </section>
+
+  <section class="scope">
+    <canvas id="cv" width="1200" height="420"></canvas>
+    <div class="readout">
+      <span>CH1 <b id="freq">1000.0 Hz</b></span>
+      <span>AMPL <b id="amp">1.00 Vpp</b></span>
+      <span>TRIGGER <b id="trig">AUTO</b></span>
+      <span>SWEEP <b id="sweep">1.0 ms/div</b></span>
+      <span class="a" id="mode">SINE</span>
+    </div>
+    <div class="ctrl">
+      <button class="btn on" data-w="sine">Sine</button>
+      <button class="btn" data-w="square">Square</button>
+      <button class="btn" data-w="saw">Saw</button>
+      <button class="btn" data-w="tri">Triangle</button>
+      <button class="btn" data-w="noise">Noise</button>
+      <button class="btn" id="freeze">Freeze</button>
+    </div>
+  </section>
+
+  <section class="note">
+    <div>
+      <h2>Anything<br>that varies<br>can be<br>drawn</h2>
+    </div>
+    <div>
+      <p>Swap the waveform and the instrument does not care. The trace is <b>amplitude against time</b>, which means any quantity you can turn into a voltage can be looked at: nerve impulses, the tremor of a bridge, the current in a speaker, the beat of a valve.</p>
+      <p>The amber trace is the second channel. Real scopes show two so you can compare — the reference signal against the thing under test, and the shape of the difference is where the information lives.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Oscilloscope — a green trace</span>
+    <span>Five waveforms · live drawing</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height, mid=H/2;
+  var wave='sine', frozen=false, t=0;
+  var FREQ={sine:1000,square:520,saw:180,tri:700,noise:0};
+  var AMP={sine:1,square:.8,saw:.9,tri:.7,noise:.55};
+
+  function shape(p,w){
+    if(w==='sine') return Math.sin(p*Math.PI*2);
+    if(w==='square') return Math.sign(Math.sin(p*Math.PI*2))||1;
+    if(w==='saw') return 2*((p%1))-1;
+    if(w==='tri') return 2*Math.abs(2*((p%1))-1)-1;
+    return (Math.random()*2-1);
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // graticule
+    ctx.strokeStyle='rgba(57,255,136,.13)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var x=0;x<=W;x+=W/10){ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,H);}
+    for(var y=0;y<=H;y+=H/8){ctx.moveTo(0,y+.5);ctx.lineTo(W,y+.5);}
+    ctx.stroke();
+    // centre line
+    ctx.strokeStyle='rgba(57,255,136,.28)';
+    ctx.beginPath(); ctx.moveTo(0,mid+.5); ctx.lineTo(W,mid+.5); ctx.stroke();
+
+    var cycles = wave==='noise'?40:6;
+    function trace(color,glow,alpha,width,offset){
+      ctx.strokeStyle=color; ctx.lineWidth=width; ctx.shadowColor=glow; ctx.shadowBlur=alpha;
+      ctx.beginPath();
+      for(var i=0;i<=W;i++){
+        var p=(i/W)*cycles + offset;
+        var v=shape(p,wave);
+        if(wave==='square') v = (Math.floor(p)%2===0)?1:-1;
+        if(wave==='tri'){ var f=p%1; v = f<0.5? (f*4-1) : (3-f*4); }
+        var y=mid - v*(H*0.34);
+        if(i===0) ctx.moveTo(i,y); else ctx.lineTo(i,y);
+      }
+      ctx.stroke();
+      ctx.shadowBlur=0;
+    }
+    trace('rgba(255,181,69,.85)','rgba(255,181,69,.9)',14,2,0);
+    trace('#39ff88','rgba(57,255,136,.95)',18,2.6,0);
+
+    // graticule label
+    ctx.fillStyle='rgba(57,255,136,.35)'; ctx.font='12px "Courier New",monospace';
+    ctx.fillText('1 V/DIV   1 ms/DIV',16,22);
+  }
+  function loop(){
+    if(!frozen){ t+=0.012; }
+    var base=FREQ[wave]||0;
+    document.getElementById('freq').textContent = wave==='noise'?'BROADBAND':'1000.0 Hz';
+    document.getElementById('amp').textContent=(AMP[wave]).toFixed(2)+' Vpp';
+    document.getElementById('mode').textContent=wave.toUpperCase();
+    document.getElementById('sweep').textContent=(wave==='saw'?'5.0 ':'1.0 ')+'ms/div';
+    draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  var btns=document.querySelectorAll('[data-w]');
+  Array.prototype.forEach.call(btns,function(b){
+    b.addEventListener('click',function(){
+      wave=b.getAttribute('data-w');
+      Array.prototype.forEach.call(btns,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+    });
+  });
+  document.getElementById('freeze').addEventListener('click',function(){
+    frozen=!frozen; this.classList.toggle('on',frozen); this.textContent=frozen?'Run':'Freeze';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+TITLE: VELLUM — the Cartographer's Complaint
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "VELLUM — the Cartographer's Complaint", a dark-fantasy map page. Art direction: an old hand-inked chart on a dark table. Palette: ground #12100c, map #1d1912, ink #e6dcc4, body #b3a68a, dim #93886f, hairline rgba(230,220,196,.15), gold #d3ab55, blood red #a3342a, fen green #6f7f4a, sea slate #3d4a4f. Layout: a header with a wide-tracked wordmark, a gold diamond logo and a sheet reference; then a bordered stage holding a 1200×700 inline SVG map with a drifting fog layer and a vignette over it, and a small legend in the bottom-left; then a two-column section — on the left a large serif heading and two paragraphs in the cartographer's voice, on the right a list of eight places, each with a number, a name, an italic category and a warning in red. Below, a footer. The map itself is generated in JavaScript as an SVG: a dark ground, a coastal shape in translucent slate, five dashed roads connecting the places, a hand-drawn fen of two hundred little wavy strokes, a range of triangular mountain outlines, forty conifer glyphs in the forest corner, eight place markers drawn as a ring, a red cross or a gold triangle depending on the kind, each with a lettered label, and a compass rose with a gold north letter. Interaction: hovering a place marker dims it; clicking a place in the list highlights the row and flashes the corresponding marker on the map. Responsive: the two-column section stacks under 880px.
+
+DESCRIPTION:
+A hand-inked map of the Marches, generated rather than drawn: the fen is two hundred little wavy strokes, the forest is forty conifer glyphs, the mountains are bare triangles, the roads are dashed and thin, and the coast is a single translucent shape. Eight places sit on it as rings, crosses and gold triangles, each with a warning attached — "tide reaches the door at spring", "no road, do not attempt after dark". Fog drifts over the whole chart, which is the correct condition for a place called Hollowmere.
+
+MAJOR VISUAL TECHNIQUES:
+- SVG map assembled procedurally: coastline, dashed roads, fen hatching, mountains, conifers
+- Drifting fog layer built from two radial gradients with a slow keyframe
+- Corner vignette over the chart
+- Place markers differentiated by kind: ring, red cross, gold triangle
+- Compass rose with concentric circles and a gold N
+- Dotted-rule place list with a vermilion warning column
+- Serif prose set as a cartographer's complaint
+
+INTENDED INTERACTION MODEL:
+Read and locate. Hover the markers or click a place in the list to link the two. The fog drifts; nothing else moves. The page is a document first and an interface second.

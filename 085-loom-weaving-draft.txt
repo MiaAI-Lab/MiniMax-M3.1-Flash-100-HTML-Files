@@ -1,0 +1,18 @@
+TITLE: LOOM — a draft for a cloth
+
+PROMPT:
+Create a self-contained HTML page (all CSS and JS inline, no external fonts, images, CDNs, libraries or external SVG files) called "LOOM — a draft for a cloth". Art direction: weaver's graph paper, cream and indigo and ochre. Palette: background #ece6d8, paper #f7f2e6, ink #25211a, dim #7c7464, hairline rgba(37,33,26,.3), warp indigo #2f4b6e, weft ochre #b5762f, red #9c2b22. Layout: a header with a bold uppercase wordmark and a monospaced specification line under a 2px rule; then a hero with a red kicker, a huge light-weight headline with one heavy word, and a paragraph; then a bordered draft panel split into a large square canvas on the left and a narrow column on the right holding three grids — a threading grid of twenty-four columns by four shaft rows, a four-by-four tie-up grid, and a four-column treadling grid of twenty-four picks — each labelled in monospace, followed by a short instruction line; then a six-item readout strip giving the weave name, the longest warp float, the longest weft float, ends per inch, length and picks woven; then a row of five buttons (Plain weave / 2/2 twill / Basket / Satin / Weave the cloth); then a two-column section pairing an essay on the three grids with a note on reading the cloth; and a footer. The cloth is computed, not drawn: for every crossing the warp thread's shaft is looked up from the threading, the treadle for that pick is looked up from the treadling, and the tie-up says whether that treadle lifts that shaft — so the drawdown on the canvas is the true multiplication of the three grids, coloured warp indigo where the warp is on top and weft ochre where the weft is. Interaction: clicking a cell in the threading moves that warp thread to another shaft, clicking a cell in the tie-up lifts or drops that shaft for that treadle, and clicking a cell in the treadling changes which treadle is pressed for that pick, with the drawdown redrawing after every change; the four preset buttons set plain, two-over-two twill, basket and satin; Weave the cloth advances pick by pick with a red marker on the current pick. Responsive: the draft panel and the two-column section stack under 900px.
+
+DESCRIPTION:
+A working four-shaft loom. The cloth on the canvas is the true product of three grids: the threading says which shaft each warp thread is on, the tie-up says which shafts each treadle lifts, the treadling says which treadle is pressed for each pick, and at every crossing the code works out whether the warp or the weft is on top. Change any one of the three and the whole cloth changes — which is exactly why a weaver's draft is the design and the cloth is only the consequence.
+
+MAJOR VISUAL TECHNIQUES:
+- Drawdown computed from the threading, tie-up and treadling grids
+- Warp and weft cell shading that reads as interlaced thread
+- DOM grid editors built from 12-pixel cells with a hairline gutter
+- Longest-float measurement in both directions
+- Pattern detection that names plain weave, two-over-two twill or a free draft
+- Pick-by-pick weaving animation with a red current-pick marker
+
+INTENDED INTERACTION MODEL:
+Weave it. Edit the three grids by clicking, use the presets, and run the cloth pick by pick while the drawdown builds up underneath.

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MYCELIUM — the network under the wood</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#0a0c09;--ink:#e8ece0;--dim:#79806e;--line:rgba(232,236,224,.13);--myc:#e9dfb4;--nut:#4fb0a5;}
+  body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0;
+    border-bottom:1px solid var(--line);}
+  .brand{font-size:12px;letter-spacing:.42em;text-transform:uppercase;display:flex;align-items:center;gap:12px;}
+  .brand i{width:22px;height:22px;display:block;position:relative;}
+  .brand i:before,.brand i:after{content:"";position:absolute;background:var(--myc);border-radius:50%;}
+  .brand i:before{width:5px;height:5px;left:2px;top:9px;box-shadow:13px 0 0 var(--myc);}
+  .brand i:after{width:2px;height:12px;left:10px;top:5px;transform:rotate(24deg);opacity:.6;}
+  .meta{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:760px;}
+  .k{font:400 10.5px/1 "Courier New",monospace;letter-spacing:.42em;text-transform:uppercase;color:var(--nut);}
+  h1{font-size:clamp(2.3rem,6vw,4.3rem);font-weight:200;line-height:1;letter-spacing:-.035em;margin:18px 0 20px;}
+  h1 b{font-weight:700;color:var(--myc);}
+  .hero p{color:var(--dim);font-size:1rem;line-height:1.9;max-width:54ch;}
+
+  .field{margin-top:5vh;border:1px solid var(--line);position:relative;background:#0d100b;padding:10px;}
+  .field canvas{width:100%;height:auto;display:block;cursor:crosshair;image-rendering:auto;}
+  .hud{position:absolute;top:20px;left:20px;font:400 11px/1.7 "Courier New",monospace;color:var(--dim);
+    pointer-events:none;}
+  .hud b{color:var(--nut);font-weight:400;}
+
+  .ctrl{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;}
+  .fld label{display:block;font:400 9.5px/1 "Courier New",monospace;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:10px;}
+  .fld output{float:right;color:var(--nut);font:400 12px/1 "Courier New",monospace;}
+  input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:16px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--nut);margin-top:-5px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--nut);cursor:pointer;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1;}
+  .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 15px;border-radius:2px;
+    cursor:pointer;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s;}
+  .btn:hover,.btn.on{border-color:var(--nut);color:var(--nut);background:rgba(79,176,165,.1);}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);font-weight:200;line-height:1.2;margin-bottom:14px;}
+  .cols p{color:var(--dim);font-size:.96rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols p b{color:var(--ink);font-weight:400;}
+  .stats div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);
+    font:400 12px/1.4 "Courier New",monospace;color:var(--dim);}
+  .stats b{color:var(--myc);font-weight:400;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 "Courier New",monospace;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i></i>Mycelium</div>
+    <div class="meta">Plot 14 · Fagus sylvatica · 41 days</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">Forest floor</div>
+    <h1>The largest<br>organism on<br>Earth is a <b>net</b></h1>
+    <p>A fungus is not a plant and not an animal. It is a network of filaments — hyphae — that grows through soil and wood, fusing with the roots of the trees around it and trading sugar for minerals. The visible mushroom is the fruit; the organism is the several hundred kilometres of thread under your feet.</p>
+  </section>
+
+  <section class="field">
+    <canvas id="cv" width="720" height="480"></canvas>
+    <div class="hud" id="hud"></div>
+  </section>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Growth rate <output id="oa">1.0×</output></label>
+      <input type="range" id="spd" min="10" max="300" value="100">
+    </div>
+    <div class="fld">
+      <label>Nutrient load <output id="ob">medium</output></label>
+      <input type="range" id="nut" min="5" max="100" value="45">
+    </div>
+    <div class="btns">
+      <button class="btn" id="seed">New colony</button>
+      <button class="btn" id="rain">Rain</button>
+      <button class="btn" id="burn">Clear</button>
+      <button class="btn" id="wood">Add a log</button>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>How it<br>decides</h2>
+      <p>Each growing tip is a decision made four or eight times a second. If there is more food in one direction than another, the tip turns towards it; if not, it goes straight on; and every so often it splits, which is how the network becomes a network rather than a thread.</p>
+      <p>There is no brain, no plan and no central control. The pattern that emerges — a fan of veins fanning out from a source, thickening where food is abundant and thinning where it is not — is the accumulated sum of those tiny local choices. It is the same reason rivers make the same shape, and the same reason the branching of a lung looks like a tree.</p>
+    </div>
+    <div>
+      <h2>The plot</h2>
+      <div class="stats">
+        <div>Hyphal length <b id="s1">0 m</b></div>
+        <div>Active tips <b id="s2">0</b></div>
+        <div>Nutrient remaining <b id="s3">0%</b></div>
+        <div>Network order <b id="s4">1.0</b></div>
+        <div>Substrate <b>beech, decayed</b></div>
+        <div>Moisture <b>field capacity</b></div>
+        <div>Light <b>none</b></div>
+        <div>Record <b>41 days, 0° C</b></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Mycelium — the network under the wood</span>
+    <span>Growth simulated on a nutrient field</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var GW=240, GH=160;
+  var cvs=document.createElement('canvas'); cvs.width=GW; cvs.height=GH;
+  var cctx=cvs.getContext('2d');
+  var img=cctx.createImageData(GW,GH);
+  var myc=new Float32Array(GW*GH);
+  var nut=new Float32Array(GW*GH);
+  var tips=[];
+  var speed=1.0, load=0.45;
+  var loopCount=0;
+
+  function idx(x,y){ return y*GW+x; }
+  function inb(x,y){ return x>=0&&y>=0&&x<GW&&y<GH; }
+  function rnd(){ return Math.random(); }
+  function addBlob(cx,cy,r,amount){
+    for(var y=Math.max(0,(cy-r)|0);y<Math.min(GH,(cy+r+1)|0);y++){
+      for(var x=Math.max(0,(cx-r)|0);x<Math.min(GW,(cx+r+1)|0);x++){
+        var d=Math.hypot(x-cx,y-cy);
+        if(d>r) continue;
+        nut[idx(x,y)] += amount*(1-d/r);
+      }
+    }
+  }
+  function seedColony(){
+    myc.fill(0); nut.fill(0); tips=[];
+    var cx=(GW*0.5)|0, cy=(GH*0.5)|0;
+    for(var i=0;i<6;i++){
+      var a=Math.random()*6.283, d=Math.random()*22;
+      var x=Math.round(cx+Math.cos(a)*d), y=Math.round(cy+Math.sin(a)*d);
+      myc[idx(x,y)]=1;
+      tips.push({x:x,y:y,dir:Math.random()*6.283,life:0});
+    }
+    addBlob(cx,cy,26,1.0*load+0.25);
+  }
+  function rain(){
+    for(var i=0;i<nut.length;i++) nut[i]+= (0.10+Math.random()*0.18)*load;
+  }
+  function addLog(){
+    var x=(Math.random()*GW)|0, y=(Math.random()*GH)|0;
+    var len=30+Math.random()*50, ang=Math.random()*6.283;
+    for(var t=0;t<len;t++){
+      var px=Math.round(x+Math.cos(ang)*t), py=Math.round(y+Math.sin(ang)*t);
+      if(!inb(px,py)) break;
+      addBlob(px,py,4,0.5*load+0.2);
+    }
+  }
+  var DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+  function step(){
+    if(!tips.length) return;
+    var count=Math.round(2*speed);
+    for(var s=0;s<count;s++){
+      var ti=(Math.random()*tips.length)|0;
+      var t=tips[ti];
+      t.life++;
+      // choose direction weighted by nutrient
+      var best=-1,bestScore=-1;
+      for(var d=0;d<DIRS.length;d++){
+        var nx=t.x+DIRS[d][0], ny=t.y+DIRS[d][1];
+        if(!inb(nx,ny)) continue;
+        var sc=nut[idx(nx,ny)]+Math.random()*0.05;
+        if(sc>bestScore){bestScore=sc;best=d;}
+      }
+      if(best<0){ tips.splice(ti,1); continue; }
+      var tx=t.x+DIRS[best][0], ty=t.y+DIRS[best][1];
+      var ni=idx(tx,ty);
+      if(nut[ni]<0.012){
+        if(Math.random()<0.35) tips.splice(ti,1);
+        else t.life=0;
+        continue;
+      }
+      // grow
+      myc[ni]=Math.min(1,myc[ni]+0.42);
+      nut[ni]-=0.055;
+      nut[idx(t.x,t.y)]+=0.030;
+      // branch
+      if(Math.random()<0.055){
+        var nd=(best+1+((Math.random()*7)|0))%DIRS.length;
+        var bx=tx+DIRS[nd][0], by=ty+DIRS[nd][1];
+        if(inb(bx,by)) tips.push({x:bx,y:by,dir:0,life:0});
+      }
+      t.x=tx; t.y=ty;
+      if(t.life>4000) tips.splice(ti,1);
+    }
+  }
+
+  function render(){
+    var d=img.data;
+    var total=0, nActive=0;
+    for(var i=0;i<GW*GH;i++){
+      var m=myc[i], n=nut[i];
+      total+=n;
+      if(m>0.08) nActive++;
+      // base loam
+      var r=14+((i*7)%5), g=16+((i*3)%4), b=11+((i*11)%4);
+      if(n>0.01){
+        var nb=Math.min(1,n);
+        r+=nb*8; g+=nb*30; b+=nb*28;
+      }
+      if(m>0.02){
+        var mb=Math.min(1,m);
+        r+=mb*205; g+=mb*205; b+=mb*150;
+      }
+      d[i*4]=r; d[i*4+1]=g; d[i*4+2]=b; d[i*4+3]=255;
+    }
+    cctx.putImageData(img,0,0);
+    ctx.imageSmoothingEnabled=true;
+    ctx.clearRect(0,0,720,480);
+    ctx.drawImage(cvs,0,0,720,480);
+    document.getElementById('hud').innerHTML='ACTIVE TIPS <b>'+tips.length+'</b><br>BIOMASS <b>'+(nActive/GW*GH*100).toFixed(1)+'%</b>';
+    document.getElementById('s1').textContent=(nActive*0.42).toFixed(1)+' m';
+    document.getElementById('s2').textContent=tips.length;
+    document.getElementById('s3').textContent=Math.min(100,total/(GW*GH)*220).toFixed(0)+'%';
+    document.getElementById('s4').textContent=(1+Math.log(1+nActive)/3).toFixed(2);
+  }
+
+  // decay
+  function decay(){
+    for(var i=0;i<myc.length;i++){
+      if(myc[i]>0){ myc[i]*=0.9995; if(myc[i]<0.03) myc[i]=0; }
+      nut[i]*=0.9975;
+    }
+  }
+
+  cv.addEventListener('click',function(e){
+    var r=cv.getBoundingClientRect();
+    var x=Math.round((e.clientX-r.left)/r.width*GW);
+    var y=Math.round((e.clientY-r.top)/r.height*GH);
+    addBlob(x,y,7,0.9*load+0.25);
+  });
+
+  document.getElementById('seed').addEventListener('click',seedColony);
+  document.getElementById('rain').addEventListener('click',rain);
+  document.getElementById('burn').addEventListener('click',function(){ myc.fill(0); nut.fill(0); tips=[]; });
+  document.getElementById('wood').addEventListener('click',addLog);
+  document.getElementById('spd').addEventListener('input',function(){
+    speed=parseInt(this.value,10)/100;
+    document.getElementById('oa').textContent=speed.toFixed(1)+'×';
+  });
+  document.getElementById('nut').addEventListener('input',function(){
+    load=parseInt(this.value,10)/100;
+    document.getElementById('ob').textContent = load<0.25?'low':(load<0.6?'medium':'high');
+  });
+
+  function loop(){
+    for(var k=0;k<3;k++) step();
+    decay();
+    render();
+    loopCount++;
+    requestAnimationFrame(loop);
+  }
+  seedColony();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

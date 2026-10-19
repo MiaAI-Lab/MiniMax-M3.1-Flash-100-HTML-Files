@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORM — Bauhaus Poster Studio</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --paper:#f0ebe0;--red:#d8352a;--yellow:#efb420;--blue:#1a4fa0;--ink:#141310;
+    --sans:"Futura","Century Gothic","Avenir Next","Trebuchet MS",sans-serif;
+  }
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden;}
+  .rule{height:10px;background:var(--ink);}
+  .rule.thin{height:3px;}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:20px 4vw;flex-wrap:wrap;gap:14px;}
+  .logo{display:flex;align-items:center;gap:14px;}
+  .logo .g{width:26px;height:26px;border-radius:50%;background:var(--red);position:relative;}
+  .logo .g::after{content:"";position:absolute;right:-11px;top:-11px;width:22px;height:22px;background:var(--blue);}
+  .logo b{font-size:1rem;letter-spacing:.34em;text-transform:uppercase;}
+  header .meta{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;opacity:.6;}
+
+  .stagewrap{display:grid;grid-template-columns:1fr 330px;gap:0;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);}
+  .poster{position:relative;aspect-ratio:3/4;max-height:86vh;margin:0 auto;width:100%;overflow:hidden;
+    background:var(--paper);}
+  .shape{position:absolute;transition:transform .7s cubic-bezier(.2,.9,.2,1),background .6s,border-radius .6s,opacity .5s;}
+  .shape.circle{border-radius:50%;}
+  .shape.tri{clip-path:polygon(50% 0%,100% 100%,0% 100%);}
+  .shape.sq{border-radius:0;}
+  .shape.arc{border-radius:100% 0 0 0;}
+  .shape.line{height:8px;background:var(--ink);}
+  .shape.ring{border-radius:50%;background:transparent;border:10px solid var(--ink);}
+  .shape.ringb{border-radius:50%;background:transparent;border:10px solid var(--blue);}
+  .shape.ringr{border-radius:50%;background:transparent;border:10px solid var(--red);}
+  .shape.half{border-radius:0 100% 0 0;}
+  .shape.quad{border-radius:100% 0 0 0;}
+
+  .ptype{position:absolute;pointer-events:none;}
+  .ptype .t1{font-size:clamp(2rem,7vw,5.2rem);line-height:.86;letter-spacing:-.02em;text-transform:uppercase;font-weight:700;}
+  .ptype .t2{font-size:clamp(.7rem,1.4vw,1rem);letter-spacing:.3em;text-transform:uppercase;}
+  .ptype .t3{font-size:clamp(.55rem,1vw,.78rem);letter-spacing:.22em;text-transform:uppercase;opacity:.75;}
+  .ptype .bar{width:64px;height:9px;background:var(--ink);margin:12px 0;}
+
+  .panel{border-left:3px solid var(--ink);padding:26px 24px;display:flex;flex-direction:column;gap:22px;background:#e9e3d6;}
+  .panel h2{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;opacity:.6;}
+  .panel .btnrow{display:grid;gap:10px;}
+  .pbtn{border:2px solid var(--ink);background:transparent;padding:14px 16px;text-align:left;cursor:pointer;font-family:inherit;
+    font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;transition:.3s;display:flex;justify-content:space-between;align-items:center;}
+  .pbtn:hover{background:var(--ink);color:var(--paper);}
+  .pbtn .sw{width:14px;height:14px;display:block;}
+  .ctl label{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.26em;text-transform:uppercase;opacity:.65;margin-bottom:9px;}
+  .ctl label b{opacity:1;letter-spacing:.04em;font-size:12px;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:var(--ink);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--red);cursor:ew-resize;border:2px solid #e9e3d6;}
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--red);cursor:ew-resize;border:2px solid #e9e3d6;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{width:30px;height:30px;border:2px solid var(--ink);cursor:pointer;transition:.25s;}
+  .chip:hover{transform:scale(1.12);}
+  .chip.on{outline:3px solid var(--ink);outline-offset:2px;}
+  .legend{border-top:2px solid var(--ink);padding-top:16px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.7;line-height:2.1;}
+
+  .band{display:grid;grid-template-columns:repeat(4,1fr);}
+  .band div{padding:34px 22px;border-right:3px solid var(--ink);}
+  .band div:last-child{border-right:none;}
+  .band h3{font-size:clamp(1.2rem,2.4vw,1.8rem);text-transform:uppercase;letter-spacing:-.01em;margin-bottom:10px;}
+  .band p{font-size:.85rem;line-height:1.75;opacity:.72;}
+  .band .n{font-size:2.6rem;line-height:1;margin-bottom:12px;}
+  .band div:nth-child(1){background:var(--yellow);}
+  .band div:nth-child(2){background:var(--red);color:var(--paper);}
+  .band div:nth-child(3){background:var(--blue);color:var(--paper);}
+  .band div:nth-child(4);}
+
+  .expl{padding:10vh 4vw;display:grid;grid-template-columns:.9fr 1.1fr;gap:6vw;align-items:center;}
+  .expl h2{font-size:clamp(2rem,5.4vw,4.2rem);line-height:.95;text-transform:uppercase;letter-spacing:-.02em;}
+  .expl h2 em{font-style:normal;background:var(--yellow);padding:0 .12em;}
+  .expl p{font-size:1rem;line-height:1.95;opacity:.75;max-width:46ch;}
+  .expl .caps{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px;}
+  .expl .caps div{border-top:2px solid var(--ink);padding-top:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;}
+
+  footer{padding:34px 4vw;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;opacity:.6;border-top:3px solid var(--ink);}
+
+  @media(max-width:940px){.stagewrap{grid-template-columns:1fr;}.panel{border-left:none;border-top:3px solid var(--ink);}
+    .band{grid-template-columns:repeat(2,1fr);}.band div:nth-child(2){border-right:none;}.band div:nth-child(-n+2){border-bottom:3px solid var(--ink);}
+    .expl{grid-template-columns:1fr;}}
+  @media(max-width:520px){.band{grid-template-columns:1fr;}.band div{border-right:none;border-bottom:3px solid var(--ink);}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="rule"></div>
+<header>
+  <div class="logo"><span class="g"></span><b>Form</b></div>
+  <div class="meta">Bauhaus Poster Studio · Issue 4</div>
+</header>
+
+<div class="stagewrap">
+  <div class="poster" id="poster">
+    <div class="ptype" id="ptype" style="left:7%;top:7%;">
+      <div class="t1">Form<br>Follows<br>Function</div>
+      <div class="bar"></div>
+      <div class="t2">Vortrag · 1926</div>
+    </div>
+    <div class="ptype" id="ptype2" style="right:7%;bottom:6%;text-align:right;">
+      <div class="t3">Staatliches Bauhaus</div>
+      <div class="t2" id="platen">Plakat № 14</div>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <h2>Composition</h2>
+    <div class="btnrow">
+      <button class="pbtn" id="new"><span>Neues Plakat</span><span>→</span></button>
+      <button class="pbtn" id="shuffle"><span>Shuffle shapes</span><span>⤨</span></button>
+    </div>
+
+    <div class="ctl">
+      <label>Shape scale <b id="vScale">1.00</b></label>
+      <input type="range" id="scale" min="40" max="180" value="100">
+    </div>
+    <div class="ctl">
+      <label>Rotation <b id="vRot">0°</b></label>
+      <input type="range" id="rot" min="-90" max="90" value="0">
+    </div>
+    <div class="ctl">
+      <label>Circle position <b id="vPos">50%</b></label>
+      <input type="range" id="pos" min="0" max="100" value="50">
+    </div>
+
+    <div class="ctl">
+      <label>Palette</label>
+      <div class="chips" id="chips">
+        <div class="chip" data-c="#d8352a" style="background:#d8352a"></div>
+        <div class="chip" data-c="#efb420" style="background:#efb420"></div>
+        <div class="chip" data-c="#1a4fa0" style="background:#1a4fa0"></div>
+        <div class="chip on" data-c="#141310" style="background:#141310"></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      Elemente: Kreis · Halbkreis · Dreieck<br>
+      Raster: 12 Spalten<br>
+      Schrift: Futura, 1926
+    </div>
+  </aside>
+</div>
+<div class="rule"></div>
+
+<section class="band">
+  <div><div class="n">01</div><h3>Kreis</h3><p>The purest form. It contains everything and excludes nothing, which is why it was taught first.</p></div>
+  <div><div class="n">02</div><h3>Dreieck</h3><p>Direction without compromise. A triangle points, and pointing is a claim about hierarchy.</p></div>
+  <div><div class="n">03</div><h3>Quadrat</h3><p>Honesty of angle. The square is the only shape that cannot be argued with: it stands where it is put.</p></div>
+  <div><div class="n">04</div><h3>Farbe</h3><p>Primary red, primary yellow, primary blue — and the discipline to let one of them carry the whole poster.</p></div>
+</section>
+
+<section class="expl">
+  <div>
+    <h2>A poster is an <em>argument</em><br>made in one second</h2>
+    <div class="caps">
+      <div>1926 — Dessau</div><div>Herbert Bayer</div><div>Joost Schmidt</div><div>Max Bill</div>
+    </div>
+  </div>
+  <div>
+    <p>The Bauhaus poster workshop was the only place in Europe where typography, colour and geometry were taught as a single subject. Students arrived with painting skills and left able to design a whole room.</p>
+    <p style="margin-top:1.3em">What survives from that workshop is not a style but a procedure: reduce the message, find the grid, choose one primary colour, set the type without apology, and print it at the size of the street.</p>
+    <p style="margin-top:1.3em">The studio on the left is a small machine for running that procedure. Change the palette, the scale, the rotation; press <strong>Neues Plakat</strong> for a new composition drawn from the same vocabulary.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Form — Poster Studio</span>
+  <span>All compositions generated in the browser</span>
+</footer>
+
+<script>
+(function(){
+  var poster=document.getElementById('poster');
+  var ptype=document.getElementById('ptype'), ptype2=document.getElementById('ptype2');
+  var accent='#141310', scaleK=1, rot=0, circleX=50;
+  var PAL=['#d8352a','#efb420','#1a4fa0','#141310'];
+  var WORDS=[['Form','Follows','Function'],['Bauhaus','Bewegt','Form'],['Farbe','Form','Fläche'],
+             ['Licht','Raum','Fläche'],['Typo','Raum','Fläche'],['Kunst','Hand','Werk']];
+  var SUBS=['Vortrag · 1926','Ausstellung · 1927','Werkstatt · 1928','Plakat · 1929','Reklame · 1930'];
+
+  function rand(a,b){return a+Math.random()*(b-a);}
+
+  function build(){
+    poster.querySelectorAll('.shape').forEach(function(s){s.remove();});
+    var W=poster.clientWidth, H=poster.clientHeight;
+    var u=Math.min(W,H);
+
+    // circle
+    var c=document.createElement('div');
+    c.className='shape circle';
+    var cr=u*rand(0.34,0.56)*scaleK;
+    c.style.width=cr+'px'; c.style.height=cr+'px';
+    c.style.background=accent;
+    c.style.left=(circleX/100*W-cr/2)+'px';
+    c.style.top=(H*0.44-cr/2)+'px';
+    c.style.transform='rotate('+rot+'deg)';
+    poster.appendChild(c);
+
+    // half circle
+    var h=document.createElement('div');
+    h.className='shape half';
+    var hs=u*rand(0.24,0.4)*scaleK;
+    h.style.width=hs+'px'; h.style.height=hs+'px';
+    h.style.background=PAL[Math.floor(Math.random()*2)];
+    h.style.left=rand(W*0.55,W*0.95-hs)+'px';
+    h.style.top=rand(H*0.12,H*0.6-hs)+'px';
+    h.style.transform='rotate('+rand(0,180)+'deg)';
+    poster.appendChild(h);
+
+    // triangle
+    var tr=document.createElement('div');
+    tr.className='shape tri';
+    var ts=u*rand(0.26,0.44)*scaleK;
+    tr.style.width=ts+'px'; tr.style.height=ts+'px';
+    tr.style.background=PAL[Math.floor(Math.random()*3)];
+    tr.style.left=rand(W*0.04,W*0.42)+'px';
+    tr.style.bottom=rand(H*0.06,H*0.3)+'px';
+    tr.style.transform='rotate('+rand(-20,20)+'deg)';
+    poster.appendChild(tr);
+
+    // ring
+    var rg=document.createElement('div');
+    rg.className='shape ring'+(Math.random()<.5?'b':'r');
+    var rs=u*rand(0.18,0.32)*scaleK;
+    rg.style.width=rs+'px'; rg.style.height=rs+'px';
+    rg.style.left=rand(W*0.3,W*0.8-rs)+'px';
+    rg.style.top=rand(H*0.08,H*0.55-rs)+'px';
+    poster.appendChild(rg);
+
+    // bar
+    var br=document.createElement('div');
+    br.className='shape line';
+    br.style.width=u*rand(0.3,0.7)+'px';
+    br.style.left=rand(W*0.06,W*0.4)+'px';
+    br.style.top=rand(H*0.2,H*0.8)+'px';
+    br.style.transform='rotate('+rand(-8,8)+'deg)';
+    br.style.background=Math.random()<.5?accent:'#141310';
+    poster.appendChild(br);
+
+    // typography
+    var w=WORDS[Math.floor(Math.random()*WORDS.length)];
+    ptype.querySelector('.t1').innerHTML=w[0]+'<br>'+w[1]+'<br>'+w[2];
+    ptype2.querySelector('.t2').textContent=SUBS[Math.floor(Math.random()*SUBS.length)];
+    document.getElementById('platen').textContent='Plakat № '+Math.floor(rand(1,60));
+  }
+
+  function rebuildShapes(){
+    // preserve the poster text, redraw geometry
+    var old=poster.querySelectorAll('.shape');
+    var first=old[0];
+    build();
+  }
+
+  document.getElementById('new').addEventListener('click',build);
+  document.getElementById('shuffle').addEventListener('click',build);
+
+  function bindRange(id,out,fn,fmt){
+    var el=document.getElementById(id), o=document.getElementById(out);
+    el.addEventListener('input',function(){
+      var v=+el.value; fn(v); o.textContent=fmt(v);
+    });
+  }
+  bindRange('scale','vScale',function(v){scaleK=v/100;build();},function(v){return (v/100).toFixed(2);});
+  bindRange('rot','vRot',function(v){rot=v;build();},function(v){return v+'°';});
+  bindRange('pos','vPos',function(v){circleX=v;build();},function(v){return v+'%';});
+
+  document.getElementById('chips').addEventListener('click',function(e){
+    var c=e.target.closest('.chip'); if(!c) return;
+    this.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});
+    c.classList.add('on'); accent=c.dataset.c; build();
+  });
+
+  // shapes react to hover
+  poster.addEventListener('pointerover',function(e){
+    var s=e.target.closest('.shape'); if(!s) return;
+    s.style.opacity='.85';
+    s.style.transform = s.style.transform + ' scale(1.06)';
+  });
+  poster.addEventListener('pointerout',function(e){
+    var s=e.target.closest('.shape'); if(!s) return;
+    s.style.opacity='1';
+  });
+
+  build();
+  window.addEventListener('resize',function(){ build(); });
+})();
+</script>
+</body>
+</html>

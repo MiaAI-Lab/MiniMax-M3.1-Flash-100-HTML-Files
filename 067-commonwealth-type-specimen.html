@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMMONWEALTH — a type specimen</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--paper:#efe9dc;--ink:#191712;--dim:#7d7669;--line:rgba(25,23,18,.22);--red:#a8321f;}
+  body{background:var(--paper);color:var(--ink);font-family:"Times New Roman",Times,serif;overflow-x:hidden;}
+  .wrap{max-width:1150px;margin:0 auto;padding:0 5vw 80px;}
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:24px 0;
+    border-bottom:3px solid var(--ink);}
+  .brand{font-size:1.15rem;letter-spacing:.34em;text-transform:uppercase;font-weight:700;}
+  .meta{font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);}
+
+  .hero{padding:8vh 0 3vh;max-width:800px;}
+  .k{font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:var(--red);}
+  h1{font-size:clamp(3rem,10vw,8rem);font-weight:700;line-height:.86;letter-spacing:-.045em;margin:22px 0 24px;}
+  .hero p{font-size:1.06rem;line-height:1.9;color:#4a453c;max-width:52ch;}
+
+  .case{margin-top:5vh;display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:0;
+    border:1px solid var(--ink);}
+  .sort{aspect-ratio:1;display:grid;place-items:center;font-size:1.7rem;border-right:1px solid var(--ink);
+    border-bottom:1px solid var(--ink);position:relative;transition:.2s;cursor:pointer;}
+  .sort:nth-child(14n){border-right:none;}
+  .sort:hover{background:var(--ink);color:var(--paper);}
+  .sort .h{position:absolute;left:4px;top:2px;font-size:7.5px;letter-spacing:.1em;color:var(--dim);}
+  .sort:hover .h{color:rgba(239,233,220,.6);}
+
+  .ctrl{margin-top:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;}
+  .fld label{display:block;font:400 9.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:10px;}
+  .fld output{font:400 12px/1 "Times New Roman",serif;color:var(--red);float:right;}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:18px;}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink);}
+  input[type=range]::-moz-range-track{height:2px;background:var(--ink);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--ink);
+    border-radius:50%;margin-top:-6px;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--ink);border:none;border-radius:50%;cursor:pointer;}
+  .seg{display:flex;border:1px solid var(--ink);}
+  .seg button{flex:1;background:transparent;border:none;border-right:1px solid var(--ink);padding:8px 4px;cursor:pointer;
+    font:400 10px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);}
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--ink);color:var(--paper);}
+
+  .press{margin-top:6vh;border:2px solid var(--ink);padding:clamp(24px,4vw,54px);position:relative;}
+  .press .tag{position:absolute;top:-11px;left:22px;background:var(--paper);padding:0 12px;
+    font:400 9.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);}
+  .specimen{font-size:clamp(3.4rem,11vw,9rem);line-height:1;letter-spacing:-.02em;color:var(--ink);}
+  .specimen.emb{text-shadow:0 1px 0 rgba(255,255,255,.6), 0 2px 1px rgba(25,23,18,.55), 0 4px 2px rgba(25,23,18,.3);}
+  .specimen.flat{text-shadow:none;}
+  .specimen.ink{text-shadow:0 0 0 var(--ink), 0 0 6px rgba(25,23,18,.5);}
+  .sample{margin-top:20px;font-size:1.06rem;line-height:1.9;color:#4a453c;max-width:56ch;}
+  .sample b{font-weight:700;}
+
+  .cols{margin-top:6vh;display:grid;grid-template-columns:1fr 1fr;gap:5vw;}
+  .cols h2{font-size:clamp(1.4rem,3vw,2.1rem);line-height:1.2;margin-bottom:14px;}
+  .cols p{color:#4a453c;font-size:.98rem;line-height:1.95;}
+  .cols p+p{margin-top:1em;}
+  .cols ul{list-style:none;margin-top:14px;}
+  .cols li{font-size:.9rem;padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;}
+  .cols li span{color:var(--dim);font:400 11px/1.6 "Helvetica Neue",Arial,sans-serif;letter-spacing:.1em;}
+  footer{margin-top:46px;padding-top:18px;border-top:3px solid var(--ink);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font:400 10.5px/1 inherit "Helvetica Neue",Arial,sans-serif;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+  @media(max-width:520px){.case{grid-template-columns:repeat(auto-fill,minmax(52px,1fr));}.sort{font-size:1.2rem;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Commonwealth</div>
+    <div class="meta">Specimen no. 4 · hot metal · 96 point</div>
+  </header>
+
+  <section class="hero">
+    <div class="k">A type specimen</div>
+    <h1>Common<br>wealth</h1>
+    <p>Before a word was a word it was a lump of lead, an inch and a half tall, with the letter reversed on the end of it. Everything in this page is a study of that: what a letter looks like when it is cut, when it is inked, and when it is pressed into damp paper.</p>
+  </section>
+
+  <div class="case" id="case"></div>
+
+  <section class="ctrl">
+    <div class="fld">
+      <label>Impression depth <output id="od">60%</output></label>
+      <input type="range" id="depth" min="0" max="100" value="60">
+    </div>
+    <div class="fld">
+      <label>Ink coverage <output id="oa">100%</output></label>
+      <input type="range" id="ink" min="0" max="100" value="100">
+    </div>
+    <div class="fld">
+      <label>Setting</label>
+      <div class="seg" id="seg">
+        <button data-t="flat" >Flat</button>
+        <button data-t="emb" class="on">Embossed</button>
+        <button data-t="ink">Wet</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="press">
+    <span class="tag">Proof pull · 600 gsm cotton rag</span>
+    <div class="specimen emb" id="spec">Hamburgefons</div>
+    <p class="sample">Set <b>at 96 point on a 12 pica measure</b>, this line runs to thirty-one characters and breaks twice. The impression slider controls how far the type sinks into the damp sheet: at zero the paper is merely inked, at full the type has pushed the fibres aside and the sheet will need to be pressed again before it is cut.</p>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>The punch,<br>the matrix,<br>the cast</h2>
+      <p>Each letter began as a cut in steel, driven with a hammer and a letter-punch into a copper matrix, which was then adjusted by hand with a proof of the letter on paper. Only then was the type cast, in an alloy of lead, tin and antimony that expands slightly as it cools — which is why type faces come out of the mould perfectly sharp and slightly larger than the punch.</p>
+      <p>By the time a case was full, the compositor set sixteen thousand pieces of lead in a galley, and the whole thing was locked up in a chase and pulled under a platen at two hundred impressions an hour.</p>
+    </div>
+    <div>
+      <h2>The sort</h2>
+      <ul>
+        <li>Body <span>12 point</span></li>
+        <li>Set solid <span>12 pica</span></li>
+        <li>Line <span>31 characters</span></li>
+        <li>Leading <span>2 points</span></li>
+        <li>Case <span>89 compartments</span></li>
+        <li>Impression <span>600 gsm rag</span></li>
+        <li>Colour <span>rubber-based black</span></li>
+        <li>Fount <span>Monotype, 1928</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Commonwealth — a type specimen</span>
+    <span>Hot metal · no fonts loaded</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var A='ABCDEFGHIJKLM', B='NOPQRSTUVWXYZ', C='abcdefghijklm', D='nopqrstuvwxyz', E='0123456789';
+  var LETTERS=(A+B).split('').concat(C.split('')).concat(D.split('')).concat(E.split(''));
+  var caseEl=document.getElementById('case');
+  LETTERS.forEach(function(ch,i){
+    var d=document.createElement('div');
+    d.className='sort';
+    d.innerHTML='<span class="h">'+String(i+1).padStart(2,'0')+'</span>'+ch;
+    d.addEventListener('click',function(){
+      document.getElementById('spec').textContent=document.getElementById('spec').textContent.replace(ch,ch);
+      d.animate([{transform:'translateY(-6px) scale(1.12)'},{transform:'none'}],{duration:280,easing:'ease-out'});
+    });
+    caseEl.appendChild(d);
+  });
+  var depth=document.getElementById('depth'), ink=document.getElementById('ink');
+  var spec=document.getElementById('spec');
+  var mode='emb';
+  function apply(){
+    var d=parseInt(depth.value,10)/100;
+    var i=parseInt(ink.value,10)/100;
+    document.getElementById('od').textContent=depth.value+'%';
+    document.getElementById('oa').textContent=ink.value+'%';
+    if(mode==='emb'){
+      var y=(1+d*4).toFixed(2);
+      spec.className='specimen emb';
+      spec.style.textShadow='0 1px 0 rgba(255,255,255,'+(0.6*d).toFixed(2)+'), 0 '+y+'px '+(1+d*2).toFixed(2)+'px rgba(25,23,18,'+(0.25+d*0.5).toFixed(2)+'), 0 '+(y*2).toFixed(2)+'px '+(1+d*3).toFixed(2)+'px rgba(25,23,18,'+(0.12+d*0.24).toFixed(2)+')';
+      spec.style.opacity=(0.55+i*0.45).toFixed(2);
+      spec.style.color='#191712';
+    }else if(mode==='flat'){
+      spec.className='specimen flat';
+      spec.style.textShadow='none';
+      spec.style.opacity=(0.55+i*0.45).toFixed(2);
+      spec.style.color='#191712';
+    }else{
+      spec.className='specimen ink';
+      spec.style.textShadow='0 0 '+(2+i*10).toFixed(2)+'px rgba(25,23,18,'+(0.2+i*0.6).toFixed(2)+')';
+      spec.style.opacity=(0.5+i*0.5).toFixed(2);
+      spec.style.color='rgba(25,23,18,'+(0.5+i*0.5).toFixed(2)+')';
+    }
+  }
+  depth.addEventListener('input',apply);
+  ink.addEventListener('input',apply);
+  var segs=document.querySelectorAll('#seg button');
+  Array.prototype.forEach.call(segs,function(b){
+    b.addEventListener('click',function(){
+      mode=b.getAttribute('data-t');
+      Array.prototype.forEach.call(segs,function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      apply();
+    });
+  });
+  apply();
+})();
+</script>
+</body>
+</html>
